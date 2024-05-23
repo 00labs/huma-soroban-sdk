@@ -6,7 +6,7 @@ import 'dotenv/config'
 import { spawn } from 'child_process'
 import process from 'process'
 
-import { StellarNetwork, NetworkMetadatas } from './network'
+import { StellarNetwork, NetworkMetadatas } from '../src/utils/network'
 
 const cmd = (...command: string[]) => {
   const p = spawn(command[0], command.slice(1))
@@ -42,7 +42,7 @@ const cmd = (...command: string[]) => {
 
     console.log('Starting bindings for', contractName)
 
-    let test = `soroban contract bindings typescript --network ${StellarNetwork.testnet}
+    let test = `soroban contract bindings typescript --network testnet
         --output-dir src/packages/${contractName} --overwrite --contract-id ${contractAddress}`
     test = test.replace(/(\r\n|\n|\r)/gm, '')
     await cmd('bash', '-c', test)

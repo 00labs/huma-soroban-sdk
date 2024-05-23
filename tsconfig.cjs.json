@@ -5,5 +5,5 @@
     "rootDir": "./src",
     "outDir": "./dist/cjs" /* Redirect output structure to the directory. */
   },
-  "exclude": ["tests/**/*.test.ts"]
+  "exclude": ["tests/**/*.test.ts", "src/examples/**/*"]
 }

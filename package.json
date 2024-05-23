@@ -1,5 +1,5 @@
 {
-  "name": "@huma-finance/soroban-sdk",
+  "name": "@huma-shan/soroban-sdk",
   "version": "0.0.1",
   "types": "./dist/index.d.ts",
   "main": "./dist/cjs/index.js",
@@ -7,7 +7,8 @@
   "files": [
     "dist",
     "getting-started.md",
-    "API.md"
+    "API.md",
+    "packages"
   ],
   "scripts": {
     "start": "tsc -w",
@@ -20,9 +21,17 @@
     "test": "jest",
     "test:coverage": "jest --verbose --coverage",
     "test:badges": "yarn run test:coverage && yarn jest-coverage-badges",
-    "binding": "ts-node --project ./tsconfig.script.json src/utils/bindings.ts"
+    "binding": "ts-node --project ./tsconfig.script.json scripts/bindings.ts",
+    "startDrawdownPayback": "ts-node --project ./tsconfig.script.json src/examples/drawdownAndPayback.ts"
   },
   "dependencies": {
+    "@huma/creditStorage": "./packages/creditStorage",
+    "@huma/humaConfig": "./packages/humaConfig",
+    "@huma/pool": "./packages/pool",
+    "@huma/poolCredit": "./packages/poolCredit",
+    "@huma/poolManager": "./packages/poolManager",
+    "@huma/poolStorage": "./packages/poolStorage",
+    "@huma/trancheVault": "./packages/trancheVault",
     "@stellar/stellar-sdk": "^12.0.0-rc.3",
     "dotenv": "^16.0.3",
     "ts-node": "^10.9.1",

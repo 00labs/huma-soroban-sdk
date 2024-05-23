@@ -1,23 +1,24 @@
-import { StellarWallet } from '../services/StellarWallet'
+import { Client as CreditStorageClient } from '@huma/creditStorage'
+import { Client as PoolClient } from '@huma/pool'
+import { Client as PoolCreditClient } from '@huma/poolCredit'
+import { Client as PoolStorageClient } from '@huma/poolStorage'
 
-import { Client as PoolClient } from '../packages/pool'
-import { Client as PoolStorageClient } from '../packages/poolStorage'
-import { Client as PoolCreditClient } from '../packages/poolCredit'
-import { Client as CreditStorageClient } from '../packages/creditStorage'
+import { StellarWallet } from '../services/StellarWallet'
+import { findPoolMetadata } from './common'
 import {
   POOL_NAME,
   StellarNetwork,
   StellarNetworkPassphrase,
   StellarPublicRpcUrl,
 } from './network'
-import { findPoolMetadata } from './common'
 
 const getCommonProps = (network: StellarNetwork, wallet: StellarWallet) => {
   return {
-    publicKey: wallet.getUserInfo().publicKey,
+    publicKey: wallet.userInfo.publicKey,
     networkPassphrase: StellarNetworkPassphrase[network],
     rpcUrl: StellarPublicRpcUrl[network],
-    ...wallet,
+    allowHttp: network === StellarNetwork.localnet,
+    signTransaction: wallet.signTransaction.bind(wallet),
   }
 }
 
