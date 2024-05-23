@@ -27,7 +27,7 @@ const cmd = (...command: string[]) => {
 ;(async () => {
   const testnetMetadata = NetworkMetadatas.find(
     (x) => x.network === StellarNetwork.testnet,
-  )
+  )!
   const { contracts } = testnetMetadata.pools[0]
   const contractNames = Object.keys(contracts)
   for (let contractName of contractNames) {

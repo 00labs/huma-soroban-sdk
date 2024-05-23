@@ -1,7 +1,9 @@
 import { StellarWallet } from '../services/StellarWallet'
 
 import { Client as PoolClient } from '../packages/pool'
+import { Client as PoolStorageClient } from '../packages/poolStorage'
 import { Client as PoolCreditClient } from '../packages/poolCredit'
+import { Client as CreditStorageClient } from '../packages/creditStorage'
 import {
   POOL_NAME,
   StellarNetwork,
@@ -9,6 +11,15 @@ import {
   StellarPublicRpcUrl,
 } from './network'
 import { findPoolMetadata } from './common'
+
+const getCommonProps = (network: StellarNetwork, wallet: StellarWallet) => {
+  return {
+    publicKey: wallet.getUserInfo().publicKey,
+    networkPassphrase: StellarNetworkPassphrase[network],
+    rpcUrl: StellarPublicRpcUrl[network],
+    ...wallet,
+  }
+}
 
 export const getPoolClient = (
   poolName: POOL_NAME,
@@ -22,10 +33,23 @@ export const getPoolClient = (
 
   return new PoolClient({
     contractId: poolMetadata.contracts.pool,
-    publicKey: wallet.getUserInfo().publicKey,
-    networkPassphrase: StellarNetworkPassphrase[network],
-    rpcUrl: StellarPublicRpcUrl[network],
-    ...wallet,
+    ...getCommonProps(network, wallet),
+  })
+}
+
+export const getPoolStorageClient = (
+  poolName: POOL_NAME,
+  network: StellarNetwork,
+  wallet: StellarWallet,
+) => {
+  const poolMetadata = findPoolMetadata(network, poolName)
+  if (!poolMetadata) {
+    return undefined
+  }
+
+  return new PoolStorageClient({
+    contractId: poolMetadata.contracts.pool,
+    ...getCommonProps(network, wallet),
   })
 }
 
@@ -41,9 +65,22 @@ export const getPoolCreditClient = (
 
   return new PoolCreditClient({
     contractId: poolMetadata.contracts.poolCredit,
-    publicKey: wallet.getUserInfo().publicKey,
-    networkPassphrase: StellarNetworkPassphrase[network],
-    rpcUrl: StellarPublicRpcUrl[network],
-    ...wallet,
+    ...getCommonProps(network, wallet),
+  })
+}
+
+export const getCreditStorageClient = (
+  poolName: POOL_NAME,
+  network: StellarNetwork,
+  wallet: StellarWallet,
+) => {
+  const poolMetadata = findPoolMetadata(network, poolName)
+  if (!poolMetadata) {
+    return undefined
+  }
+
+  return new CreditStorageClient({
+    contractId: poolMetadata.contracts.creditStorage,
+    ...getCommonProps(network, wallet),
   })
 }

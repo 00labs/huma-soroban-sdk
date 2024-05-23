@@ -32,15 +32,10 @@ if (typeof window !== 'undefined') {
 export const networks = {
   testnet: {
     networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CBIKE7DJOL3JK7NDACY257ZQV2WCOINFMOVOB6OFRKHRPP2556YY3WPW",
+    contractId: "CD6E7GFRHBQ627ZXK5YNMQFBBLFCXBBEU6VYXBSQ77CYOYQC5UV3HS76",
   }
 } as const
 
-export const Errors = {
-  1: {message:""},
-  2: {message:""},
-  3: {message:""}
-}
 export type HumaConfigDataKey = {tag: "HumaOwner", values: void} | {tag: "HumaTreasury", values: void} | {tag: "Sentinel", values: void} | {tag: "ProtocolFeeInBps", values: void} | {tag: "IsPaused", values: void} | {tag: "Pauser", values: readonly [string]} | {tag: "ValidLiquidityAsset", values: readonly [string]};
 
 
@@ -151,6 +146,10 @@ export interface ProtocolFeeChangedEvent {
   old_fee_bps: u32;
 }
 
+export const Errors = {
+  1: {message:""},
+  79: {message:""}
+}
 
 export interface Client {
   /**
@@ -504,7 +503,8 @@ export class Client extends ContractClient {
         "AAAAAQAAAH1OZXcgdW5kZXJseWluZyBhc3NldCBzdXBwb3J0ZWQgYnkgdGhlIHByb3RvY29sIGlzIGFkZGVkLgojIEZpZWxkcwoqIGBhc3NldGAgLSBUaGUgYWRkcmVzcyBvZiB0aGUgbGlxdWlkaXR5IGFzc2V0IGJlaW5nIGFkZGVkLgAAAAAAAAAAAAAYTGlxdWlkaXR5QXNzZXRBZGRlZEV2ZW50AAAAAQAAAAAAAAAFYXNzZXQAAAAAAAAT",
         "AAAAAQAAAIRSZW1vdmUgdGhlIGFzc2V0IHRoYXQgaXMgbm8gbG9uZ2VyIHN1cHBvcnRlZCBieSB0aGUgcHJvdG9jb2wuCiMgRmllbGRzCiogYGFzc2V0YCAtIFRoZSBhZGRyZXNzIG9mIHRoZSBsaXF1aWRpdHkgYXNzZXQgYmVpbmcgcmVtb3ZlZC4AAAAAAAAAGkxpcXVpZGl0eUFzc2V0UmVtb3ZlZEV2ZW50AAAAAAABAAAAAAAAAAVhc3NldAAAAAAAABM=",
         "AAAAAQAAAHZUaGUgYWNjb3VudCBmb3IgdGhlIFNlbnRpbmVsIFNlcnZpY2UgaGFzIGJlZW4gY2hhbmdlZC4KIyBGaWVsZHMKKiBgYWNjb3VudGAgLSBUaGUgYWRkcmVzcyBvZiB0aGUgbmV3IFNlbnRpbmVsIFNlcnZpY2UuAAAAAAAAAAAAIlNlbnRpbmVsU2VydmljZUFjY291bnRDaGFuZ2VkRXZlbnQAAAAAAAEAAAAAAAAAB2FjY291bnQAAAAAEw==",
-        "AAAAAQAAAIlUaGUgcHJvdG9jb2wgZmVlIGhhcyBiZWVuIGNoYW5nZWQuCiMgRmllbGRzCiogYG9sZF9mZWVfYnBzYCAtIFRoZSBvbGQgcHJvdG9jb2wgZmVlIGluIGJwcy4KKiBgbmV3X2ZlZV9icHNgIC0gVGhlIG5ldyBwcm90b2NvbCBmZWUgaW4gYnBzLgAAAAAAAAAAAAAXUHJvdG9jb2xGZWVDaGFuZ2VkRXZlbnQAAAAAAgAAAAAAAAALbmV3X2ZlZV9icHMAAAAABAAAAAAAAAALb2xkX2ZlZV9icHMAAAAABA==" ]),
+        "AAAAAQAAAIlUaGUgcHJvdG9jb2wgZmVlIGhhcyBiZWVuIGNoYW5nZWQuCiMgRmllbGRzCiogYG9sZF9mZWVfYnBzYCAtIFRoZSBvbGQgcHJvdG9jb2wgZmVlIGluIGJwcy4KKiBgbmV3X2ZlZV9icHNgIC0gVGhlIG5ldyBwcm90b2NvbCBmZWUgaW4gYnBzLgAAAAAAAAAAAAAXUHJvdG9jb2xGZWVDaGFuZ2VkRXZlbnQAAAAAAgAAAAAAAAALbmV3X2ZlZV9icHMAAAAABAAAAAAAAAALb2xkX2ZlZV9icHMAAAAABA==",
+        "AAAABAAAAAAAAAAAAAAAC0NvbW1vbkVycm9yAAAAAAIAAAAAAAAAEkFscmVhZHlJbml0aWFsaXplZAAAAAAAAQAAAAAAAAAgQXV0aG9yaXplZENvbnRyYWN0Q2FsbGVyUmVxdWlyZWQAAABP" ]),
       options
     )
   }

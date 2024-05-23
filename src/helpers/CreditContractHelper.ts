@@ -4,7 +4,11 @@ import {
   CreditRecord,
 } from '../packages/poolCredit'
 import { StellarWallet } from '../services/StellarWallet'
-import { getPoolClient, getPoolCreditClient } from '../utils/client'
+import {
+  getCreditStorageClient,
+  getPoolCreditClient,
+  getPoolStorageClient,
+} from '../utils/client'
 import { POOL_NAME, StellarNetwork } from '../utils/network'
 
 /**
@@ -36,12 +40,12 @@ export async function getAvailableBalanceForPool(
   network: StellarNetwork,
   wallet: StellarWallet,
 ): Promise<bigint> {
-  const poolCreditClient = getPoolClient(poolName, network, wallet)
-  if (!poolCreditClient) {
+  const poolStorageClient = getPoolStorageClient(poolName, network, wallet)
+  if (!poolStorageClient) {
     throw new Error('Could not find credit contract for pool')
   }
 
-  const { result } = await poolCreditClient.get_available_balance()
+  const { result } = await poolStorageClient.get_available_balance()
   return result
 }
 
@@ -59,19 +63,19 @@ export async function getCreditRecordForPool(
   wallet: StellarWallet,
   borrower: string,
 ): Promise<CreditRecord> {
-  const poolCreditClient = getPoolCreditClient(poolName, network, wallet)
-  if (!poolCreditClient) {
-    throw new Error('Could not find credit contract for pool')
+  const creditStorageClient = getCreditStorageClient(poolName, network, wallet)
+  if (!creditStorageClient) {
+    throw new Error('Could not find credit storage contract for pool')
   }
 
-  const { result: creditHash } = await poolCreditClient.get_credit_hash({
+  const { result: creditHash } = await creditStorageClient.get_credit_hash({
     borrower,
   })
   if (!creditHash) {
     throw new Error('Could not find credit hash')
   }
 
-  const { result: creditRecord } = await poolCreditClient.get_credit_record({
+  const { result: creditRecord } = await creditStorageClient.get_credit_record({
     credit_hash: creditHash,
   })
   if (!creditRecord) {
@@ -97,12 +101,12 @@ export async function getAvailableCreditForPool(
   network: StellarNetwork,
   wallet: StellarWallet,
 ): Promise<bigint> {
-  const poolCreditClient = getPoolCreditClient(poolName, network, wallet)
-  if (!poolCreditClient) {
-    throw new Error('Could not find credit contract for pool')
+  const creditStorageClient = getCreditStorageClient(poolName, network, wallet)
+  if (!creditStorageClient) {
+    throw new Error('Could not find credit storage contract for pool')
   }
 
-  const { result: creditHash } = await poolCreditClient.get_credit_hash({
+  const { result: creditHash } = await creditStorageClient.get_credit_hash({
     borrower,
   })
   if (!creditHash) {
@@ -111,10 +115,10 @@ export async function getAvailableCreditForPool(
 
   const [{ result: creditConfig }, { result: creditRecord }] =
     await Promise.all([
-      poolCreditClient.get_credit_config({
+      creditStorageClient.get_credit_config({
         credit_hash: creditHash,
       }),
-      poolCreditClient.get_credit_record({
+      creditStorageClient.get_credit_record({
         credit_hash: creditHash,
       }),
     ])
@@ -203,7 +207,7 @@ export async function drawdown(
  * @param {boolean} principalOnly - Whether this payment should ONLY apply to the principal
  * @returns {Promise<AssembledTransaction>} - A Promise of the AssembledTransaction.
  */
-export async function makePaymentWithReceivable(
+export async function makePayment(
   poolName: POOL_NAME,
   network: StellarNetwork,
   wallet: StellarWallet,
