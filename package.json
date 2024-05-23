@@ -22,7 +22,7 @@
     "test:coverage": "jest --verbose --coverage",
     "test:badges": "yarn run test:coverage && yarn jest-coverage-badges",
     "binding": "ts-node --project ./tsconfig.script.json scripts/bindings.ts",
-    "startDrawdownPayback": "ts-node --project ./tsconfig.script.json src/examples/drawdownAndPayback.ts"
+    "startDrawdownPayback": "ts-node --project ./tsconfig.script.json examples/drawdownAndPayback.ts"
   },
   "dependencies": {
     "@huma/creditStorage": "./packages/creditStorage",
