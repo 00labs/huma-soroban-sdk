@@ -1,6 +1,6 @@
 {
   "name": "@huma-shan/soroban-sdk",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "types": "./dist/index.d.ts",
   "main": "./dist/cjs/index.js",
   "module": "./dist/index.js",
@@ -25,13 +25,13 @@
     "startDrawdownPayback": "ts-node --project ./tsconfig.script.json examples/drawdownAndPayback.ts"
   },
   "dependencies": {
-    "@huma/creditStorage": "./packages/creditStorage",
-    "@huma/humaConfig": "./packages/humaConfig",
-    "@huma/pool": "./packages/pool",
-    "@huma/poolCredit": "./packages/poolCredit",
-    "@huma/poolManager": "./packages/poolManager",
-    "@huma/poolStorage": "./packages/poolStorage",
-    "@huma/trancheVault": "./packages/trancheVault",
+    "@huma-shan/credit-storage": "^0.0.1",
+    "@huma-shan/huma-config": "^0.0.1",
+    "@huma-shan/pool": "^0.0.1",
+    "@huma-shan/pool-credit": "^0.0.1",
+    "@huma-shan/pool-manager": "^0.0.1",
+    "@huma-shan/pool-storage": "^0.0.1",
+    "@huma-shan/tranche-vault": "^0.0.1",
     "@stellar/stellar-sdk": "^12.0.0-rc.3",
     "dotenv": "^16.0.3",
     "ts-node": "^10.9.1",

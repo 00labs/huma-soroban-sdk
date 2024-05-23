@@ -1,6 +1,12 @@
 import 'dotenv/config'
 
-import { drawdown, POOL_NAME, StellarNetwork, StellarWallet } from '../src'
+import {
+  drawdown,
+  makePayment,
+  POOL_NAME,
+  StellarNetwork,
+  StellarWallet,
+} from '../src'
 
 const main = async () => {
   const wallet = new StellarWallet(process.env.TEST_PRIVATE_KEY!)
@@ -13,9 +19,20 @@ const main = async () => {
     wallet,
     borrowAmount,
   )
-  drawdownResult.sendTransactionResponse?.hash
   console.log(
     `Drawdown success. Tx hash: ${drawdownResult.sendTransactionResponse?.hash}`,
+  )
+
+  const paymentAmount = 100_0000000n
+  const makePaymentResult = await makePayment(
+    POOL_NAME.Arf,
+    StellarNetwork.localnet,
+    wallet,
+    paymentAmount,
+    true,
+  )
+  console.log(
+    `Payment success. Tx hash: ${makePaymentResult.sendTransactionResponse?.hash}`,
   )
 }
 

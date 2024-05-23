@@ -1072,50 +1072,71 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.0.tgz#a5417ae8427873f1dd08b70b3574b453e67b5f7f"
   integrity sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==
 
-"@huma/creditStorage@./packages/creditStorage":
-  version "0.0.0"
+"@huma-shan/credit-storage@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@huma-shan/credit-storage/-/credit-storage-0.0.1.tgz#b30ce2130bedde8d3815d47691e669432450b4ae"
+  integrity sha512-2qu3KQ17nZv+ltn4y2tld1iVPzdR7M/POJMlI5eNeLO2eQhFvnn2DVz+dGREuKNG4gLrtGTOdYOAsM9mUDbXIA==
   dependencies:
     "@stellar/freighter-api" "2.0.0"
     "@stellar/stellar-sdk" "11.3.0"
     buffer "6.0.3"
 
-"@huma/humaConfig@./packages/humaConfig":
-  version "0.0.0"
+"@huma-shan/huma-config@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@huma-shan/huma-config/-/huma-config-0.0.1.tgz#e1f538b425ea911a597a1c78994208ca173a74e3"
+  integrity sha512-MX1XgXAJdLIEfpN2a3u8+WO3bbF5BS3gaxUux4oNdJowHvqlQRkDqFQBCvhrdba7ZGUGUxRirRnE2as5DkprBA==
   dependencies:
     "@stellar/freighter-api" "2.0.0"
     "@stellar/stellar-sdk" "11.3.0"
     buffer "6.0.3"
 
-"@huma/pool@./packages/pool":
-  version "0.0.0"
+"@huma-shan/pool-credit@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@huma-shan/pool-credit/-/pool-credit-0.0.1.tgz#2fb4e1a06448b78c26d995e53c13f7074354af5b"
+  integrity sha512-k3o8kZcWy4YGB+Vy5kDADMhV9IYRCD7ivtsGdzrKsUKHe4fcgAj0mpjnVMeqjPkG/6XihIEqMxVWRajYFOtYcQ==
   dependencies:
     "@stellar/freighter-api" "2.0.0"
     "@stellar/stellar-sdk" "11.3.0"
     buffer "6.0.3"
 
-"@huma/poolCredit@./packages/poolCredit":
-  version "0.0.0"
+"@huma-shan/pool-manager@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@huma-shan/pool-manager/-/pool-manager-0.0.1.tgz#bf0088c5a68d4c5f45477060a715ca75f4839951"
+  integrity sha512-r7VSnc1wTmuFvJmRscRdG+tPk8HsPLU6Ea5ZbpvjtUEXcsZ7mqSAxgdFD97jSnGd+hMZaIu1ygLTxkPhW/nZlw==
   dependencies:
     "@stellar/freighter-api" "2.0.0"
     "@stellar/stellar-sdk" "11.3.0"
     buffer "6.0.3"
 
-"@huma/poolManager@./packages/poolManager":
-  version "0.0.0"
+"@huma-shan/pool-storage@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@huma-shan/pool-storage/-/pool-storage-0.0.1.tgz#c5eda35a0414cff25e084c348bda1c511b9fa00b"
+  integrity sha512-Y9Dn5pBGJhDNr14xjPEDsInathjYPG4aGx8sAMihwfmUuvq4dH1T12Qz19NXdgbVwZnqAiDPWsW/x92MXiacNA==
   dependencies:
     "@stellar/freighter-api" "2.0.0"
     "@stellar/stellar-sdk" "11.3.0"
     buffer "6.0.3"
 
-"@huma/poolStorage@./packages/poolStorage":
-  version "0.0.0"
+"@huma-shan/pool@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@huma-shan/pool/-/pool-0.0.1.tgz#3759fa7b8c528fbe86c11fe0c6e7254cae51b48d"
+  integrity sha512-aaAnegYwuNytjE8aG4y89fRhxLx+zBzAE7wIX9mci6ac50C3+YKbaMSsyyWJn1HGvJlHSvY3hPfJ1oBqkAYO+g==
+  dependencies:
+    "@stellar/freighter-api" "2.0.0"
+    "@stellar/stellar-sdk" "11.3.0"
+    buffer "6.0.3"
+
+"@huma-shan/tranche-vault@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@huma-shan/tranche-vault/-/tranche-vault-0.0.1.tgz#235700078ed5149b72f3ac1614561770ca7c155d"
+  integrity sha512-27kzydKgchZ3YNRLh/+xx1X7MV2Ih35K7CGm6fPdNY+zIsF4HkuWir/tuJbzfY4i9N0HWngGu7dLktTtLj5GCA==
   dependencies:
     "@stellar/freighter-api" "2.0.0"
     "@stellar/stellar-sdk" "11.3.0"
     buffer "6.0.3"
 
 "@huma/trancheVault@./packages/trancheVault":
-  version "0.0.0"
+  version "0.0.1"
   dependencies:
     "@stellar/freighter-api" "2.0.0"
     "@stellar/stellar-sdk" "11.3.0"

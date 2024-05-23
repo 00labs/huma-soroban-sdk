@@ -2,7 +2,8 @@ import {
   Client as PoolCreditClient,
   CreditRecord,
   SentTransaction,
-} from '../../packages/poolCredit'
+} from '@huma-shan/pool-credit'
+
 import { StellarWallet } from '../services/StellarWallet'
 import {
   getCreditStorageClient,
@@ -195,54 +196,54 @@ export async function drawdown(
   return result
 }
 
-// /**
-//  * Makes a payment.
-//  *
-//  * @async
-//  * @function
-//  * @param {POOL_NAME} poolName - The name of the credit pool to get the contract instance for.
-//  * @param {StellarNetwork} network - The stellar network.
-//  * @param {StellarWallet} wallet - The stellar wallet.
-//  * @param {bigint} paymentAmount - The amount to payback.
-//  * @param {boolean} principalOnly - Whether this payment should ONLY apply to the principal
-//  * @returns {Promise<AssembledTransaction>} - A Promise of the AssembledTransaction.
-//  */
-// export async function makePayment(
-//   poolName: POOL_NAME,
-//   network: StellarNetwork,
-//   wallet: StellarWallet,
-//   paymentAmount: bigint,
-//   principalOnly: boolean,
-// ): Promise<AssembledTransaction<readonly [bigint, boolean]>> {
-//   const poolCreditClient = getPoolCreditClient(poolName, network, wallet)
-//   if (!poolCreditClient) {
-//     throw new Error('Could not find credit contract for pool')
-//   }
+/**
+ * Makes a payment.
+ *
+ * @async
+ * @function
+ * @param {POOL_NAME} poolName - The name of the credit pool to get the contract instance for.
+ * @param {StellarNetwork} network - The stellar network.
+ * @param {StellarWallet} wallet - The stellar wallet.
+ * @param {bigint} paymentAmount - The amount to payback.
+ * @param {boolean} principalOnly - Whether this payment should ONLY apply to the principal
+ * @returns {Promise<AssembledTransaction>} - A Promise of the AssembledTransaction.
+ */
+export async function makePayment(
+  poolName: POOL_NAME,
+  network: StellarNetwork,
+  wallet: StellarWallet,
+  paymentAmount: bigint,
+  principalOnly: boolean,
+): Promise<SentTransaction<readonly [bigint, boolean]>> {
+  const poolCreditClient = getPoolCreditClient(poolName, network, wallet)
+  if (!poolCreditClient) {
+    throw new Error('Could not find credit contract for pool')
+  }
 
-//   let tx
-//   if (principalOnly) {
-//     tx = await poolCreditClient.make_principal_payment(
-//       {
-//         borrower: wallet.getUserInfo().publicKey,
-//         amount: paymentAmount,
-//       },
-//       {
-//         timeoutInSeconds: 30,
-//       },
-//     )
-//   } else {
-//     tx = await poolCreditClient.make_payment(
-//       {
-//         caller: wallet.getUserInfo().publicKey,
-//         borrower: wallet.getUserInfo().publicKey,
-//         amount: paymentAmount,
-//       },
-//       {
-//         timeoutInSeconds: 30,
-//       },
-//     )
-//   }
+  let tx
+  if (principalOnly) {
+    tx = await poolCreditClient.make_principal_payment(
+      {
+        borrower: wallet.userInfo.publicKey,
+        amount: paymentAmount,
+      },
+      {
+        timeoutInSeconds: 30,
+      },
+    )
+  } else {
+    tx = await poolCreditClient.make_payment(
+      {
+        caller: wallet.userInfo.publicKey,
+        borrower: wallet.userInfo.publicKey,
+        amount: paymentAmount,
+      },
+      {
+        timeoutInSeconds: 30,
+      },
+    )
+  }
 
-//   await tx.signAndSend()
-//   return tx
-// }
+  const result = await tx.signAndSend()
+  return result
+}
