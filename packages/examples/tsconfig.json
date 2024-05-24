@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@huma-shan/soroban-sdk": ["../sdk/src"]
+    }
+  },
+  "references": [
+    {
+      "path": "../sdk"
+    }
+  ]
+}
