@@ -1,7 +1,7 @@
-import { Client as CreditStorageClient } from '@huma-shan/credit-storage'
-import { Client as PoolClient } from '@huma-shan/pool'
-import { Client as PoolCreditClient } from '@huma-shan/pool-credit'
-import { Client as PoolStorageClient } from '@huma-shan/pool-storage'
+import { Client as CreditStorageClient } from '@huma-shan/soroban-credit-storage'
+import { Client as PoolClient } from '@huma-shan/soroban-pool'
+import { Client as PoolCreditClient } from '@huma-shan/soroban-pool-credit'
+import { Client as PoolStorageClient } from '@huma-shan/soroban-pool-storage'
 
 import { StellarWallet } from '../services/StellarWallet'
 import { findPoolMetadata } from './common'
