@@ -1,5 +1,5 @@
 {
-  "version": "0.0.3",
+  "version": "0.0.4",
   "name": "@huma-shan/soroban-credit-storage",
   "dependencies": {
     "@stellar/freighter-api": "2.0.0",
