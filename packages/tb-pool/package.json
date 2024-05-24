@@ -1,6 +1,6 @@
 {
   "version": "0.0.6",
-  "name": "@huma-shan/soroban-pool",
+  "name": "@huma-finance/soroban-pool",
   "dependencies": {
     "@stellar/freighter-api": "2.0.0",
     "@stellar/stellar-sdk": "11.3.0",
