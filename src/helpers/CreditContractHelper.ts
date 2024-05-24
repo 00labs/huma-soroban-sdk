@@ -109,12 +109,15 @@ export async function getAvailableCreditForPool(
     throw new Error('Could not find credit hash')
   }
 
-  const { result: creditConfig } = await poolCreditClient.get_credit_config({
-    credit_hash: creditHash,
-  })
-  const { result: creditRecord } = await poolCreditClient.get_credit_record({
-    credit_hash: creditHash,
-  })
+  const [{ result: creditConfig }, { result: creditRecord }] =
+    await Promise.all([
+      poolCreditClient.get_credit_config({
+        credit_hash: creditHash,
+      }),
+      poolCreditClient.get_credit_record({
+        credit_hash: creditHash,
+      }),
+    ])
 
   if (!creditConfig || !creditRecord) {
     throw new Error('Could not find credit config or credit record')
