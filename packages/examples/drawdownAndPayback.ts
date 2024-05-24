@@ -6,7 +6,7 @@ import {
   POOL_NAME,
   StellarNetwork,
   StellarWallet,
-} from '../src'
+} from '../packages/sdk/src'
 
 const main = async () => {
   const wallet = new StellarWallet(process.env.TEST_PRIVATE_KEY!)

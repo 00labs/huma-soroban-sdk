@@ -28,5 +28,28 @@
     },
     "esModuleInterop": true,
     "skipLibCheck": true
-  }
+  },
+  "references": [
+    {
+      "path": "../tb-creditStorage"
+    },
+    {
+      "path": "../tb-humaConfig"
+    },
+    {
+      "path": "../tb-pool"
+    },
+    {
+      "path": "../tb-poolCredit"
+    },
+    {
+      "path": "../tb-poolManager"
+    },
+    {
+      "path": "../tb-poolStorage"
+    },
+    {
+      "path": "../tb-trancheVault"
+    }
+  ]
 }

@@ -23,6 +23,8 @@ module.exports = {
     'webpack.cosmos.js',
     'babel.config.js',
     'jest.config.js',
+    'packages',
+    'scripts',
   ],
   rules: {
     'jsx-quotes': 'off',
