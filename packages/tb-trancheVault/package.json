@@ -1,6 +1,6 @@
 {
   "version": "0.0.7",
-  "name": "@huma-finance/soroban-tranche-vault",
+  "name": "@huma-shan/soroban-tranche-vault",
   "dependencies": {
     "@stellar/freighter-api": "2.0.0",
     "@stellar/stellar-sdk": "11.3.0",
