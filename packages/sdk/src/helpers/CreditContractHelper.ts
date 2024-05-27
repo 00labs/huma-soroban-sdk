@@ -91,16 +91,16 @@ export async function getCreditRecordForPool(
  * currently available for borrowing as the credit limit might exceed the available pool balance. Use
  * getPoolBalance() to get the current available pool balance.
  *
- * @param {string} borrower - The address of the borrower to check the available credit for.
  * @param {POOL_NAME} poolName - The name of the credit pool to get the contract instance for.
  * @param {StellarNetwork} network - The stellar network.
  * @param {StellarWallet} wallet - The stellar wallet.
+ * @param {string} borrower - The address of the borrower to check the available credit for.
  */
 export async function getAvailableCreditForPool(
-  borrower: string,
   poolName: POOL_NAME,
   network: StellarNetwork,
   wallet: StellarWallet,
+  borrower: string,
 ): Promise<bigint> {
   const creditStorageClient = getCreditStorageClient(poolName, network, wallet)
   if (!creditStorageClient) {

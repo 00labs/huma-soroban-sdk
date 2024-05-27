@@ -8,7 +8,7 @@ associated with the given pool name on the current chain.</p></dd>
 <dd><p>Returns the current pool balance available for borrowing</p></dd>
 <dt><a href="#getCreditRecordForPool">getCreditRecordForPool(poolName, network, wallet, borrower)</a></dt>
 <dd><p>Returns the credit record of the borrower</p></dd>
-<dt><a href="#getAvailableCreditForPool">getAvailableCreditForPool(borrower, poolName, network, wallet)</a></dt>
+<dt><a href="#getAvailableCreditForPool">getAvailableCreditForPool(poolName, network, wallet, borrower)</a></dt>
 <dd><p>Returns the borrower's remaining credit they can use for borrowing. Note that this might not be
 currently available for borrowing as the credit limit might exceed the available pool balance. Use
 getPoolBalance() to get the current available pool balance.</p></dd>
@@ -65,7 +65,7 @@ associated with the given pool name on the current chain.</p>
 
 <a name="getAvailableCreditForPool"></a>
 
-## getAvailableCreditForPool(borrower, poolName, network, wallet)
+## getAvailableCreditForPool(poolName, network, wallet, borrower)
 <p>Returns the borrower's remaining credit they can use for borrowing. Note that this might not be
 currently available for borrowing as the credit limit might exceed the available pool balance. Use
 getPoolBalance() to get the current available pool balance.</p>
@@ -74,10 +74,10 @@ getPoolBalance() to get the current available pool balance.</p>
 
 | Param | Type | Description |
 | --- | --- | --- |
-| borrower | <code>string</code> | <p>The address of the borrower to check the available credit for.</p> |
 | poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to get the contract instance for.</p> |
 | network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
 | wallet | <code>StellarWallet</code> | <p>The stellar wallet.</p> |
+| borrower | <code>string</code> | <p>The address of the borrower to check the available credit for.</p> |
 
 <a name="getTotalDue"></a>
 
