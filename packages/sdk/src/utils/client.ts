@@ -17,7 +17,7 @@ const getCommonProps = (network: StellarNetwork, wallet: StellarWallet) => {
     publicKey: wallet.userInfo.publicKey,
     networkPassphrase: StellarNetworkPassphrase[network],
     rpcUrl: StellarPublicRpcUrl[network],
-    allowHttp: network === StellarNetwork.localnet,
+    allowHttp: StellarPublicRpcUrl[network].startsWith('http://'),
     signTransaction: wallet.signTransaction.bind(wallet),
   }
 }
