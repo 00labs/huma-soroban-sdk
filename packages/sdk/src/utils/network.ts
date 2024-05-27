@@ -3,6 +3,7 @@ export enum StellarNetwork {
   mainnet = 'mainnet',
   futurenet = 'futurenet',
   localnet = 'localnet',
+  humanet = 'humanet',
 }
 
 export enum StellarNetworkPassphrase {
@@ -10,6 +11,7 @@ export enum StellarNetworkPassphrase {
   testnet = 'Test SDF Network ; September 2015',
   futurenet = 'Test SDF Future Network ; October 2022',
   localnet = 'Standalone Network ; February 2017',
+  humanet = 'Standalone Network ; February 2017',
 }
 
 export enum StellarPublicRpcUrl {
@@ -17,6 +19,7 @@ export enum StellarPublicRpcUrl {
   testnet = 'https://soroban-testnet.stellar.org',
   futurenet = 'https://rpc-futurenet.stellar.org',
   localnet = 'http://localhost:8000/soroban/rpc',
+  humanet = 'http://172.31.7.67:8000/soroban/rpc',
 }
 
 export enum POOL_NAME {
@@ -102,6 +105,34 @@ export const NetworkMetadatas: NetworkMetadata[] = [
             'CD4TNCKN7PDNOBS2JHEXRXPHOL327EX4Z7EURDG2XFWBZ67XG5XW5Q7O',
           seniorTranche:
             'CDOB4BPE2AKSZYW27QP4IYVIIGVQD3C7E7YL6XRZ2ANM7MYJT2TKOVPC',
+        },
+      },
+    ],
+  },
+  {
+    network: StellarNetwork.humanet,
+    networkPassphrase: StellarNetworkPassphrase.humanet,
+    rpcUrl: StellarPublicRpcUrl.humanet,
+    pools: [
+      {
+        poolName: POOL_NAME.Arf,
+        poolType: POOL_TYPE.Creditline,
+        contracts: {
+          humaConfig:
+            'CDUARGZAEFXOLWPDVCYZ5Y4QD7ISG5QZL36CUVCYLGE22S4U2FQC7T5L',
+          poolStorage:
+            'CBO432DNOGKONUPMKY3FMN2XDOXQO6YF32RWU3AYEE6FE3ABNTLZ44AY',
+          pool: 'CDZ5RPSAEV52JRPNF5MIFIUSGPFETOB5GB4ZMHGDOYHNAMXZ6EZYYEIP',
+          poolManager:
+            'CDAWXL4EEOTBKRMYPCRD4SHXJ5QW2ZCYWI64P6SWMRVPEQCL7GCENDNO',
+          poolCredit:
+            'CC5QODELURRO4KUIHZ6IIDDDMKQ2DCUBANVEPFWC7MLGVGCGVIYRDDOZ',
+          creditStorage:
+            'CB2X3E7FBKWAG6EYSTKIMCSNNLM3FFVZVEWPNQVHOVTQER24DMHYYIBV',
+          juniorTranche:
+            'CCGIZUQOMU6FINZQHBSXTYWLGQNW2UEZD7ZSMEFHJKHJPHS64YZFDFZP',
+          seniorTranche:
+            'CBC2OBQATLC27ZCN2IR7YG33KL2J75O6PYJV33FPB6ZBFGJKWRZF6MVT',
         },
       },
     ],
