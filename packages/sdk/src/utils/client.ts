@@ -49,7 +49,7 @@ export const getPoolStorageClient = (
   }
 
   return new PoolStorageClient({
-    contractId: poolMetadata.contracts.pool,
+    contractId: poolMetadata.contracts.poolStorage,
     ...getCommonProps(network, wallet),
   })
 }
