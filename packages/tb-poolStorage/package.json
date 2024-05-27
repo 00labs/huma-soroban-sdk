@@ -1,5 +1,5 @@
 {
-  "version": "0.0.8",
+  "version": "0.0.9",
   "name": "@huma-shan/soroban-pool-storage",
   "dependencies": {
     "@stellar/freighter-api": "2.0.0",
