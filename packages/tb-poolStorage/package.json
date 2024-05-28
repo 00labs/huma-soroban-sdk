@@ -1,0 +1,24 @@
+{
+  "version": "0.0.7",
+  "name": "@huma-finance/soroban-pool-storage",
+  "dependencies": {
+    "@stellar/freighter-api": "2.0.0",
+    "@stellar/stellar-sdk": "11.3.0",
+    "buffer": "6.0.3"
+  },
+  "scripts": {
+    "build": "node ./scripts/build.mjs"
+  },
+  "exports": {
+    "require": "./dist/cjs/index.js",
+    "import": "./dist/esm/index.js"
+  },
+  "typings": "dist/types/index.d.ts",
+  "devDependencies": {
+    "typescript": "5.3.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
