@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@huma-finance/soroban-sdk": ["../sdk/src"]
+    }
+  },
+  "references": [
+    {
+      "path": "../sdk"
+    }
+  ]
+}
