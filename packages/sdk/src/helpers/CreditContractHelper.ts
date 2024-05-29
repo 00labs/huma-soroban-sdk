@@ -11,6 +11,7 @@ import {
   getPoolStorageClient,
 } from '../utils/client'
 import { POOL_NAME, StellarNetwork } from '../utils/network'
+import { approveSep41AllowanceIfInsufficient } from './Sep41ContractHelper'
 
 /**
  * Returns an soroban contract client instance for the credit line contract
@@ -162,6 +163,56 @@ export async function getTotalDue(
 }
 
 /**
+ * Approve allowance for sentinel if not enough allowance is approved.
+ *
+ * @async
+ * @function
+ * @param {POOL_NAME} poolName - The name of the credit pool to get the contract instance for.
+ * @param {StellarNetwork} network - The stellar network.
+ * @param {StellarWallet} wallet - The stellar wallet.
+ * @returns {Promise<SentTransaction>} - A Promise of the SentTransaction.
+ */
+export async function approveAllowanceForSentinel(
+  poolName: POOL_NAME,
+  network: StellarNetwork,
+  wallet: StellarWallet,
+): Promise<SentTransaction<null>> {
+  const totalDue = await getTotalDue(
+    poolName,
+    network,
+    wallet,
+    wallet.userInfo.publicKey,
+  )
+  if (totalDue === null) {
+    throw new Error('Could not find total due')
+  }
+  const poolStorageClient = getPoolStorageClient(poolName, network, wallet)
+  if (!poolStorageClient) {
+    throw new Error('Could not find pool storage contract for pool')
+  }
+
+  const [{ result: underlyingToken }, { result: sentinel }] = await Promise.all(
+    [
+      poolStorageClient.get_underlying_token(),
+      poolStorageClient.get_sentinel(),
+    ],
+  )
+
+  const tx = await approveSep41AllowanceIfInsufficient(
+    network,
+    wallet,
+    underlyingToken,
+    sentinel,
+    totalDue,
+  )
+  if (!tx) {
+    throw new Error('Could not approve allowance for sentinel')
+  }
+
+  return tx
+}
+
+/**
  * Draws down from a pool.
  *
  * @async
@@ -183,6 +234,7 @@ export async function drawdown(
     throw new Error('Could not find credit contract for pool')
   }
 
+  await approveAllowanceForSentinel(poolName, network, wallet)
   const tx = await poolCreditClient.drawdown(
     {
       borrower: wallet.userInfo.publicKey,
@@ -219,8 +271,28 @@ export async function makePayment(
   if (!poolCreditClient) {
     throw new Error('Could not find credit contract for pool')
   }
+  const poolStorageClient = getPoolStorageClient(poolName, network, wallet)
+  if (!poolStorageClient) {
+    throw new Error('Could not find pool storage contract for pool')
+  }
+
+  await approveAllowanceForSentinel(poolName, network, wallet)
+  const [{ result: underlyingToken }, { result: sentinel }] = await Promise.all(
+    [
+      poolStorageClient.get_underlying_token(),
+      poolStorageClient.get_sentinel(),
+    ],
+  )
 
   let tx
+  tx = await approveSep41AllowanceIfInsufficient(
+    network,
+    wallet,
+    underlyingToken,
+    sentinel,
+    paymentAmount,
+  )
+
   if (principalOnly) {
     tx = await poolCreditClient.make_principal_payment(
       {

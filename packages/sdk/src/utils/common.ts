@@ -1,4 +1,9 @@
-import { StellarNetwork, NetworkMetadatas } from './network'
+import { SorobanRpc } from '@stellar/stellar-sdk'
+import {
+  StellarNetwork,
+  NetworkMetadatas,
+  StellarPublicRpcUrl,
+} from './network'
 
 export const findPoolMetadata = (network: StellarNetwork, poolName: string) => {
   const selectedNetworkMetadata = NetworkMetadatas.find(
@@ -10,4 +15,11 @@ export const findPoolMetadata = (network: StellarNetwork, poolName: string) => {
     )
   }
   return undefined
+}
+
+export const getLatestLedger = async (network: StellarNetwork) => {
+  const server = new SorobanRpc.Server(StellarPublicRpcUrl[network], {
+    allowHttp: true,
+  })
+  return server.getLatestLedger()
 }

@@ -31,7 +31,8 @@
       "@huma-finance/soroban-pool-credit": ["../tb-poolCredit"],
       "@huma-finance/soroban-pool-manager": ["../tb-poolManager"],
       "@huma-finance/soroban-pool-storage": ["../tb-poolStorage"],
-      "@huma-finance/soroban-tranche-vault": ["../tb-trancheVault"]
+      "@huma-finance/soroban-tranche-vault": ["../tb-trancheVault"],
+      "@huma-finance/soroban-sep41": ["../tb-sep41"]
     },
     "esModuleInterop": true,
     "skipLibCheck": true
@@ -57,6 +58,9 @@
     },
     {
       "path": "../tb-trancheVault"
+    },
+    {
+      "path": "../tb-sep41"
     }
   ]
 }
