@@ -42,7 +42,8 @@ export async function approveSep41AllowanceIfInsufficient(
       {
         from: wallet.userInfo.publicKey,
         spender: spenderAddress,
-        amount: 1000_000_000_0000000n,
+        // jsdoc will throw error if 1000_000_000_0000000n is used
+        amount: BigInt(1000_000_000_0000000),
         expiration_ledger: latestLedger.sequence + advanceLedgerNum,
       },
       {
