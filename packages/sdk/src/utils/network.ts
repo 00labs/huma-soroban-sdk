@@ -19,7 +19,7 @@ export enum StellarPublicRpcUrl {
   testnet = 'https://soroban-testnet.stellar.org',
   futurenet = 'https://rpc-futurenet.stellar.org',
   localnet = 'http://localhost:8000/soroban/rpc',
-  humanet = 'http://172.31.7.67:8000/soroban/rpc',
+  humanet = 'https://dev.stellar.huma.finance/soroban/rpc',
 }
 
 export enum POOL_NAME {

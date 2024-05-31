@@ -9,7 +9,7 @@
   "scripts": {
     "lerna:publish": "yarn lerna publish patch --no-private",
     "lerna:publish:canary": "yarn lerna publish patch --preid beta --canary --no-private",
-    "build:all": "yarn build:creditManager && yarn build:creditStorage && yarn build:humaConfig && yarn build:pool && yarn build:poolCredit && yarn build:poolManager && yarn build:poolStorage && yarn build:trancheVault && yarn build:sdk",
+    "build:all": "yarn build:creditManager && yarn build:creditStorage && yarn build:humaConfig && yarn build:pool && yarn build:poolCredit && yarn build:poolManager && yarn build:poolStorage && yarn build:trancheVault && yarn build:sep41 && yarn build:sdk",
     "build:sdk": "yarn workspace @huma-finance/soroban-sdk build",
     "build:creditManager": "yarn workspace @huma-finance/soroban-credit-manager build",
     "build:creditStorage": "yarn workspace @huma-finance/soroban-credit-storage build",
