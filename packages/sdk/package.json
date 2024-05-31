@@ -27,6 +27,7 @@
     "binding": "ts-node --project ./tsconfig.script.json scripts/bindings.ts"
   },
   "dependencies": {
+    "@huma-finance/soroban-credit-manager": "^0.0.7",
     "@huma-finance/soroban-credit-storage": "^0.0.7",
     "@huma-finance/soroban-huma-config": "^0.0.7",
     "@huma-finance/soroban-pool": "^0.0.7",
