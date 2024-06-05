@@ -39,6 +39,7 @@ export type PoolMetadata = {
     pool: string
     poolManager: string
     poolCredit: string
+    creditManager: string
     creditStorage: string
     seniorTranche: string
     juniorTranche: string
@@ -71,6 +72,8 @@ export const NetworkMetadatas: NetworkMetadata[] = [
             'CC7TGDDRSA2R7F6RIW3POEZSH22RG7DYNZX6GY2YGQ2O33E5BZWSMPDT',
           poolCredit:
             'CBI7LGEWCJFO2APREGBRTUXB5JMZHJOVD76MESEB7V6W4IJ4ZLQJILDB',
+          creditManager:
+            'CBFNWTJNDTJPHRKL4JKN6OH2UGF2CRMYTV5ULEBUBE53S6FDW36J2AIP',
           creditStorage:
             'CCQMDMB2J6XRPZKG4QYNSXNN6W56HH5QCQXM6MDIW7ZEJRYSLL2ZEG2U',
           juniorTranche:
@@ -99,6 +102,8 @@ export const NetworkMetadatas: NetworkMetadata[] = [
             'CDBZYAXIHNGPRAHOQU53AILDMSUO5UENFSCNHNT2ABXGLC2MEJ6RPV33',
           poolCredit:
             'CAC6ZM2HT2JVNS3TZ2LYVJ6JDR724J2SOV63YIWMP2RSLYA64EB5C7JH',
+          creditManager:
+            'CBOUPUZNWER345C3AGDWP43EO63RGZ4ZRWDKSKL43MVDGRES5EAUHQSD',
           creditStorage:
             'CCPTCRU7FUVQLNR4GGUBWQDHJCQTW3MXDZQYQQGB4OC2PNME7HNIV3R3',
           juniorTranche:
@@ -127,6 +132,8 @@ export const NetworkMetadatas: NetworkMetadata[] = [
             'CARLNZ3NYWYOV2T6QRMZKNNDXTPU4O3KJ4MGSM3ZFKITZOEWD7A3Q7BH',
           poolCredit:
             'CAH7FTMJW3FZJPCWO6QPQJFKNM647JJYXZ6U4ZUGMO5V4UVT57XYE6JD',
+          creditManager:
+            'CBOUPUZNWER345C3AGDWP43EO63RGZ4ZRWDKSKL43MVDGRES5EAUHQSD',
           creditStorage:
             'CA2FYGZO5IJGMW354LI4H6HMMLQZIDUYHHFE6J4BCNKK2WQAQ7H4ZKNJ',
           juniorTranche:

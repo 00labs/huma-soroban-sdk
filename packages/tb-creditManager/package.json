@@ -1,6 +1,6 @@
 {
   "version": "0.0.7",
-  "name": "@huma-finance/soroban-sep41",
+  "name": "@huma-finance/soroban-credit-manager",
   "dependencies": {
     "@stellar/freighter-api": "2.0.0",
     "buffer": "6.0.3",

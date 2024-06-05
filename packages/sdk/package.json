@@ -24,7 +24,7 @@
     "test": "jest",
     "test:coverage": "jest --verbose --coverage",
     "test:badges": "yarn run test:coverage && yarn jest-coverage-badges",
-    "binding": "ts-node --project ./tsconfig.script.json scripts/bindings.ts"
+    "binding": "ts-node --project ./tsconfig.script.json ../../scripts/bindings.ts"
   },
   "dependencies": {
     "@huma-finance/soroban-credit-storage": "^0.0.7",

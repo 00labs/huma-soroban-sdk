@@ -25,7 +25,8 @@
     "docs:sdk": "yarn workspace @huma-finance/soroban-sdk generateDocs",
     "lint:all": "yarn lint:sdk",
     "lint:sdk": "yarn workspace @huma-finance/soroban-sdk lint",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "binding": "yarn workspace @huma-finance/soroban-sdk binding"
   },
   "devDependencies": {
     "lerna": "^6.6.1"
