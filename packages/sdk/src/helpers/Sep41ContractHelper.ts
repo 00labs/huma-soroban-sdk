@@ -29,10 +29,13 @@ export async function approveSep41AllowanceIfInsufficient(
 ): Promise<SentTransaction<null> | null> {
   const tokenClient = getUnderlyingTokenClient(tokenAddress, network, wallet)
 
-  const { result: allowance } = await tokenClient.allowance({
-    from: wallet.userInfo.publicKey,
-    spender: spenderAddress,
-  })
+  const [{ result: allowance }, { result: decimals }] = await Promise.all([
+    tokenClient.allowance({
+      from: wallet.userInfo.publicKey,
+      spender: spenderAddress,
+    }),
+    tokenClient.decimals(),
+  ])
 
   if (allowance < allowanceAmount) {
     const latestLedger = await getLatestLedger(network)
@@ -42,8 +45,7 @@ export async function approveSep41AllowanceIfInsufficient(
       {
         from: wallet.userInfo.publicKey,
         spender: spenderAddress,
-        // jsdoc will throw error if 1000_000_000_0000000n is used
-        amount: BigInt(1000_000_000_0000000),
+        amount: BigInt(1000_000_000 * Math.pow(10, Number(decimals))),
         expiration_ledger: latestLedger.sequence + advanceLedgerNum,
       },
       {
