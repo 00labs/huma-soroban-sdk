@@ -2,6 +2,7 @@ import { Client as CreditStorageClient } from '@huma-finance/soroban-credit-stor
 import { Client as PoolClient } from '@huma-finance/soroban-pool'
 import { Client as PoolCreditClient } from '@huma-finance/soroban-pool-credit'
 import { Client as PoolStorageClient } from '@huma-finance/soroban-pool-storage'
+import { Client as Sep41Client } from '@huma-finance/soroban-sep41'
 
 import { StellarWallet } from '../services/StellarWallet'
 import { findPoolMetadata } from './common'
@@ -82,6 +83,17 @@ export const getCreditStorageClient = (
 
   return new CreditStorageClient({
     contractId: poolMetadata.contracts.creditStorage,
+    ...getCommonProps(network, wallet),
+  })
+}
+
+export const getUnderlyingTokenClient = (
+  tokenAddress: string,
+  network: StellarNetwork,
+  wallet: StellarWallet,
+) => {
+  return new Sep41Client({
+    contractId: tokenAddress,
     ...getCommonProps(network, wallet),
   })
 }

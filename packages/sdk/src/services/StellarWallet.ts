@@ -1,7 +1,7 @@
 import { Keypair, Transaction } from '@stellar/stellar-sdk'
 
 export class StellarWallet {
-  sourceKeypair: Keypair
+  private sourceKeypair: Keypair
 
   constructor(secretKey: string) {
     this.sourceKeypair = Keypair.fromSecret(secretKey)
