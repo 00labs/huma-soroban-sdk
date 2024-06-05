@@ -19,7 +19,7 @@ export enum StellarPublicRpcUrl {
   testnet = 'https://soroban-testnet.stellar.org',
   futurenet = 'https://rpc-futurenet.stellar.org',
   localnet = 'http://localhost:8000/soroban/rpc',
-  humanet = 'http://172.31.7.67:8000/soroban/rpc',
+  humanet = 'https://dev.stellar.huma.finance/soroban/rpc',
 }
 
 export enum POOL_NAME {
@@ -39,6 +39,7 @@ export type PoolMetadata = {
     pool: string
     poolManager: string
     poolCredit: string
+    creditManager: string
     creditStorage: string
     seniorTranche: string
     juniorTranche: string
@@ -63,20 +64,22 @@ export const NetworkMetadatas: NetworkMetadata[] = [
         poolType: POOL_TYPE.Creditline,
         contracts: {
           humaConfig:
-            'CD6E7GFRHBQ627ZXK5YNMQFBBLFCXBBEU6VYXBSQ77CYOYQC5UV3HS76',
+            'CAHPEHOIZIIMMTFCZOYEXDKHXJZ2QDYLRD3SF2AZTXWAUV4OWKGHPDCL',
           poolStorage:
-            'CAKPKH2G3ALGKW2E5BJFUJ6WR3RXJVGIXEAPVI5S6Q4HKSDCMKEYJSBR',
-          pool: 'CC2GGLIHX5E75QIXB7G27EOC47V74PXA33KGYDQH4DFISIVZPWQRBVJV',
+            'CDL3YWC2SMRK363QPS4AR5TGVFESE3FMIPOGHEQBMJJA3RTQQ2ALW73U',
+          pool: 'CCUM2YAJM3EY2RTFMX5P6PDBT7ZZWPNNQLMW4CGIGQJKLTLT7J2SMAMV',
           poolManager:
-            'CC7TGDDRSA2R7F6RIW3POEZSH22RG7DYNZX6GY2YGQ2O33E5BZWSMPDT',
+            'CDPNNXOD6LVIXD2VYAH6CKQ6TPQYDITGJ4END7LFLR7OIZNHLCWLF347',
           poolCredit:
-            'CBI7LGEWCJFO2APREGBRTUXB5JMZHJOVD76MESEB7V6W4IJ4ZLQJILDB',
+            'CCRLVVJOUF5MHMKJ36YWRCKPK7YUVDHA7ZNEL6EDSU2LUDHIOMN65S5G',
+          creditManager:
+            'CASGH7RO7Q4H3JOMACIFKIVZDIL7AFHYELXB5JQ6VWTMQ7IMO6GEBRQ5',
           creditStorage:
-            'CCQMDMB2J6XRPZKG4QYNSXNN6W56HH5QCQXM6MDIW7ZEJRYSLL2ZEG2U',
+            'CAWXNUPJVXSPZ4WSWURNYYPECL3GDPLLP7LSSBMRXMDGWZ4ZXNIHMITS',
           juniorTranche:
-            'CDXI5L5EFHBW3KYY3D6JGXJTGDOG5EZAQUDAK5LWZQVH4TEUDAO7PBGU',
+            'CAX7J3ZANVPKCW4YSTWUBOUNO667MLH2FQGDURE4RPPI5BWPAO6WCSKZ',
           seniorTranche:
-            'CDFZVYABKBUBCNBW4NLTZ63JWPZFE677PQOXRZLBCKSY6MDB5CHR2IJ2',
+            'CAX34UNMKDDDO7IFQO7VZ43UYYWLUILLMU52HDGBBDQFYGQQUCYASOWH',
         },
       },
     ],
@@ -98,6 +101,8 @@ export const NetworkMetadatas: NetworkMetadata[] = [
           poolManager:
             'CDBZYAXIHNGPRAHOQU53AILDMSUO5UENFSCNHNT2ABXGLC2MEJ6RPV33',
           poolCredit:
+            'CAC6ZM2HT2JVNS3TZ2LYVJ6JDR724J2SOV63YIWMP2RSLYA64EB5C7JH',
+          creditManager:
             'CAC6ZM2HT2JVNS3TZ2LYVJ6JDR724J2SOV63YIWMP2RSLYA64EB5C7JH',
           creditStorage:
             'CCPTCRU7FUVQLNR4GGUBWQDHJCQTW3MXDZQYQQGB4OC2PNME7HNIV3R3',
@@ -127,6 +132,8 @@ export const NetworkMetadatas: NetworkMetadata[] = [
             'CARLNZ3NYWYOV2T6QRMZKNNDXTPU4O3KJ4MGSM3ZFKITZOEWD7A3Q7BH',
           poolCredit:
             'CAH7FTMJW3FZJPCWO6QPQJFKNM647JJYXZ6U4ZUGMO5V4UVT57XYE6JD',
+          creditManager:
+            'CBOUPUZNWER345C3AGDWP43EO63RGZ4ZRWDKSKL43MVDGRES5EAUHQSD',
           creditStorage:
             'CA2FYGZO5IJGMW354LI4H6HMMLQZIDUYHHFE6J4BCNKK2WQAQ7H4ZKNJ',
           juniorTranche:
