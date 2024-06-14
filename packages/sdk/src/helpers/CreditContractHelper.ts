@@ -176,7 +176,7 @@ export async function approveAllowanceForSentinel(
   poolName: POOL_NAME,
   network: StellarNetwork,
   wallet: StellarWallet,
-): Promise<SentTransaction<null>> {
+): Promise<SentTransaction<null> | null> {
   const totalDue = await getTotalDue(
     poolName,
     network,
@@ -205,9 +205,6 @@ export async function approveAllowanceForSentinel(
     sentinel,
     totalDue,
   )
-  if (!tx) {
-    throw new Error('Could not approve allowance for sentinel')
-  }
 
   return tx
 }
