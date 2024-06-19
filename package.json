@@ -26,6 +26,8 @@
     "docs:sdk": "yarn workspace @huma-finance/soroban-sdk generateDocs",
     "lint:all": "yarn lint:sdk",
     "lint:sdk": "yarn workspace @huma-finance/soroban-sdk lint",
+    "test:all": "yarn test:sdk",
+    "test:sdk": "yarn workspace @huma-finance/soroban-sdk test",
     "prepare": "husky install",
     "binding": "ts-node scripts/bindings.ts"
   },
