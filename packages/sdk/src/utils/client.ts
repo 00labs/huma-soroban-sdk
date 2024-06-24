@@ -1,7 +1,9 @@
 import { Client as CreditStorageClient } from '@huma-finance/soroban-credit-storage'
+import { Client as CreditManagerClient } from '@huma-finance/soroban-credit-manager'
 import { Client as PoolClient } from '@huma-finance/soroban-pool'
 import { Client as PoolCreditClient } from '@huma-finance/soroban-pool-credit'
 import { Client as PoolStorageClient } from '@huma-finance/soroban-pool-storage'
+import { Client as TrancheVaultClient } from '@huma-finance/soroban-tranche-vault'
 import { Client as Sep41Client } from '@huma-finance/soroban-sep41'
 
 import { StellarWallet } from '../services/StellarWallet'
@@ -83,6 +85,39 @@ export const getCreditStorageClient = (
 
   return new CreditStorageClient({
     contractId: poolMetadata.contracts.creditStorage,
+    ...getCommonProps(network, wallet),
+  })
+}
+
+export const getCreditManagerClient = (
+  poolName: POOL_NAME,
+  network: StellarNetwork,
+  wallet: StellarWallet,
+) => {
+  const poolMetadata = findPoolMetadata(network, poolName)
+  if (!poolMetadata) {
+    return undefined
+  }
+
+  return new CreditManagerClient({
+    contractId: poolMetadata.contracts.creditManager,
+    ...getCommonProps(network, wallet),
+  })
+}
+
+export const getTrancheVaultClient = (
+  poolName: POOL_NAME,
+  network: StellarNetwork,
+  wallet: StellarWallet,
+  tranche: 'senior' | 'junior',
+) => {
+  const poolMetadata = findPoolMetadata(network, poolName)
+  if (!poolMetadata) {
+    return undefined
+  }
+
+  return new TrancheVaultClient({
+    contractId: poolMetadata.contracts[`${tranche}Tranche`],
     ...getCommonProps(network, wallet),
   })
 }

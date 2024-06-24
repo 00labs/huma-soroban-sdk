@@ -2,7 +2,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   transform: {
-    '^.+\\.ts?$': ['ts-jest', { tsconfig: 'tsconfig.test.json' }],
+    '^.+\\.ts?$': ['ts-jest'],
     '^.+\\.(js|jsx)$': 'babel-jest',
   },
   coverageReporters: ['json-summary', 'text', 'lcov'],
