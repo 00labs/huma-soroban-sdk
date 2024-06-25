@@ -40,3 +40,5 @@ dts
 
 tsconfig.tsbuildinfo
 tsconfig.build.tsbuildinfo
+
+lerna-debug.log
