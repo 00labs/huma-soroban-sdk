@@ -1,5 +1,5 @@
 {
-  "version": "0.0.10",
+  "version": "0.0.12",
   "name": "@huma-finance/soroban-huma-config",
   "dependencies": {
     "@stellar/freighter-api": "2.0.0",
