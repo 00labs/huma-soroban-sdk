@@ -1,13 +1,17 @@
+import { CreditConfig } from '@huma-finance/soroban-credit-storage'
 import {
   Client as PoolCreditClient,
   CreditRecord,
 } from '@huma-finance/soroban-pool-credit'
 import { SentTransaction } from '@stellar/stellar-sdk/lib/contract'
+import { ScValType } from 'utils'
+import { sendTransactionV2 } from 'utils/transaction'
+
 import { StellarWallet } from '../services/StellarWallet'
 import {
-  getCreditStorageClient,
   getPoolCreditClient,
   getPoolStorageClient,
+  TransactionContext,
 } from '../utils/client'
 import { POOL_NAME, StellarNetwork } from '../utils/network'
 import { approveSep41AllowanceIfInsufficient } from './Sep41ContractHelper'
@@ -41,12 +45,18 @@ export async function getAvailableBalanceForPool(
   network: StellarNetwork,
   wallet: StellarWallet,
 ): Promise<bigint> {
-  const poolStorageClient = getPoolStorageClient(poolName, network, wallet)
-  if (!poolStorageClient) {
-    throw new Error('Could not find credit contract for pool')
-  }
+  const poolStorageContext = new TransactionContext(
+    poolName,
+    network,
+    wallet,
+    'poolStorage',
+  )
 
-  const { result } = await poolStorageClient.get_available_balance()
+  const { result } = await sendTransactionV2<bigint>({
+    context: poolStorageContext,
+    method: 'get_available_balance',
+  })
+
   return result
 }
 
@@ -64,20 +74,38 @@ export async function getCreditRecordForPool(
   wallet: StellarWallet,
   borrower: string,
 ): Promise<CreditRecord> {
-  const creditStorageClient = getCreditStorageClient(poolName, network, wallet)
-  if (!creditStorageClient) {
-    throw new Error('Could not find credit storage contract for pool')
-  }
+  const creditStorageContext = new TransactionContext(
+    poolName,
+    network,
+    wallet,
+    'creditStorage',
+  )
 
-  const { result: creditHash } = await creditStorageClient.get_credit_hash({
-    borrower,
+  const { result: creditHash } = await sendTransactionV2<Buffer>({
+    context: creditStorageContext,
+    method: 'get_credit_hash',
+    params: [
+      {
+        name: 'borrower',
+        type: ScValType.address,
+        value: borrower,
+      },
+    ],
   })
   if (!creditHash) {
     throw new Error('Could not find credit hash')
   }
 
-  const { result: creditRecord } = await creditStorageClient.get_credit_record({
-    credit_hash: creditHash,
+  const { result: creditRecord } = await sendTransactionV2<CreditRecord>({
+    context: creditStorageContext,
+    method: 'get_credit_record',
+    params: [
+      {
+        name: 'credit_hash',
+        type: ScValType.buffer,
+        value: creditHash,
+      },
+    ],
   })
   if (!creditRecord) {
     throw new Error('Could not find credit record')
@@ -102,27 +130,43 @@ export async function getAvailableCreditForPool(
   wallet: StellarWallet,
   borrower: string,
 ): Promise<bigint> {
-  const creditStorageClient = getCreditStorageClient(poolName, network, wallet)
-  if (!creditStorageClient) {
-    throw new Error('Could not find credit storage contract for pool')
-  }
+  const creditStorageContext = new TransactionContext(
+    poolName,
+    network,
+    wallet,
+    'creditStorage',
+  )
 
-  const { result: creditHash } = await creditStorageClient.get_credit_hash({
-    borrower,
+  const { result: creditHash } = await sendTransactionV2<Buffer>({
+    context: creditStorageContext,
+    method: 'get_credit_hash',
+    params: [
+      {
+        name: 'borrower',
+        type: ScValType.address,
+        value: borrower,
+      },
+    ],
   })
   if (!creditHash) {
     throw new Error('Could not find credit hash')
   }
 
-  const [{ result: creditConfig }, { result: creditRecord }] =
-    await Promise.all([
-      creditStorageClient.get_credit_config({
-        credit_hash: creditHash,
-      }),
-      creditStorageClient.get_credit_record({
-        credit_hash: creditHash,
-      }),
-    ])
+  const creditHashParam = {
+    name: 'credit_hash',
+    type: ScValType.buffer,
+    value: creditHash,
+  }
+  const { result: creditConfig } = await sendTransactionV2<CreditConfig>({
+    context: creditStorageContext,
+    method: 'get_credit_config',
+    params: [creditHashParam],
+  })
+  const { result: creditRecord } = await sendTransactionV2<CreditRecord>({
+    context: creditStorageContext,
+    method: 'get_credit_record',
+    params: [creditHashParam],
+  })
 
   if (!creditConfig || !creditRecord) {
     throw new Error('Could not find credit config or credit record')
@@ -187,17 +231,21 @@ export async function approveAllowanceForSentinel(
   if (totalDue === null) {
     throw new Error('Could not find total due')
   }
-  const poolStorageClient = getPoolStorageClient(poolName, network, wallet)
-  if (!poolStorageClient) {
-    throw new Error('Could not find pool storage contract for pool')
-  }
 
-  const [{ result: underlyingToken }, { result: sentinel }] = await Promise.all(
-    [
-      poolStorageClient.get_underlying_token(),
-      poolStorageClient.get_sentinel(),
-    ],
+  const poolStorageContext = new TransactionContext(
+    poolName,
+    network,
+    wallet,
+    'poolStorage',
   )
+  const { result: underlyingToken } = await sendTransactionV2<string>({
+    context: poolStorageContext,
+    method: 'get_underlying_token',
+  })
+  const { result: sentinel } = await sendTransactionV2<string>({
+    context: poolStorageContext,
+    method: 'get_sentinel',
+  })
 
   const tx = await approveSep41AllowanceIfInsufficient(
     network,
@@ -227,22 +275,31 @@ export async function drawdown(
   wallet: StellarWallet,
   drawdownAmount: bigint,
 ): Promise<SentTransaction<null>> {
-  const poolCreditClient = getPoolCreditClient(poolName, network, wallet)
-  if (!poolCreditClient) {
-    throw new Error('Could not find credit contract for pool')
-  }
-
   await approveAllowanceForSentinel(poolName, network, wallet)
-  const tx = await poolCreditClient.drawdown(
-    {
-      borrower: wallet.userInfo.publicKey,
-      amount: drawdownAmount,
-    },
-    {
-      timeoutInSeconds: 30,
-    },
+
+  const poolCreditContext = new TransactionContext(
+    poolName,
+    network,
+    wallet,
+    'poolCredit',
   )
-  const result = await tx.signAndSend()
+  const result = await sendTransactionV2({
+    context: poolCreditContext,
+    method: 'drawdown',
+    params: [
+      {
+        name: 'borrower',
+        type: ScValType.address,
+        value: wallet.userInfo.publicKey,
+      },
+      {
+        name: 'amount',
+        type: ScValType.u128,
+        value: drawdownAmount,
+      },
+    ],
+    shouldSignTransaction: true,
+  })
   return result
 }
 
