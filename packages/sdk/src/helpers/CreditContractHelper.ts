@@ -231,7 +231,7 @@ export async function drawdown(
     throw new Error('Could not find credit contract for pool')
   }
 
-  // await approveAllowanceForSentinel(poolName, network, wallet)
+  await approveAllowanceForSentinel(poolName, network, wallet)
   const tx = await poolCreditClient.drawdown(
     {
       borrower: wallet.userInfo.publicKey,
@@ -273,22 +273,22 @@ export async function makePayment(
     throw new Error('Could not find pool storage contract for pool')
   }
 
-  // await approveAllowanceForSentinel(poolName, network, wallet)
-  // const [{ result: underlyingToken }, { result: sentinel }] = await Promise.all(
-  //   [
-  //     poolStorageClient.get_underlying_token(),
-  //     poolStorageClient.get_sentinel(),
-  //   ],
-  // )
+  await approveAllowanceForSentinel(poolName, network, wallet)
+  const [{ result: underlyingToken }, { result: sentinel }] = await Promise.all(
+    [
+      poolStorageClient.get_underlying_token(),
+      poolStorageClient.get_sentinel(),
+    ],
+  )
 
   let tx
-  // tx = await approveSep41AllowanceIfInsufficient(
-  //   network,
-  //   wallet,
-  //   underlyingToken,
-  //   sentinel,
-  //   paymentAmount,
-  // )
+  tx = await approveSep41AllowanceIfInsufficient(
+    network,
+    wallet,
+    underlyingToken,
+    sentinel,
+    paymentAmount,
+  )
 
   if (principalOnly) {
     tx = await poolCreditClient.make_principal_payment(
