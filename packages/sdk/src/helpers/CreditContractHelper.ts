@@ -1,9 +1,8 @@
 import {
   Client as PoolCreditClient,
   CreditRecord,
-  SentTransaction,
 } from '@huma-finance/soroban-pool-credit'
-
+import { SentTransaction } from '@stellar/stellar-sdk/lib/contract'
 import { StellarWallet } from '../services/StellarWallet'
 import {
   getCreditStorageClient,
@@ -129,7 +128,9 @@ export async function getAvailableCreditForPool(
     throw new Error('Could not find credit config or credit record')
   }
 
-  return creditConfig.credit_limit - creditRecord.unbilled_principal
+  return (
+    BigInt(creditConfig.credit_limit) - BigInt(creditRecord.unbilled_principal)
+  )
 }
 
 /**
@@ -255,7 +256,7 @@ export async function drawdown(
  * @param {StellarWallet} wallet - The stellar wallet.
  * @param {bigint} paymentAmount - The amount to payback.
  * @param {boolean} principalOnly - Whether this payment should ONLY apply to the principal
- * @returns {Promise<AssembledTransaction>} - A Promise of the AssembledTransaction.
+ * @returns {Promise<SentTransaction>} - A Promise of the SentTransaction.
  */
 export async function makePayment(
   poolName: POOL_NAME,

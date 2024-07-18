@@ -1,10 +1,12 @@
-import { ContractSpec, Address } from "@stellar/stellar-sdk";
 import { Buffer } from "buffer";
+import { Address } from "@stellar/stellar-sdk";
 import {
   AssembledTransaction,
-  ContractClient,
-  ContractClientOptions,
-} from "@stellar/stellar-sdk/lib/contract_client/index.js";
+  Client as ContractClient,
+  ClientOptions as ContractClientOptions,
+  Result,
+  Spec as ContractSpec,
+} from "@stellar/stellar-sdk/contract";
 import type {
   u32,
   i32,
@@ -17,11 +19,10 @@ import type {
   Option,
   Typepoint,
   Duration,
-} from "@stellar/stellar-sdk/lib/contract_client";
-import { Result } from "@stellar/stellar-sdk/lib/rust_types/index.js";
+} from "@stellar/stellar-sdk/contract";
 export * from "@stellar/stellar-sdk";
-export * from "@stellar/stellar-sdk/lib/contract_client/index.js";
-export * from "@stellar/stellar-sdk/lib/rust_types/index.js";
+export * as contract from "@stellar/stellar-sdk/contract";
+export * as rpc from "@stellar/stellar-sdk/rpc";
 
 if (typeof window !== "undefined") {
   //@ts-ignore Buffer exists
@@ -31,7 +32,7 @@ if (typeof window !== "undefined") {
 export const networks = {
   testnet: {
     networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CDPNNXOD6LVIXD2VYAH6CKQ6TPQYDITGJ4END7LFLR7OIZNHLCWLF347",
+    contractId: "CCTCNYWWKPVFNPJDQUMJM6GFBU6IJSZH6CHPM5COJTBMWO64A4XVCXNV",
   },
 } as const;
 
@@ -46,8 +47,8 @@ export interface PoolManagerAddressesChangedEvent {
 }
 
 export interface PoolStorageAddressesChangedEvent {
-  credit: string;
   pool: string;
+  pool_credit: string;
   pool_manager: string;
 }
 
@@ -127,6 +128,12 @@ export const Errors = {
   307: { message: "" },
   308: { message: "" },
   309: { message: "" },
+  101: { message: "" },
+  1: { message: "" },
+  2: { message: "" },
+  3: { message: "" },
+  4: { message: "" },
+  5: { message: "" },
 };
 
 /**
@@ -374,8 +381,8 @@ export interface Client {
     {
       pool,
       pool_manager,
-      credit,
-    }: { pool: string; pool_manager: string; credit: string },
+      pool_credit,
+    }: { pool: string; pool_manager: string; pool_credit: string },
     options?: {
       /**
        * The fee to pay for the transaction. Default: BASE_FEE
@@ -918,7 +925,7 @@ export class Client extends ContractClient {
       new ContractSpec([
         "AAAAAgAAAAAAAAAAAAAADUNsaWVudERhdGFLZXkAAAAAAAADAAAAAAAAAAAAAAAKSHVtYUNvbmZpZwAAAAAAAAAAAAAAAAALUG9vbFN0b3JhZ2UAAAAAAAAAAAAAAAAEUG9vbA==",
         "AAAAAQAAAAAAAAAAAAAAIFBvb2xNYW5hZ2VyQWRkcmVzc2VzQ2hhbmdlZEV2ZW50AAAAAgAAAAAAAAAEcG9vbAAAABMAAAAAAAAADHBvb2xfc3RvcmFnZQAAABM=",
-        "AAAAAQAAAAAAAAAAAAAAIFBvb2xTdG9yYWdlQWRkcmVzc2VzQ2hhbmdlZEV2ZW50AAAAAwAAAAAAAAAGY3JlZGl0AAAAAAATAAAAAAAAAARwb29sAAAAEwAAAAAAAAAMcG9vbF9tYW5hZ2VyAAAAEw==",
+        "AAAAAQAAAAAAAAAAAAAAIFBvb2xTdG9yYWdlQWRkcmVzc2VzQ2hhbmdlZEV2ZW50AAAAAwAAAAAAAAAEcG9vbAAAABMAAAAAAAAAC3Bvb2xfY3JlZGl0AAAAABMAAAAAAAAADHBvb2xfbWFuYWdlcgAAABM=",
         "AAAAAQAAAAAAAAAAAAAAFlBvb2xPcGVyYXRvckFkZGVkRXZlbnQAAAAAAAEAAAAAAAAACG9wZXJhdG9yAAAAEw==",
         "AAAAAQAAAAAAAAAAAAAAGFBvb2xPcGVyYXRvclJlbW92ZWRFdmVudAAAAAEAAAAAAAAACG9wZXJhdG9yAAAAEw==",
         "AAAAAQAAAAAAAAAAAAAAFkh1bWFDb25maWdDaGFuZ2VkRXZlbnQAAAAAAAQAAAAAAAAAC2h1bWFfY29uZmlnAAAAABMAAAAAAAAACmh1bWFfb3duZXIAAAAAABMAAAAAAAAADmlzX3Byb3RvY29sX29uAAAAAAABAAAAAAAAAAhzZW50aW5lbAAAABM=",
@@ -926,7 +933,7 @@ export class Client extends ContractClient {
         "AAAAAAAAAAAAAAAKaW5pdGlhbGl6ZQAAAAAABAAAAAAAAAAJcG9vbF9uYW1lAAAAAAAAEAAAAAAAAAALaHVtYV9jb25maWcAAAAAEwAAAAAAAAAMcG9vbF9zdG9yYWdlAAAAEwAAAAAAAAAEcG9vbAAAABMAAAAA",
         "AAAAAAAAAAAAAAAPc2V0X2h1bWFfY29uZmlnAAAAAAEAAAAAAAAAC2h1bWFfY29uZmlnAAAAABMAAAAA",
         "AAAAAAAAAAAAAAASc2V0X2NvbnRyYWN0X2FkZHJzAAAAAAACAAAAAAAAAAxwb29sX3N0b3JhZ2UAAAATAAAAAAAAAARwb29sAAAAEwAAAAA=",
-        "AAAAAAAAAAAAAAAac2V0X3N0b3JhZ2VfY29udHJhY3RfYWRkcnMAAAAAAAMAAAAAAAAABHBvb2wAAAATAAAAAAAAAAxwb29sX21hbmFnZXIAAAATAAAAAAAAAAZjcmVkaXQAAAAAABMAAAAA",
+        "AAAAAAAAAAAAAAAac2V0X3N0b3JhZ2VfY29udHJhY3RfYWRkcnMAAAAAAAMAAAAAAAAABHBvb2wAAAATAAAAAAAAAAxwb29sX21hbmFnZXIAAAATAAAAAAAAAAtwb29sX2NyZWRpdAAAAAATAAAAAA==",
         "AAAAAAAAAAAAAAANc2V0X3Bvb2xfbmFtZQAAAAAAAAIAAAAAAAAABmNhbGxlcgAAAAAAEwAAAAAAAAAEbmFtZQAAABAAAAAA",
         "AAAAAAAAAAAAAAAOc2V0X3Bvb2xfb3duZXIAAAAAAAIAAAAAAAAABmNhbGxlcgAAAAAAEwAAAAAAAAAEYWRkcgAAABMAAAAA",
         "AAAAAAAAAAAAAAAXc2V0X3Bvb2xfb3duZXJfdHJlYXN1cnkAAAAAAgAAAAAAAAAGY2FsbGVyAAAAAAATAAAAAAAAAARhZGRyAAAAEwAAAAA=",

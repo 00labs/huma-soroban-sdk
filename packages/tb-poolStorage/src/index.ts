@@ -1,10 +1,12 @@
-import { ContractSpec, Address } from "@stellar/stellar-sdk";
 import { Buffer } from "buffer";
+import { Address } from "@stellar/stellar-sdk";
 import {
   AssembledTransaction,
-  ContractClient,
-  ContractClientOptions,
-} from "@stellar/stellar-sdk/lib/contract_client/index.js";
+  Client as ContractClient,
+  ClientOptions as ContractClientOptions,
+  Result,
+  Spec as ContractSpec,
+} from "@stellar/stellar-sdk/contract";
 import type {
   u32,
   i32,
@@ -17,11 +19,10 @@ import type {
   Option,
   Typepoint,
   Duration,
-} from "@stellar/stellar-sdk/lib/contract_client";
-import { Result } from "@stellar/stellar-sdk/lib/rust_types/index.js";
+} from "@stellar/stellar-sdk/contract";
 export * from "@stellar/stellar-sdk";
-export * from "@stellar/stellar-sdk/lib/contract_client/index.js";
-export * from "@stellar/stellar-sdk/lib/rust_types/index.js";
+export * as contract from "@stellar/stellar-sdk/contract";
+export * as rpc from "@stellar/stellar-sdk/rpc";
 
 if (typeof window !== "undefined") {
   //@ts-ignore Buffer exists
@@ -31,7 +32,7 @@ if (typeof window !== "undefined") {
 export const networks = {
   testnet: {
     networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CDL3YWC2SMRK363QPS4AR5TGVFESE3FMIPOGHEQBMJJA3RTQQ2ALW73U",
+    contractId: "CBHY4NM3DVEBX3QTL3X5XEOAKHDMP44HDP7SBDTCOAMFU7LFIBMFEV4N",
   },
 } as const;
 
@@ -39,6 +40,12 @@ export const Errors = {
   201: { message: "" },
   202: { message: "" },
   203: { message: "" },
+  101: { message: "" },
+  1: { message: "" },
+  2: { message: "" },
+  3: { message: "" },
+  4: { message: "" },
+  5: { message: "" },
 };
 
 /**
@@ -172,8 +179,8 @@ export interface Client {
     {
       pool,
       pool_manager,
-      credit,
-    }: { pool: string; pool_manager: string; credit: string },
+      pool_credit,
+    }: { pool: string; pool_manager: string; pool_credit: string },
     options?: {
       /**
        * The fee to pay for the transaction. Default: BASE_FEE
@@ -1205,7 +1212,7 @@ export class Client extends ContractClient {
     super(
       new ContractSpec([
         "AAAAAAAAAAAAAAAKaW5pdGlhbGl6ZQAAAAAABAAAAAAAAAAFYWRkcnMAAAAAAAPqAAAAEwAAAAAAAAALcHJvdG9jb2xfb24AAAAAAQAAAAAAAAANdHJhbmNoZV9hZGRycwAAAAAAA+oAAAPoAAAAEwAAAAAAAAAPdHJhbmNoZXNfcG9saWN5AAAAB9AAAAASVHJhbmNoZXNQb2xpY3lUeXBlAAAAAAAA",
-        "AAAAAAAAAAAAAAASc2V0X2NvbnRyYWN0X2FkZHJzAAAAAAADAAAAAAAAAARwb29sAAAAEwAAAAAAAAAMcG9vbF9tYW5hZ2VyAAAAEwAAAAAAAAAGY3JlZGl0AAAAAAATAAAAAA==",
+        "AAAAAAAAAAAAAAASc2V0X2NvbnRyYWN0X2FkZHJzAAAAAAADAAAAAAAAAARwb29sAAAAEwAAAAAAAAAMcG9vbF9tYW5hZ2VyAAAAEwAAAAAAAAALcG9vbF9jcmVkaXQAAAAAEwAAAAA=",
         "AAAAAAAAAAAAAAAPc2V0X2h1bWFfY29uZmlnAAAAAAQAAAAAAAAAC2h1bWFfY29uZmlnAAAAABMAAAAAAAAACmh1bWFfb3duZXIAAAAAABMAAAAAAAAACHNlbnRpbmVsAAAAEwAAAAAAAAALcHJvdG9jb2xfb24AAAAAAQAAAAA=",
         "AAAAAAAAAAAAAAAOc2V0X3Bvb2xfb3duZXIAAAAAAAEAAAAAAAAACnBvb2xfb3duZXIAAAAAABMAAAAA",
         "AAAAAAAAAAAAAAAXc2V0X3Bvb2xfb3duZXJfdHJlYXN1cnkAAAAAAQAAAAAAAAATcG9vbF9vd25lcl90cmVhc3VyeQAAAAATAAAAAA==",
