@@ -1,4 +1,4 @@
-# Huma Soroban SDK
+# Huma Soroban SDK Beta
 
 The Huma Soroban SDK includes utilities and services for interacting with our contracts. It's currently offered just as a Javascript NPM package at https://www.npmjs.com/package/@huma-shan/soroban-sdk.
 
