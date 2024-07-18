@@ -1,10 +1,12 @@
-import { ContractSpec, Address } from "@stellar/stellar-sdk";
 import { Buffer } from "buffer";
+import { Address } from "@stellar/stellar-sdk";
 import {
   AssembledTransaction,
-  ContractClient,
-  ContractClientOptions,
-} from "@stellar/stellar-sdk/lib/contract_client/index.js";
+  Client as ContractClient,
+  ClientOptions as ContractClientOptions,
+  Result,
+  Spec as ContractSpec,
+} from "@stellar/stellar-sdk/contract";
 import type {
   u32,
   i32,
@@ -17,11 +19,10 @@ import type {
   Option,
   Typepoint,
   Duration,
-} from "@stellar/stellar-sdk/lib/contract_client";
-import { Result } from "@stellar/stellar-sdk/lib/rust_types/index.js";
+} from "@stellar/stellar-sdk/contract";
 export * from "@stellar/stellar-sdk";
-export * from "@stellar/stellar-sdk/lib/contract_client/index.js";
-export * from "@stellar/stellar-sdk/lib/rust_types/index.js";
+export * as contract from "@stellar/stellar-sdk/contract";
+export * as rpc from "@stellar/stellar-sdk/rpc";
 
 if (typeof window !== "undefined") {
   //@ts-ignore Buffer exists
@@ -31,13 +32,18 @@ if (typeof window !== "undefined") {
 export const networks = {
   testnet: {
     networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CAHPEHOIZIIMMTFCZOYEXDKHXJZ2QDYLRD3SF2AZTXWAUV4OWKGHPDCL",
+    contractId: "CDEH36NMZK6AV5I675A2BSRIWLJGBVXWN5HHABKJKHNIGKSKJQVXPXFB",
   },
 } as const;
 
 export const Errors = {
   101: { message: "" },
   102: { message: "" },
+  1: { message: "" },
+  2: { message: "" },
+  3: { message: "" },
+  4: { message: "" },
+  5: { message: "" },
 };
 export type HumaConfigDataKey =
   | { tag: "HumaOwner"; values: void }

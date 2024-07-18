@@ -1,10 +1,12 @@
-import { ContractSpec, Address } from "@stellar/stellar-sdk";
 import { Buffer } from "buffer";
+import { Address } from "@stellar/stellar-sdk";
 import {
   AssembledTransaction,
-  ContractClient,
-  ContractClientOptions,
-} from "@stellar/stellar-sdk/lib/contract_client/index.js";
+  Client as ContractClient,
+  ClientOptions as ContractClientOptions,
+  Result,
+  Spec as ContractSpec,
+} from "@stellar/stellar-sdk/contract";
 import type {
   u32,
   i32,
@@ -17,11 +19,10 @@ import type {
   Option,
   Typepoint,
   Duration,
-} from "@stellar/stellar-sdk/lib/contract_client";
-import { Result } from "@stellar/stellar-sdk/lib/rust_types/index.js";
+} from "@stellar/stellar-sdk/contract";
 export * from "@stellar/stellar-sdk";
-export * from "@stellar/stellar-sdk/lib/contract_client/index.js";
-export * from "@stellar/stellar-sdk/lib/rust_types/index.js";
+export * as contract from "@stellar/stellar-sdk/contract";
+export * as rpc from "@stellar/stellar-sdk/rpc";
 
 if (typeof window !== "undefined") {
   //@ts-ignore Buffer exists
@@ -31,7 +32,7 @@ if (typeof window !== "undefined") {
 export const networks = {
   testnet: {
     networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CCRLVVJOUF5MHMKJ36YWRCKPK7YUVDHA7ZNEL6EDSU2LUDHIOMN65S5G",
+    contractId: "CCYWDOW34SPB3FCR6A633B5GS5DPRRQKTTCT4DU7YYFDRT7XBOA2HYYY",
   },
 } as const;
 
@@ -46,6 +47,26 @@ export interface CreditAddressesChangedEvent {
   pool: string;
   pool_storage: string;
 }
+
+export const Errors = {
+  601: { message: "" },
+  602: { message: "" },
+  603: { message: "" },
+  604: { message: "" },
+  605: { message: "" },
+  606: { message: "" },
+  607: { message: "" },
+  608: { message: "" },
+  609: { message: "" },
+  610: { message: "" },
+  101: { message: "" },
+  1: { message: "" },
+  2: { message: "" },
+  3: { message: "" },
+  4: { message: "" },
+  5: { message: "" },
+  221: { message: "" },
+};
 
 /**
  * A credit has been borrowed from.
@@ -120,18 +141,6 @@ export interface CreditClosedAfterPayOffEvent {
   credit_hash: Buffer;
 }
 
-export const Errors = {
-  601: { message: "" },
-  602: { message: "" },
-  603: { message: "" },
-  604: { message: "" },
-  605: { message: "" },
-  606: { message: "" },
-  607: { message: "" },
-  608: { message: "" },
-  609: { message: "" },
-  610: { message: "" },
-};
 export type PayPeriodDuration =
   | { tag: "Monthly"; values: void }
   | { tag: "Quarterly"; values: void }
@@ -475,11 +484,11 @@ export class Client extends ContractClient {
         "AAAAAAAAAAAAAAAMbWFrZV9wYXltZW50AAAAAwAAAAAAAAAGY2FsbGVyAAAAAAATAAAAAAAAAAhib3Jyb3dlcgAAABMAAAAAAAAABmFtb3VudAAAAAAACgAAAAEAAAPtAAAAAgAAAAoAAAAB",
         "AAAAAAAAAAAAAAAWbWFrZV9wcmluY2lwYWxfcGF5bWVudAAAAAAAAgAAAAAAAAAIYm9ycm93ZXIAAAATAAAAAAAAAAZhbW91bnQAAAAAAAoAAAABAAAD7QAAAAIAAAAKAAAAAQ==",
         "AAAAAAAAAAAAAAAHdXBncmFkZQAAAAABAAAAAAAAAA1uZXdfd2FzbV9oYXNoAAAAAAAD7gAAACAAAAAA",
+        "AAAABAAAAAAAAAAAAAAAC0NyZWRpdEVycm9yAAAAAAoAAAAAAAAAGkJvcnJvd2VyT3JTZW50aW5lbFJlcXVpcmVkAAAAAAJZAAAAAAAAACVBdHRlbXB0ZWREcmF3ZG93bk9uTm9uUmV2b2x2aW5nQ3JlZGl0AAAAAAACWgAAAAAAAAATQ3JlZGl0TGltaXRFeGNlZWRlZAAAAAJbAAAAAAAAAChEcmF3ZG93bk5vdEFsbG93ZWRJbkZpbmFsUGVyaW9kQW5kQmV5b25kAAACXAAAAAAAAAAiSW5zdWZmaWNpZW50UG9vbEJhbGFuY2VGb3JEcmF3ZG93bgAAAAACXQAAAAAAAAAVRmlyc3REcmF3ZG93blRvb0Vhcmx5AAAAAAACXgAAAAAAAAAbQ3JlZGl0Tm90SW5TdGF0ZUZvckRyYXdkb3duAAAAAl8AAAAAAAAAK0RyYXdkb3duTm90QWxsb3dlZEFmdGVyRHVlRGF0ZVdpdGhVbnBhaWREdWUAAAACYAAAAAAAAAAgQ3JlZGl0Tm90SW5TdGF0ZUZvck1ha2luZ1BheW1lbnQAAAJhAAAAAAAAAClDcmVkaXROb3RJblN0YXRlRm9yTWFraW5nUHJpbmNpcGFsUGF5bWVudAAAAAAAAmI=",
         "AAAAAQAAAOdBIGNyZWRpdCBoYXMgYmVlbiBib3Jyb3dlZCBmcm9tLgojIEZpZWxkczoKKiBgYm9ycm93ZXJgIC0gVGhlIGFkZHJlc3Mgb2YgdGhlIGJvcnJvd2VyLgoqIGBib3Jyb3dfYW1vdW50YCAtIFRoZSBhbW91bnQgdGhlIHVzZXIgaGFzIGJvcnJvd2VkLgoqIGBuZXRfYW1vdW50X3RvX2JvcnJvd2VyYCAtIFRoZSBib3Jyb3dpbmcgYW1vdW50IG1pbnVzIHRoZSBmZWVzIHRoYXQgYXJlIGNoYXJnZWQgdXBmcm9udC4AAAAAAAAAABFEcmF3ZG93bk1hZGVFdmVudAAAAAAAAAMAAAAAAAAADWJvcnJvd19hbW91bnQAAAAAAAAKAAAAAAAAAAhib3Jyb3dlcgAAABMAAAAAAAAAFm5ldF9hbW91bnRfdG9fYm9ycm93ZXIAAAAAAAo=",
         "AAAAAQAAA2ZBIHBheW1lbnQgaGFzIGJlZW4gbWFkZSBhZ2FpbnN0IHRoZSBjcmVkaXQuCiMgRmllbGRzOgoqIGBib3Jyb3dlcmAgLSBUaGUgYWRkcmVzcyBvZiB0aGUgYm9ycm93ZXIuCiogYGFtb3VudGAgLSBUaGUgcGF5YmFjayBhbW91bnQuCiogYG5leHRfZHVlX2RhdGVgIC0gVGhlIGR1ZSBkYXRlIG9mIHRoZSBuZXh0IHBheW1lbnQuCiogYHlpZWxkX2R1ZWAgLSBUaGUgeWllbGQgZHVlIG9uIHRoZSBjcmVkaXQgYWZ0ZXIgcHJvY2Vzc2luZyB0aGUgcGF5bWVudC4KKiBgcHJpbmNpcGFsX2R1ZWAgLSBUaGUgcHJpbmNpcGFsIGR1ZSBvbiB0aGUgY3JlZGl0IGFmdGVyIHByb2Nlc3NpbmcgdGhlIHBheW1lbnQuCiogYHlpZWxkX2R1ZV9wYWlkYCAtIFRoZSBhbW91bnQgb2YgdGhpcyBwYXltZW50IGFwcGxpZWQgdG8geWllbGQgZHVlIGluIHRoZSBjdXJyZW50IGJpbGxpbmcgY3ljbGUuCiogYHByaW5jaXBhbF9kdWVfcGFpZGAgLSBUaGUgYW1vdW50IG9mIHRoaXMgcGF5bWVudCBhcHBsaWVkIHRvIHByaW5jaXBhbCBkdWUgaW4gdGhlIGN1cnJlbnQgYmlsbGluZyBjeWNsZS4KKiBgdW5iaWxsZWRfcHJpbmNpcGFsX3BhaWRgIC0gVGhlIGFtb3VudCBvZiB0aGlzIHBheW1lbnQgYXBwbGllZCB0byB1bmJpbGxlZCBwcmluY2lwYWwuCiogYHlpZWxkX3Bhc3RfZHVlX3BhaWRgIC0gVGhlIGFtb3VudCBvZiB0aGlzIHBheW1lbnQgYXBwbGllZCB0byB5aWVsZCBwYXN0IGR1ZS4KKiBgbGF0ZV9mZWVfcGFpZGAgLSBUaGUgYW1vdW50IG9mIHRoaXMgcGF5bWVudCBhcHBsaWVkIHRvIGxhdGUgZmVlLgoqIGBwcmluY2lwYWxfcGFzdF9kdWVfcGFpZGAgLSBUaGUgYW1vdW50IG9mIHRoaXMgcGF5bWVudCBhcHBsaWVkIHRvIHByaW5jaXBhbCBwYXN0IGR1ZS4AAAAAAAAAAAAQUGF5bWVudE1hZGVFdmVudAAAAAsAAAAAAAAABmFtb3VudAAAAAAACgAAAAAAAAAIYm9ycm93ZXIAAAATAAAAAAAAAA1sYXRlX2ZlZV9wYWlkAAAAAAAACgAAAAAAAAANbmV4dF9kdWVfZGF0ZQAAAAAAAAYAAAAAAAAADXByaW5jaXBhbF9kdWUAAAAAAAAKAAAAAAAAABJwcmluY2lwYWxfZHVlX3BhaWQAAAAAAAoAAAAAAAAAF3ByaW5jaXBhbF9wYXN0X2R1ZV9wYWlkAAAAAAoAAAAAAAAAF3VuYmlsbGVkX3ByaW5jaXBhbF9wYWlkAAAAAAoAAAAAAAAACXlpZWxkX2R1ZQAAAAAAAAoAAAAAAAAADnlpZWxkX2R1ZV9wYWlkAAAAAAAKAAAAAAAAABN5aWVsZF9wYXN0X2R1ZV9wYWlkAAAAAAo=",
         "AAAAAQAAAk5BIHByaW5jaXBhbCBwYXltZW50IGhhcyBiZWVuIG1hZGUgYWdhaW5zdCB0aGUgY3JlZGl0LgojIEZpZWxkczoKKiBgYm9ycm93ZXJgIC0gVGhlIGFkZHJlc3Mgb2YgdGhlIGJvcnJvd2VyLgoqIGBwYXllcmAgLSBUaGUgYWRkcmVzcyBmcm9tIHdoaWNoIHRoZSBtb25leSBpcyBjb21pbmcuCiogYGFtb3VudGAgLSBUaGUgcGF5YmFjayBhbW91bnQuCiogYG5leHRfZHVlX2RhdGVgIC0gVGhlIGR1ZSBkYXRlIG9mIHRoZSBuZXh0IHBheW1lbnQuCiogYHByaW5jaXBhbF9kdWVgIC0gVGhlIHByaW5jaXBhbCBkdWUgb24gdGhlIGNyZWRpdCBhZnRlciBwcm9jZXNzaW5nIHRoZSBwYXltZW50LgoqIGB1bmJpbGxlZF9wcmluY2lwYWxgIC0gVGhlIHVuYmlsbGVkIHByaW5jaXBhbCBvbiB0aGUgY3JlZGl0IGFmdGVyIHByb2Nlc3NpbmcgdGhlIHBheW1lbnQuCiogYHByaW5jaXBhbF9kdWVfcGFpZGAgLSBUaGUgYW1vdW50IG9mIHRoaXMgcGF5bWVudCBhcHBsaWVkIHRvIHByaW5jaXBhbCBkdWUuCiogYHVuYmlsbGVkX3ByaW5jaXBhbF9wYWlkYCAtIFRoZSBhbW91bnQgb2YgdGhpcyBwYXltZW50IGFwcGxpZWQgdG8gdW5iaWxsZWQgcHJpbmNpcGFsLgAAAAAAAAAAABlQcmluY2lwYWxQYXltZW50TWFkZUV2ZW50AAAAAAAABwAAAAAAAAAGYW1vdW50AAAAAAAKAAAAAAAAAAhib3Jyb3dlcgAAABMAAAAAAAAADW5leHRfZHVlX2RhdGUAAAAAAAAGAAAAAAAAAA1wcmluY2lwYWxfZHVlAAAAAAAACgAAAAAAAAAScHJpbmNpcGFsX2R1ZV9wYWlkAAAAAAAKAAAAAAAAABJ1bmJpbGxlZF9wcmluY2lwYWwAAAAAAAoAAAAAAAAAF3VuYmlsbGVkX3ByaW5jaXBhbF9wYWlkAAAAAAo=",
         "AAAAAQAAAFBBbiBleGlzdGluZyBjcmVkaXQgaGFzIGJlZW4gY2xvc2VkLgojIEZpZWxkczoKKiBgY3JlZGl0X2hhc2hgIC0gVGhlIGNyZWRpdCBoYXNoLgAAAAAAAAAcQ3JlZGl0Q2xvc2VkQWZ0ZXJQYXlPZmZFdmVudAAAAAEAAAAAAAAAC2NyZWRpdF9oYXNoAAAAA+4AAAAg",
-        "AAAABAAAAAAAAAAAAAAAC0NyZWRpdEVycm9yAAAAAAoAAAAAAAAAGkJvcnJvd2VyT3JTZW50aW5lbFJlcXVpcmVkAAAAAAJZAAAAAAAAACVBdHRlbXB0ZWREcmF3ZG93bk9uTm9uUmV2b2x2aW5nQ3JlZGl0AAAAAAACWgAAAAAAAAATQ3JlZGl0TGltaXRFeGNlZWRlZAAAAAJbAAAAAAAAAChEcmF3ZG93bk5vdEFsbG93ZWRJbkZpbmFsUGVyaW9kQW5kQmV5b25kAAACXAAAAAAAAAAiSW5zdWZmaWNpZW50UG9vbEJhbGFuY2VGb3JEcmF3ZG93bgAAAAACXQAAAAAAAAAVRmlyc3REcmF3ZG93blRvb0Vhcmx5AAAAAAACXgAAAAAAAAAbQ3JlZGl0Tm90SW5TdGF0ZUZvckRyYXdkb3duAAAAAl8AAAAAAAAAK0RyYXdkb3duTm90QWxsb3dlZEFmdGVyRHVlRGF0ZVdpdGhVbnBhaWREdWUAAAACYAAAAAAAAAAgQ3JlZGl0Tm90SW5TdGF0ZUZvck1ha2luZ1BheW1lbnQAAAJhAAAAAAAAAClDcmVkaXROb3RJblN0YXRlRm9yTWFraW5nUHJpbmNpcGFsUGF5bWVudAAAAAAAAmI=",
         "AAAAAgAAAAAAAAAAAAAAEVBheVBlcmlvZER1cmF0aW9uAAAAAAAAAwAAAAAAAAAAAAAAB01vbnRobHkAAAAAAAAAAAAAAAAJUXVhcnRlcmx5AAAAAAAAAAAAAAAAAAAMU2VtaUFubnVhbGx5",
         "AAAABAAAAAAAAAAAAAAADUNhbGVuZGFyRXJyb3IAAAAAAAABAAAAAAAAABlTdGFydERhdGVMYXRlclRoYW5FbmREYXRlAAAAAAAAZQ==",
         "AAAABAAAAAAAAAAAAAAAC0NvbW1vbkVycm9yAAAAAAUAAAAAAAAAEkFscmVhZHlJbml0aWFsaXplZAAAAAAAAQAAAAAAAAAdUHJvdG9jb2xJc1BhdXNlZE9yUG9vbElzTm90T24AAAAAAAACAAAAAAAAACBBdXRob3JpemVkQ29udHJhY3RDYWxsZXJSZXF1aXJlZAAAAAMAAAAAAAAAE1Vuc3VwcG9ydGVkRnVuY3Rpb24AAAAABAAAAAAAAAASWmVyb0Ftb3VudFByb3ZpZGVkAAAAAAAF",

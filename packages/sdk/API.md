@@ -19,7 +19,7 @@ associated with the given pool name on the current chain.</p></dd>
 <dd><p>Approve allowance for sentinel if not enough allowance is approved.</p></dd>
 <dt><a href="#drawdown">drawdown(poolName, network, wallet, drawdownAmount)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
 <dd><p>Draws down from a pool.</p></dd>
-<dt><a href="#makePayment">makePayment(poolName, network, wallet, paymentAmount, principalOnly)</a> ⇒ <code>Promise.&lt;AssembledTransaction&gt;</code></dt>
+<dt><a href="#makePayment">makePayment(poolName, network, wallet, paymentAmount, principalOnly)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
 <dd><p>Makes a payment.</p></dd>
 <dt><a href="#approveSep41AllowanceIfInsufficient">approveSep41AllowanceIfInsufficient(network, wallet, tokenAddress, spenderAddress, allowanceAmount)</a> ⇒ <code>Promise.&lt;(SentTransaction.&lt;null&gt;|null)&gt;</code></dt>
 <dd><p>Approves an Sep41 allowance for a spender address, if the current allowance is insufficient.
@@ -135,12 +135,12 @@ associated with the given pool name on the current chain.</p>
 
 <a name="makePayment"></a>
 
-## makePayment(poolName, network, wallet, paymentAmount, principalOnly) ⇒ <code>Promise.&lt;AssembledTransaction&gt;</code>
+## makePayment(poolName, network, wallet, paymentAmount, principalOnly) ⇒ <code>Promise.&lt;SentTransaction&gt;</code>
 <p>Makes a payment.</p>
 
 **Kind**: global function  
-**Returns**: <code>Promise.&lt;AssembledTransaction&gt;</code> - <ul>
-<li>A Promise of the AssembledTransaction.</li>
+**Returns**: <code>Promise.&lt;SentTransaction&gt;</code> - <ul>
+<li>A Promise of the SentTransaction.</li>
 </ul>  
 
 | Param | Type | Description |

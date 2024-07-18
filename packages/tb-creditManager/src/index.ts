@@ -1,10 +1,12 @@
-import { ContractSpec, Address } from "@stellar/stellar-sdk";
 import { Buffer } from "buffer";
+import { Address } from "@stellar/stellar-sdk";
 import {
   AssembledTransaction,
-  ContractClient,
-  ContractClientOptions,
-} from "@stellar/stellar-sdk/lib/contract_client/index.js";
+  Client as ContractClient,
+  ClientOptions as ContractClientOptions,
+  Result,
+  Spec as ContractSpec,
+} from "@stellar/stellar-sdk/contract";
 import type {
   u32,
   i32,
@@ -17,11 +19,10 @@ import type {
   Option,
   Typepoint,
   Duration,
-} from "@stellar/stellar-sdk/lib/contract_client";
-import { Result } from "@stellar/stellar-sdk/lib/rust_types/index.js";
+} from "@stellar/stellar-sdk/contract";
 export * from "@stellar/stellar-sdk";
-export * from "@stellar/stellar-sdk/lib/contract_client/index.js";
-export * from "@stellar/stellar-sdk/lib/rust_types/index.js";
+export * as contract from "@stellar/stellar-sdk/contract";
+export * as rpc from "@stellar/stellar-sdk/rpc";
 
 if (typeof window !== "undefined") {
   //@ts-ignore Buffer exists
@@ -31,7 +32,7 @@ if (typeof window !== "undefined") {
 export const networks = {
   testnet: {
     networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CASGH7RO7Q4H3JOMACIFKIVZDIL7AFHYELXB5JQ6VWTMQ7IMO6GEBRQ5",
+    contractId: "CDHYIC3ISV3F3RL7FROC3SI2GW65ZOJHMA2AMZJYLIRLWSDELFF3CR23",
   },
 } as const;
 
@@ -182,6 +183,13 @@ export const Errors = {
   713: { message: "" },
   714: { message: "" },
   715: { message: "" },
+  101: { message: "" },
+  1: { message: "" },
+  2: { message: "" },
+  3: { message: "" },
+  4: { message: "" },
+  5: { message: "" },
+  221: { message: "" },
 };
 export type PayPeriodDuration =
   | { tag: "Monthly"; values: void }

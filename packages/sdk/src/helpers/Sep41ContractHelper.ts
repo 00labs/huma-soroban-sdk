@@ -1,4 +1,4 @@
-import { SentTransaction } from '@huma-finance/soroban-pool-credit'
+import { SentTransaction } from '@stellar/stellar-sdk/lib/contract'
 
 import { StellarWallet } from '../services'
 import {
