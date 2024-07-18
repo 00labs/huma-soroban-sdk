@@ -29,7 +29,7 @@
     "test:all": "yarn test:sdk",
     "test:sdk": "yarn workspace @huma-shan/soroban-sdk test",
     "prepare": "husky install",
-    "binding": "ts-node scripts/bindings.ts"
+    "example": "yarn workspace @huma-shan/soroban-examples startDrawdownPayback"
   },
   "devDependencies": {
     "lerna": "^6.6.1"
