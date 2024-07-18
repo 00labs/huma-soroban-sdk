@@ -112,12 +112,12 @@ export const getTrancheVaultClient = (
   tranche: 'senior' | 'junior',
 ) => {
   const poolMetadata = findPoolMetadata(network, poolName)
-  if (!poolMetadata) {
+  if (!poolMetadata || !poolMetadata.contracts[`${tranche}Tranche`]) {
     return undefined
   }
 
   return new TrancheVaultClient({
-    contractId: poolMetadata.contracts[`${tranche}Tranche`],
+    contractId: poolMetadata.contracts[`${tranche}Tranche`]!,
     ...getCommonProps(network, wallet),
   })
 }

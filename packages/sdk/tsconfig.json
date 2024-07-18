@@ -25,6 +25,7 @@
     "paths": {
       "@": ["./"],
       "*": ["src/*", "node_modules/*"],
+      "@huma-shan/soroban-credit-manager": ["../tb-creditManager"],
       "@huma-shan/soroban-credit-storage": ["../tb-creditStorage"],
       "@huma-shan/soroban-huma-config": ["../tb-humaConfig"],
       "@huma-shan/soroban-pool": ["../tb-pool"],
@@ -38,6 +39,9 @@
     "skipLibCheck": true
   },
   "references": [
+    {
+      "path": "../tb-creditManager"
+    },
     {
       "path": "../tb-creditStorage"
     },
