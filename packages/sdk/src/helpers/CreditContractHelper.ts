@@ -1,7 +1,7 @@
 import {
   Client as PoolCreditClient,
   CreditRecord,
-} from '@huma-finance/soroban-pool-credit'
+} from '@huma-shan/soroban-pool-credit'
 import { SentTransaction } from '@stellar/stellar-sdk/lib/contract'
 import { StellarWallet } from '../services/StellarWallet'
 import {

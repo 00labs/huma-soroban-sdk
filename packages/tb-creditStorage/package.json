@@ -1,6 +1,6 @@
 {
   "version": "0.0.14",
-  "name": "@huma-finance/soroban-credit-storage",
+  "name": "@huma-shan/soroban-credit-storage",
   "type": "module",
   "exports": "./dist/index.js",
   "typings": "dist/index.d.ts",
