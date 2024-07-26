@@ -16,9 +16,13 @@ import {
   StellarPublicRpcUrl,
 } from './network'
 
-const getCommonProps = (network: StellarNetwork, wallet: StellarWallet) => {
+const getCommonProps = (
+  network: StellarNetwork,
+  wallet: StellarWallet,
+  sender?: string,
+) => {
   return {
-    publicKey: wallet.userInfo.publicKey,
+    publicKey: sender ?? wallet.userInfo.publicKey,
     networkPassphrase: StellarNetworkPassphrase[network],
     rpcUrl: StellarPublicRpcUrl[network],
     allowHttp: StellarPublicRpcUrl[network].startsWith('http://'),
@@ -30,6 +34,7 @@ export const getHumaConfigClient = (
   poolName: POOL_NAME,
   network: StellarNetwork,
   wallet: StellarWallet,
+  sender?: string,
 ) => {
   const poolMetadata = findPoolMetadata(network, poolName)
   if (!poolMetadata) {
@@ -38,7 +43,7 @@ export const getHumaConfigClient = (
 
   return new HumaConfigClient({
     contractId: poolMetadata.contracts.humaConfig,
-    ...getCommonProps(network, wallet),
+    ...getCommonProps(network, wallet, sender),
   })
 }
 

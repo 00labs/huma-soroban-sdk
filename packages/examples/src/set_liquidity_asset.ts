@@ -8,12 +8,14 @@ import {
 } from "@huma-finance/soroban-sdk";
 
 const main = async () => {
-  const wallet = new StellarWallet(process.env.TEST_SECRET_KEY!);
+  const senderPublicKey = "senderPublicKey";
+  const signer = new StellarWallet(process.env.TEST_SECRET_KEY!);
 
   const humaConfigClient = getHumaConfigClient(
     POOL_NAME.Arf,
     StellarNetwork.mainnet,
-    wallet
+    signer,
+    senderPublicKey
   );
 
   const tx = await humaConfigClient.set_liquidity_asset(
