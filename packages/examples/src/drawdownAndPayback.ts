@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import {
   drawdown,
+  getHumaConfigClient,
   makePayment,
   POOL_NAME,
   StellarNetwork,
@@ -9,31 +10,23 @@ import {
 } from "@huma-finance/soroban-sdk";
 
 const main = async () => {
-  const wallet = new StellarWallet(process.env.TEST_PRIVATE_KEY!);
-  //100 USDC. Stellar USDC's decimal is 7
-  const borrowAmount = 100_0000000;
+  const wallet = new StellarWallet("Replace to secret key");
 
-  const drawdownResult = await drawdown(
+  const humaConfigClient = getHumaConfigClient(
     POOL_NAME.Arf,
-    StellarNetwork.localnet,
-    wallet,
-    borrowAmount as any
-  );
-  console.log(
-    `Drawdown success. Tx hash: ${drawdownResult.sendTransactionResponse?.hash}`
+    StellarNetwork.mainnet,
+    wallet
   );
 
-  const paymentAmount = 100_0000000;
-  const makePaymentResult = await makePayment(
-    POOL_NAME.Arf,
-    StellarNetwork.localnet,
-    wallet,
-    paymentAmount as any,
-    true
+  const tx = await humaConfigClient.set_liquidity_asset(
+    {
+      addr: "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+      valid: true,
+    },
+    { timeoutInSeconds: 30 }
   );
-  console.log(
-    `Payment success. Tx hash: ${makePaymentResult.sendTransactionResponse?.hash}`
-  );
+
+  await tx.signAndSend();
 };
 
 main();

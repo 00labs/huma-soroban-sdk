@@ -1,3 +1,4 @@
+import { Client as HumaConfigClient } from '@huma-finance/soroban-huma-config'
 import { Client as CreditStorageClient } from '@huma-finance/soroban-credit-storage'
 import { Client as CreditManagerClient } from '@huma-finance/soroban-credit-manager'
 import { Client as PoolClient } from '@huma-finance/soroban-pool'
@@ -23,6 +24,22 @@ const getCommonProps = (network: StellarNetwork, wallet: StellarWallet) => {
     allowHttp: StellarPublicRpcUrl[network].startsWith('http://'),
     signTransaction: wallet.signTransaction.bind(wallet),
   }
+}
+
+export const getHumaConfigClient = (
+  poolName: POOL_NAME,
+  network: StellarNetwork,
+  wallet: StellarWallet,
+) => {
+  const poolMetadata = findPoolMetadata(network, poolName)
+  if (!poolMetadata) {
+    return undefined
+  }
+
+  return new HumaConfigClient({
+    contractId: poolMetadata.contracts.humaConfig,
+    ...getCommonProps(network, wallet),
+  })
 }
 
 export const getPoolClient = (
