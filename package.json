@@ -29,7 +29,7 @@
     "test:all": "yarn test:sdk",
     "test:sdk": "yarn workspace @huma-finance/soroban-sdk test",
     "prepare": "husky install",
-    "example": "yarn workspace @huma-finance/soroban-examples startDrawdownPayback"
+    "set_liquidity_asset": "yarn workspace @huma-finance/soroban-examples set_liquidity_asset"
   },
   "devDependencies": {
     "lerna": "^6.6.1"

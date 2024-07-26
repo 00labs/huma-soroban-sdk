@@ -5,7 +5,7 @@
   "private": true,
   "main": "src/mintReceivable.js",
   "scripts": {
-    "startDrawdownPayback": "ts-node src/drawdownAndPayback.ts",
+    "set_liquidity_asset": "ts-node src/set_liquidity_asset.ts",
     "lint-staged": "lint-staged"
   },
   "dependencies": {

@@ -1,16 +1,14 @@
 import "dotenv/config";
 
 import {
-  drawdown,
   getHumaConfigClient,
-  makePayment,
   POOL_NAME,
   StellarNetwork,
   StellarWallet,
 } from "@huma-finance/soroban-sdk";
 
 const main = async () => {
-  const wallet = new StellarWallet("Replace to secret key");
+  const wallet = new StellarWallet(process.env.TEST_SECRET_KEY!);
 
   const humaConfigClient = getHumaConfigClient(
     POOL_NAME.Arf,
