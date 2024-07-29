@@ -1,33 +1,13 @@
 import { CreditConfig } from '@huma-finance/soroban-credit-storage'
-import {
-  Client as PoolCreditClient,
-  CreditRecord,
-} from '@huma-finance/soroban-pool-credit'
+import { CreditRecord } from '@huma-finance/soroban-pool-credit'
 import { SentTransaction } from '@stellar/stellar-sdk/lib/contract'
 
 import { StellarWallet } from '../services/StellarWallet'
-import { getPoolCreditClient, TransactionContext } from '../utils/client'
+import { TransactionContext } from '../utils/client'
 import { ScValType } from '../utils/common'
 import { POOL_NAME, StellarNetwork } from '../utils/network'
 import { sendTransaction } from '../utils/transaction'
 import { approveSep41AllowanceIfInsufficient } from './Sep41ContractHelper'
-
-/**
- * Returns an soroban contract client instance for the credit line contract
- * associated with the given pool name on the current chain.
- *
- * @param {POOL_NAME} poolName - The name of the credit pool to get the contract instance for.
- * @param {StellarNetwork} network - The stellar network.
- * @param {StellarWallet} wallet - The stellar wallet.
- * @returns {PoolCreditClient | undefined} A contract client instance for the CreditLine contract or undefined if it could not be found.
- */
-export function getCreditLineClient(
-  poolName: POOL_NAME,
-  network: StellarNetwork,
-  wallet: StellarWallet,
-): PoolCreditClient | undefined {
-  return getPoolCreditClient(poolName, network, wallet)
-}
 
 /**
  * Returns the current pool balance available for borrowing

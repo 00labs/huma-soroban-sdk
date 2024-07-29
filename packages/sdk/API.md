@@ -1,9 +1,6 @@
 ## Functions
 
 <dl>
-<dt><a href="#getCreditLineClient">getCreditLineClient(poolName, network, wallet)</a> ⇒ <code>PoolCreditClient</code> | <code>undefined</code></dt>
-<dd><p>Returns an soroban contract client instance for the credit line contract
-associated with the given pool name on the current chain.</p></dd>
 <dt><a href="#getAvailableBalanceForPool">getAvailableBalanceForPool(poolName, network, wallet)</a></dt>
 <dd><p>Returns the current pool balance available for borrowing</p></dd>
 <dt><a href="#getCreditRecordForPool">getCreditRecordForPool(poolName, network, wallet, borrower)</a></dt>
@@ -25,21 +22,6 @@ associated with the given pool name on the current chain.</p></dd>
 <dd><p>Approves an Sep41 allowance for a spender address, if the current allowance is insufficient.
 Allowance is required to do certain actions on the Huma protocol (e.g. makePayment for Autopay)</p></dd>
 </dl>
-
-<a name="getCreditLineClient"></a>
-
-## getCreditLineClient(poolName, network, wallet) ⇒ <code>PoolCreditClient</code> \| <code>undefined</code>
-<p>Returns an soroban contract client instance for the credit line contract
-associated with the given pool name on the current chain.</p>
-
-**Kind**: global function  
-**Returns**: <code>PoolCreditClient</code> \| <code>undefined</code> - <p>A contract client instance for the CreditLine contract or undefined if it could not be found.</p>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to get the contract instance for.</p> |
-| network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
-| wallet | <code>StellarWallet</code> | <p>The stellar wallet.</p> |
 
 <a name="getAvailableBalanceForPool"></a>
 
