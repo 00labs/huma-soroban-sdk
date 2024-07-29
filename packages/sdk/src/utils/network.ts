@@ -55,6 +55,36 @@ export type NetworkMetadata = {
 
 export const NetworkMetadatas: NetworkMetadata[] = [
   {
+    network: StellarNetwork.mainnet,
+    networkPassphrase: StellarNetworkPassphrase.mainnet,
+    rpcUrl: StellarPublicRpcUrl.mainnet,
+    pools: [
+      {
+        poolName: POOL_NAME.Arf,
+        poolType: POOL_TYPE.Creditline,
+        contracts: {
+          humaConfig:
+            'CCAIHLSVRKOU4XM2UWLBXRTWX3C2SFKZTCZ7ZDWSOWPHRAL4LVONLZSF',
+          poolStorage:
+            'CDETZGJWZZFLXSO5AJ5S5EWUQPJUKS2KSYIWTQNH5ZADJMSYXQVE6Z6Y',
+          pool: 'CCIH4TXFY32NM4CN5G5MVJHLIMLUZUJ72TUH3PWO7T7RDMYFIS6ME6LI',
+          poolManager:
+            'CCM4GBO7FW3EABFPLYBPU4GW6IPCSDUEET6WFW253IQIJ4MXYLUCXVAF',
+          poolCredit:
+            'CAJ6TKKHCE7Y7LIMPNTG5XZYYK7IZYAWRT2BOSZCKOZZCPX3RBZONPFJ',
+          creditManager:
+            'CCV47GK54O67WKCV4SQ6ZRCCQFZAUBKBOIYC6GENWDMCOJE7K2VYGVPI',
+          creditStorage:
+            'CCAGR4BX7NGUUVD55B7DCKH2ZY4ISYCHMWNVEA63AKUXAESHJTRNWDTB',
+          juniorTranche:
+            'CDHZGXZLW3Q2MJOC6RB4IYOSGI7P3T2AEE6DAIS4ATMOXYHHDQ5G5UWG',
+          seniorTranche:
+            'CAEGT76URZASBOLMWNASRDPMWM3TELHTH7CEZEMRJRTT3GO6HJCW4HSU',
+        },
+      },
+    ],
+  },
+  {
     network: StellarNetwork.testnet,
     networkPassphrase: StellarNetworkPassphrase.testnet,
     rpcUrl: StellarPublicRpcUrl.testnet,
