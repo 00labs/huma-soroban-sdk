@@ -44,6 +44,7 @@ export type PoolMetadata = {
     juniorTranche: string
     seniorTranche?: string
   }
+  borrowers: string[]
 }
 
 export type ContractType = keyof PoolMetadata['contracts']
@@ -81,6 +82,7 @@ export const NetworkMetadatas: NetworkMetadata[] = [
           juniorTranche:
             'CCDCJ5PYATGWFBNSVISW5B4GMSOTJSMK2T7TOB6XLIUA66OCSGPKB3RV',
         },
+        borrowers: ['GBK62KZMUVEKLGGB3UYCRUP2BVDUE6UEZWUHPUNJ54BKFDTW4CNSF6O7'],
       },
     ],
   },
@@ -111,6 +113,7 @@ export const NetworkMetadatas: NetworkMetadata[] = [
           seniorTranche:
             'CDOB4BPE2AKSZYW27QP4IYVIIGVQD3C7E7YL6XRZ2ANM7MYJT2TKOVPC',
         },
+        borrowers: [],
       },
     ],
   },
@@ -141,6 +144,7 @@ export const NetworkMetadatas: NetworkMetadata[] = [
           seniorTranche:
             'CBM2QHAXIELWLDITPPXU4ILWOFKA6RLO4M5OSJJS4QJNWDU5L7CSKJUP',
         },
+        borrowers: [],
       },
     ],
   },
