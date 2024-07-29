@@ -4,16 +4,12 @@ import {
   CreditRecord,
 } from '@huma-finance/soroban-pool-credit'
 import { SentTransaction } from '@stellar/stellar-sdk/lib/contract'
-import { ScValType } from 'utils'
-import { sendTransactionV2 } from 'utils/transaction'
 
 import { StellarWallet } from '../services/StellarWallet'
-import {
-  getPoolCreditClient,
-  getPoolStorageClient,
-  TransactionContext,
-} from '../utils/client'
+import { getPoolCreditClient, TransactionContext } from '../utils/client'
+import { ScValType } from '../utils/common'
 import { POOL_NAME, StellarNetwork } from '../utils/network'
+import { sendTransaction } from '../utils/transaction'
 import { approveSep41AllowanceIfInsufficient } from './Sep41ContractHelper'
 
 /**
@@ -52,7 +48,7 @@ export async function getAvailableBalanceForPool(
     'poolStorage',
   )
 
-  const { result } = await sendTransactionV2<bigint>({
+  const { result } = await sendTransaction<bigint>({
     context: poolStorageContext,
     method: 'get_available_balance',
   })
@@ -81,7 +77,7 @@ export async function getCreditRecordForPool(
     'creditStorage',
   )
 
-  const { result: creditHash } = await sendTransactionV2<Buffer>({
+  const { result: creditHash } = await sendTransaction<Buffer>({
     context: creditStorageContext,
     method: 'get_credit_hash',
     params: [
@@ -96,7 +92,7 @@ export async function getCreditRecordForPool(
     throw new Error('Could not find credit hash')
   }
 
-  const { result: creditRecord } = await sendTransactionV2<CreditRecord>({
+  const { result: creditRecord } = await sendTransaction<CreditRecord>({
     context: creditStorageContext,
     method: 'get_credit_record',
     params: [
@@ -137,7 +133,7 @@ export async function getAvailableCreditForPool(
     'creditStorage',
   )
 
-  const { result: creditHash } = await sendTransactionV2<Buffer>({
+  const { result: creditHash } = await sendTransaction<Buffer>({
     context: creditStorageContext,
     method: 'get_credit_hash',
     params: [
@@ -157,12 +153,12 @@ export async function getAvailableCreditForPool(
     type: ScValType.buffer,
     value: creditHash,
   }
-  const { result: creditConfig } = await sendTransactionV2<CreditConfig>({
+  const { result: creditConfig } = await sendTransaction<CreditConfig>({
     context: creditStorageContext,
     method: 'get_credit_config',
     params: [creditHashParam],
   })
-  const { result: creditRecord } = await sendTransactionV2<CreditRecord>({
+  const { result: creditRecord } = await sendTransaction<CreditRecord>({
     context: creditStorageContext,
     method: 'get_credit_record',
     params: [creditHashParam],
@@ -238,11 +234,11 @@ export async function approveAllowanceForSentinel(
     wallet,
     'poolStorage',
   )
-  const { result: underlyingToken } = await sendTransactionV2<string>({
+  const { result: underlyingToken } = await sendTransaction<string>({
     context: poolStorageContext,
     method: 'get_underlying_token',
   })
-  const { result: sentinel } = await sendTransactionV2<string>({
+  const { result: sentinel } = await sendTransaction<string>({
     context: poolStorageContext,
     method: 'get_sentinel',
   })
@@ -283,7 +279,7 @@ export async function drawdown(
     wallet,
     'poolCredit',
   )
-  const result = await sendTransactionV2({
+  const result = await sendTransaction({
     context: poolCreditContext,
     method: 'drawdown',
     params: [
@@ -322,25 +318,24 @@ export async function makePayment(
   paymentAmount: bigint,
   principalOnly: boolean,
 ): Promise<SentTransaction<readonly [bigint, boolean]>> {
-  const poolCreditClient = getPoolCreditClient(poolName, network, wallet)
-  if (!poolCreditClient) {
-    throw new Error('Could not find credit contract for pool')
-  }
-  const poolStorageClient = getPoolStorageClient(poolName, network, wallet)
-  if (!poolStorageClient) {
-    throw new Error('Could not find pool storage contract for pool')
-  }
-
   await approveAllowanceForSentinel(poolName, network, wallet)
-  const [{ result: underlyingToken }, { result: sentinel }] = await Promise.all(
-    [
-      poolStorageClient.get_underlying_token(),
-      poolStorageClient.get_sentinel(),
-    ],
-  )
 
-  let tx
-  tx = await approveSep41AllowanceIfInsufficient(
+  const poolStorageContext = new TransactionContext(
+    poolName,
+    network,
+    wallet,
+    'poolStorage',
+  )
+  const { result: underlyingToken } = await sendTransaction<string>({
+    context: poolStorageContext,
+    method: 'get_underlying_token',
+  })
+  const { result: sentinel } = await sendTransaction<string>({
+    context: poolStorageContext,
+    method: 'get_sentinel',
+  })
+
+  await approveSep41AllowanceIfInsufficient(
     network,
     wallet,
     underlyingToken,
@@ -348,29 +343,36 @@ export async function makePayment(
     paymentAmount,
   )
 
-  if (principalOnly) {
-    tx = await poolCreditClient.make_principal_payment(
-      {
-        borrower: wallet.userInfo.publicKey,
-        amount: paymentAmount,
-      },
-      {
-        timeoutInSeconds: 30,
-      },
-    )
-  } else {
-    tx = await poolCreditClient.make_payment(
-      {
-        caller: wallet.userInfo.publicKey,
-        borrower: wallet.userInfo.publicKey,
-        amount: paymentAmount,
-      },
-      {
-        timeoutInSeconds: 30,
-      },
-    )
+  const poolCreditContext = new TransactionContext(
+    poolName,
+    network,
+    wallet,
+    'poolCredit',
+  )
+  const params = [
+    {
+      name: 'borrower',
+      type: ScValType.address,
+      value: wallet.userInfo.publicKey,
+    },
+    {
+      name: 'amount',
+      type: ScValType.u128,
+      value: paymentAmount,
+    },
+  ]
+  if (!principalOnly) {
+    params.unshift({
+      name: 'caller',
+      type: ScValType.address,
+      value: wallet.userInfo.publicKey,
+    })
   }
-
-  const result = await tx.signAndSend()
+  const result = await sendTransaction<readonly [bigint, boolean]>({
+    context: poolCreditContext,
+    method: principalOnly ? 'make_principal_payment' : 'make_payment',
+    params: params,
+    shouldSignTransaction: true,
+  })
   return result
 }

@@ -1,10 +1,3 @@
-import { Client as CreditStorageClient } from '@huma-finance/soroban-credit-storage'
-import { Client as CreditManagerClient } from '@huma-finance/soroban-credit-manager'
-import { Client as PoolClient } from '@huma-finance/soroban-pool'
-import { Client as PoolCreditClient } from '@huma-finance/soroban-pool-credit'
-import { Client as PoolStorageClient } from '@huma-finance/soroban-pool-storage'
-import { Client as TrancheVaultClient } from '@huma-finance/soroban-tranche-vault'
-import { Client as Sep41Client } from '@huma-finance/soroban-sep41'
 import {
   BASE_FEE,
   Contract,
@@ -16,13 +9,13 @@ import {
 import { SentTransaction } from '@stellar/stellar-sdk/lib/contract'
 import { StellarWallet } from 'services'
 
+import { TransactionContext } from './client'
 import { ScValType, toScVal } from './common'
 import {
   StellarNetwork,
   StellarNetworkPassphrase,
   StellarPublicRpcUrl,
 } from './network'
-import { TransactionContext } from './client'
 
 const handlePendingTransaction = async (
   sendResponse: SorobanRpc.Api.SendTransactionResponse,
@@ -161,55 +154,7 @@ export const restoreAndExtendTTL = async (
   await extendTTLTransaction(wallet, network, simResponse)
 }
 
-export const sendTransaction = async <T = null>(
-  network: StellarNetwork,
-  wallet: StellarWallet,
-  client:
-    | PoolCreditClient
-    | CreditStorageClient
-    | CreditManagerClient
-    | PoolClient
-    | PoolStorageClient
-    | TrancheVaultClient
-    | Sep41Client,
-  method: string,
-  params: {
-    name: string
-    type: ScValType
-    value: string | number | bigint | Buffer
-  }[] = [],
-  shouldSignTransaction = false,
-): Promise<SentTransaction<T>> => {
-  const paramsXDR = params.map((param) => {
-    return toScVal(param.value, param.type)
-  })
-  const simResponse = await simTransaction(
-    wallet,
-    network,
-    client.options.contractId,
-    method,
-    paramsXDR,
-  )
-  await restoreTransaction(wallet, network, simResponse)
-  await extendTTLTransaction(wallet, network, simResponse)
-
-  const paramsClient = params.reduce((accumulator, currentValue) => {
-    accumulator[currentValue.name] = currentValue.value
-    return accumulator
-  }, {} as Record<string, unknown>)
-  if (!shouldSignTransaction) {
-    // @ts-ignore
-    return client[method](paramsClient)
-  }
-
-  // @ts-ignore
-  const tx = await client[method](paramsClient, {
-    timeoutInSeconds: 30,
-  })
-  return tx.signAndSend()
-}
-
-export const sendTransactionV2 = async <T = null>({
+export const sendTransaction = async <T = null>({
   context,
   method,
   params = [],
@@ -241,14 +186,15 @@ export const sendTransactionV2 = async <T = null>({
     accumulator[currentValue.name] = currentValue.value
     return accumulator
   }, {} as Record<string, unknown>)
-  if (!shouldSignTransaction) {
-    // @ts-ignore
-    return client[method](paramsClient)
-  }
 
   // @ts-ignore
-  const tx = await client[method](paramsClient, {
+  const tx = await context.client[method](paramsClient, {
     timeoutInSeconds: 30,
   })
+
+  if (!shouldSignTransaction) {
+    return tx
+  }
+
   return tx.signAndSend()
 }
