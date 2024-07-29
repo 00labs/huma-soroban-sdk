@@ -7,8 +7,8 @@ In this guide we'll take a look at using Huma's Soroban SDK to call functions on
 Huma's Soroban SDK can be installed using npm or yarn.
 
 ```
-npm install @huma-finance/soroban-sdk
-yarn add @huma-finance/soroban-sdk
+npm install @huma-shan/soroban-sdk
+yarn add @huma-shan/soroban-sdk
 ```
 
 ## Approve lender
@@ -19,7 +19,7 @@ import {
   POOL_NAME,
   StellarNetwork,
   StellarWallet,
-} from '@huma-finance/soroban-sdk'
+} from '@huma-shan/soroban-sdk'
 
 const poolName = POOL_NAME.Arf
 const network = StellarNetwork.testnet
@@ -55,7 +55,7 @@ import {
   POOL_NAME,
   StellarNetwork,
   StellarWallet,
-} from '@huma-finance/soroban-sdk'
+} from '@huma-shan/soroban-sdk'
 
 const poolName = POOL_NAME.Arf
 const network = StellarNetwork.testnet
@@ -91,7 +91,7 @@ import {
   POOL_NAME,
   StellarNetwork,
   StellarWallet,
-} from '@huma-finance/soroban-sdk'
+} from '@huma-shan/soroban-sdk'
 
 const poolName = POOL_NAME.Arf
 const network = StellarNetwork.testnet
@@ -128,7 +128,7 @@ import {
   POOL_NAME,
   StellarNetwork,
   StellarWallet,
-} from '@huma-finance/soroban-sdk'
+} from '@huma-shan/soroban-sdk'
 
 const poolName = POOL_NAME.Arf
 const network = StellarNetwork.testnet

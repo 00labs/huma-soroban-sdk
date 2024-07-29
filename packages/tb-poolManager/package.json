@@ -1,6 +1,6 @@
 {
   "version": "0.0.14",
-  "name": "@huma-finance/soroban-pool-manager",
+  "name": "@huma-shan/soroban-pool-manager",
   "exports": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {

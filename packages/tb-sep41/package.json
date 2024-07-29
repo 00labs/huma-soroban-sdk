@@ -1,6 +1,6 @@
 {
   "version": "0.0.14",
-  "name": "@huma-finance/soroban-sep41",
+  "name": "@huma-shan/soroban-sep41",
   "exports": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
