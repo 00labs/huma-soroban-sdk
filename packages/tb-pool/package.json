@@ -1,5 +1,5 @@
 {
-  "version": "0.0.14",
+  "version": "0.0.20",
   "name": "@huma-shan/soroban-pool",
   "exports": "./dist/index.js",
   "typings": "dist/index.d.ts",
