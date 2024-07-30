@@ -15,7 +15,7 @@ export enum StellarNetworkPassphrase {
 }
 
 export enum StellarPublicRpcUrl {
-  mainnet = 'https://horizon.stellar.org',
+  mainnet = 'https://svc.blockdaemon.com/stellar/mainnet/native/soroban-rpc',
   testnet = 'https://soroban-testnet.stellar.org',
   futurenet = 'https://rpc-futurenet.stellar.org',
   localnet = 'http://localhost:8000/soroban/rpc',
@@ -43,6 +43,7 @@ export type PoolMetadata = {
     creditStorage: string
     juniorTranche: string
     seniorTranche?: string
+    underlyingToken: string
   }
   borrowers: string[]
 }
@@ -83,6 +84,8 @@ export const NetworkMetadatas: NetworkMetadata[] = [
             'CDHZGXZLW3Q2MJOC6RB4IYOSGI7P3T2AEE6DAIS4ATMOXYHHDQ5G5UWG',
           seniorTranche:
             'CAEGT76URZASBOLMWNASRDPMWM3TELHTH7CEZEMRJRTT3GO6HJCW4HSU',
+          underlyingToken:
+            'CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75',
         },
         borrowers: ['GBQ4MIGKASCJG4GNEOQ3G6Z6YDUXCAKYARB3MNJ7QOF54MNMYW7HP62V'],
       },
@@ -112,6 +115,8 @@ export const NetworkMetadatas: NetworkMetadata[] = [
             'CDXG5THQJWEKY6XO6VH673J5KYUAU5Q2FPGLWO4YM2TXYMXEOEQOE4DZ',
           juniorTranche:
             'CCDCJ5PYATGWFBNSVISW5B4GMSOTJSMK2T7TOB6XLIUA66OCSGPKB3RV',
+          underlyingToken:
+            'CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA',
         },
         borrowers: ['GBK62KZMUVEKLGGB3UYCRUP2BVDUE6UEZWUHPUNJ54BKFDTW4CNSF6O7'],
       },
@@ -143,6 +148,7 @@ export const NetworkMetadatas: NetworkMetadata[] = [
             'CD4TNCKN7PDNOBS2JHEXRXPHOL327EX4Z7EURDG2XFWBZ67XG5XW5Q7O',
           seniorTranche:
             'CDOB4BPE2AKSZYW27QP4IYVIIGVQD3C7E7YL6XRZ2ANM7MYJT2TKOVPC',
+          underlyingToken: '',
         },
         borrowers: [],
       },
@@ -174,6 +180,7 @@ export const NetworkMetadatas: NetworkMetadata[] = [
             'CBDPTKXAOUVRUCGPUJKRZGL3AKZVEOPUR5BFNRAHTJSI6WOUZLXU4KXP',
           seniorTranche:
             'CBM2QHAXIELWLDITPPXU4ILWOFKA6RLO4M5OSJJS4QJNWDU5L7CSKJUP',
+          underlyingToken: '',
         },
         borrowers: [],
       },

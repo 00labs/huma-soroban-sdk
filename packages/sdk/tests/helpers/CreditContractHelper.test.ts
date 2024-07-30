@@ -32,7 +32,7 @@ jest.mock('../../src/helpers/Sep41ContractHelper', () => ({
 
 describe('getAvailableBalanceForPool', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetAllMocks()
   })
 
   it('should return available balance', async () => {
@@ -55,7 +55,7 @@ describe('getAvailableBalanceForPool', () => {
 
 describe('getCreditRecordForPool', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetAllMocks()
   })
 
   const mockPoolName = POOL_NAME.Arf
@@ -118,7 +118,7 @@ describe('getCreditRecordForPool', () => {
 
 describe('getAvailableCreditForPool', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetAllMocks()
   })
 
   const mockPoolName = POOL_NAME.Arf
@@ -188,7 +188,7 @@ describe('getAvailableCreditForPool', () => {
 
 describe('getTotalDue', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetAllMocks()
   })
 
   const mockPoolName = POOL_NAME.Arf
@@ -231,7 +231,7 @@ describe('getTotalDue', () => {
 
 describe('approveAllowanceForSentinel', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetAllMocks()
   })
 
   const mockPoolName = POOL_NAME.Arf
@@ -282,7 +282,7 @@ describe('approveAllowanceForSentinel', () => {
 
 describe('drawdown', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetAllMocks()
   })
 
   const mockPoolName = POOL_NAME.Arf
@@ -302,9 +302,6 @@ describe('drawdown', () => {
           next_due: 1000n,
           total_past_due: 500n,
         },
-      })
-      .mockResolvedValueOnce({
-        result: 'token123',
       })
       .mockResolvedValueOnce({
         result: 'sentinel123',
@@ -330,7 +327,7 @@ describe('drawdown', () => {
 
 describe('makePayment', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetAllMocks()
   })
 
   const mockPoolName = POOL_NAME.Arf
@@ -353,13 +350,7 @@ describe('makePayment', () => {
         },
       })
       .mockResolvedValueOnce({
-        result: 'token123',
-      })
-      .mockResolvedValueOnce({
         result: 'sentinel123',
-      })
-      .mockResolvedValueOnce({
-        result: 'token123',
       })
       .mockResolvedValueOnce({
         result: 'sentinel123',
@@ -411,13 +402,7 @@ describe('makePayment', () => {
         },
       })
       .mockResolvedValueOnce({
-        result: 'token123',
-      })
-      .mockResolvedValueOnce({
         result: 'sentinel123',
-      })
-      .mockResolvedValueOnce({
-        result: 'token123',
       })
       .mockResolvedValueOnce({
         result: 'sentinel123',
