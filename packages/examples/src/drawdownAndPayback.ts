@@ -11,7 +11,7 @@ import {
   POOL_NAME,
   StellarNetwork,
   StellarWallet,
-} from "@huma-finance/soroban-sdk";
+} from "@huma-shan/soroban-sdk";
 
 const main = async () => {
   const borrower = new StellarWallet(process.env.TEST_PRIVATE_KEY as string);

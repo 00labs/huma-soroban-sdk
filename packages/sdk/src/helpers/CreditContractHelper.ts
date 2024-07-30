@@ -1,5 +1,5 @@
-import { CreditConfig } from '@huma-finance/soroban-credit-storage'
-import { CreditRecord } from '@huma-finance/soroban-pool-credit'
+import { CreditConfig } from '@huma-shan/soroban-credit-storage'
+import { CreditRecord } from '@huma-shan/soroban-pool-credit'
 import { SentTransaction } from '@stellar/stellar-sdk/lib/contract'
 
 import { StellarWallet } from '../services'
