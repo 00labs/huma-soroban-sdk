@@ -23,9 +23,11 @@ const handlePendingTransaction = async (
 ) => {
   if (sendResponse.status === 'PENDING') {
     let getResponse = await server.getTransaction(sendResponse.hash)
-    while (getResponse.status === 'NOT_FOUND') {
+    let retryCount = 0
+    while (getResponse.status === 'NOT_FOUND' || retryCount < 90) {
       await new Promise((resolve) => setTimeout(resolve, 1000))
       getResponse = await server.getTransaction(sendResponse.hash)
+      retryCount++
     }
 
     if (getResponse.status === 'SUCCESS') {
@@ -42,7 +44,7 @@ const handlePendingTransaction = async (
   }
 }
 
-export const simTransaction = async (
+export const simulateTransaction = async (
   wallet: StellarWallet,
   network: StellarNetwork,
   contractAddress: string,
@@ -143,7 +145,7 @@ export const restoreAndExtendTTL = async (
   const paramsXDR = params.map((param) => {
     return toScVal(param.value, param.type)
   })
-  const simResponse = await simTransaction(
+  const simResponse = await simulateTransaction(
     wallet,
     network,
     contractAddress,
@@ -172,7 +174,7 @@ export const sendTransaction = async <T = null>({
   const paramsXDR = params.map((param) => {
     return toScVal(param.value, param.type)
   })
-  const simResponse = await simTransaction(
+  const simResponse = await simulateTransaction(
     context.wallet,
     context.network,
     context.contractId,
