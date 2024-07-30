@@ -2,11 +2,14 @@ import { CreditConfig } from '@huma-finance/soroban-credit-storage'
 import { CreditRecord } from '@huma-finance/soroban-pool-credit'
 import { SentTransaction } from '@stellar/stellar-sdk/lib/contract'
 
-import { StellarWallet } from '../services/StellarWallet'
-import { TransactionContext } from '../utils/client'
-import { ScValType } from '../utils/common'
-import { POOL_NAME, StellarNetwork } from '../utils/network'
-import { sendTransaction } from '../utils/transaction'
+import { StellarWallet } from '../services'
+import {
+  POOL_NAME,
+  ScValType,
+  sendTransaction,
+  StellarNetwork,
+  TransactionContext,
+} from '../utils'
 import { approveSep41AllowanceIfInsufficient } from './Sep41ContractHelper'
 
 /**
@@ -214,19 +217,15 @@ export async function approveAllowanceForSentinel(
     wallet,
     'poolStorage',
   )
-  const { result: underlyingToken } = await sendTransaction<string>({
-    context: poolStorageContext,
-    method: 'get_underlying_token',
-  })
   const { result: sentinel } = await sendTransaction<string>({
     context: poolStorageContext,
     method: 'get_sentinel',
   })
 
   const tx = await approveSep41AllowanceIfInsufficient(
+    poolName,
     network,
     wallet,
-    underlyingToken,
     sentinel,
     totalDue,
   )
@@ -306,19 +305,15 @@ export async function makePayment(
     wallet,
     'poolStorage',
   )
-  const { result: underlyingToken } = await sendTransaction<string>({
-    context: poolStorageContext,
-    method: 'get_underlying_token',
-  })
   const { result: sentinel } = await sendTransaction<string>({
     context: poolStorageContext,
     method: 'get_sentinel',
   })
 
   await approveSep41AllowanceIfInsufficient(
+    poolName,
     network,
     wallet,
-    underlyingToken,
     sentinel,
     paymentAmount,
   )

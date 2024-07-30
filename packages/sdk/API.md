@@ -18,7 +18,7 @@ associated with the given pool name on the current chain.</p></dd>
 <dd><p>Draws down from a pool.</p></dd>
 <dt><a href="#makePayment">makePayment(poolName, network, wallet, paymentAmount, principalOnly)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
 <dd><p>Makes a payment.</p></dd>
-<dt><a href="#approveSep41AllowanceIfInsufficient">approveSep41AllowanceIfInsufficient(network, wallet, tokenAddress, spenderAddress, allowanceAmount)</a> ⇒ <code>Promise.&lt;(SentTransaction.&lt;null&gt;|null)&gt;</code></dt>
+<dt><a href="#approveSep41AllowanceIfInsufficient">approveSep41AllowanceIfInsufficient(poolName, network, wallet, spenderAddress, allowanceAmount)</a> ⇒ <code>Promise.&lt;(SentTransaction.&lt;null&gt;|null)&gt;</code></dt>
 <dd><p>Approves an Sep41 allowance for a spender address, if the current allowance is insufficient.
 Allowance is required to do certain actions on the Huma protocol (e.g. makePayment for Autopay)</p></dd>
 </dl>
@@ -135,7 +135,7 @@ associated with the given pool name on the current chain.</p>
 
 <a name="approveSep41AllowanceIfInsufficient"></a>
 
-## approveSep41AllowanceIfInsufficient(network, wallet, tokenAddress, spenderAddress, allowanceAmount) ⇒ <code>Promise.&lt;(SentTransaction.&lt;null&gt;\|null)&gt;</code>
+## approveSep41AllowanceIfInsufficient(poolName, network, wallet, spenderAddress, allowanceAmount) ⇒ <code>Promise.&lt;(SentTransaction.&lt;null&gt;\|null)&gt;</code>
 <p>Approves an Sep41 allowance for a spender address, if the current allowance is insufficient.
 Allowance is required to do certain actions on the Huma protocol (e.g. makePayment for Autopay)</p>
 
@@ -146,9 +146,9 @@ Allowance is required to do certain actions on the Huma protocol (e.g. makePayme
 
 | Param | Type | Description |
 | --- | --- | --- |
+| poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to get the contract instance for.</p> |
 | network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
 | wallet | <code>StellarWallet</code> | <p>The wallet used to send the transaction.</p> |
-| tokenAddress | <code>string</code> | <p>The address of the Sep41 token to approve.</p> |
 | spenderAddress | <code>string</code> | <p>The address of the spender to approve an allowance for.</p> |
 | allowanceAmount | <code>bigint</code> | <p>The amount of tokens to approve, if applicable. Denominated in the Sep41 tokens.</p> |
 
