@@ -84,6 +84,7 @@ export const NetworkMetadatas: NetworkMetadata[] = [
           seniorTranche:
             'CAEGT76URZASBOLMWNASRDPMWM3TELHTH7CEZEMRJRTT3GO6HJCW4HSU',
         },
+        borrowers: ['GBQ4MIGKASCJG4GNEOQ3G6Z6YDUXCAKYARB3MNJ7QOF54MNMYW7HP62V'],
       },
     ],
   },
