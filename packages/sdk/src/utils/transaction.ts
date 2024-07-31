@@ -23,11 +23,9 @@ const handlePendingTransaction = async (
 ) => {
   if (sendResponse.status === 'PENDING') {
     let getResponse = await server.getTransaction(sendResponse.hash)
-    let retryCount = 0
-    while (getResponse.status === 'NOT_FOUND' || retryCount < 90) {
+    while (getResponse.status === 'NOT_FOUND') {
       await new Promise((resolve) => setTimeout(resolve, 1000))
       getResponse = await server.getTransaction(sendResponse.hash)
-      retryCount++
     }
 
     if (getResponse.status === 'SUCCESS') {
