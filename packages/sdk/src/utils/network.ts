@@ -15,7 +15,7 @@ export enum StellarNetworkPassphrase {
 }
 
 export enum StellarPublicRpcUrl {
-  mainnet = 'https://svc.blockdaemon.com/stellar/mainnet/native/soroban-rpc',
+  mainnet = 'https://soroban-rpc.mainnet.stellar.gateway.fm',
   testnet = 'https://soroban-testnet.stellar.org',
   futurenet = 'https://rpc-futurenet.stellar.org',
   localnet = 'http://localhost:8000/soroban/rpc',
