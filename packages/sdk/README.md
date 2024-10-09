@@ -14,3 +14,4 @@ For extensive documentation on the different functions offered please refer to t
 
 - Helpers
   - `CreditContractHelper` helper function for interacting with Huma's pool contracts, including drawdown and payback
+  - `Sep41ContractHelper` helper function for interacting with Sep41 token contract (ERC20 equivalent)

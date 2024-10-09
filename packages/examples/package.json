@@ -1,6 +1,6 @@
 {
   "name": "@huma-finance/soroban-examples",
-  "version": "1.0.0",
+  "version": "0.0.14",
   "description": "",
   "private": true,
   "main": "src/mintReceivable.js",

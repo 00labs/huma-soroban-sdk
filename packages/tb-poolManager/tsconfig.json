@@ -3,10 +3,10 @@
   "compilerOptions": {
     "composite": true,
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "NodeNext",
     "rootDir": "./src",
     "outDir": "dist",
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "declaration": true,
     "strictNullChecks": true,
     "skipLibCheck": true
