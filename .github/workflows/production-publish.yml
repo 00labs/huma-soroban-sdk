@@ -43,7 +43,7 @@ jobs:
 
       - name: Publish packages
         run: |
-          yarn lerna:publish --yes
+          yarn lerna:publish --yes --force-publish
 
       - name: Synchronize lerna version bump commit with develop branch
         run: |

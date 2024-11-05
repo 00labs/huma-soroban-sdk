@@ -25,18 +25,23 @@
     "paths": {
       "@": ["./"],
       "*": ["src/*", "node_modules/*"],
+      "@huma-finance/soroban-credit-manager": ["../tb-creditManager"],
       "@huma-finance/soroban-credit-storage": ["../tb-creditStorage"],
       "@huma-finance/soroban-huma-config": ["../tb-humaConfig"],
       "@huma-finance/soroban-pool": ["../tb-pool"],
       "@huma-finance/soroban-pool-credit": ["../tb-poolCredit"],
       "@huma-finance/soroban-pool-manager": ["../tb-poolManager"],
       "@huma-finance/soroban-pool-storage": ["../tb-poolStorage"],
-      "@huma-finance/soroban-tranche-vault": ["../tb-trancheVault"]
+      "@huma-finance/soroban-tranche-vault": ["../tb-trancheVault"],
+      "@huma-finance/soroban-sep41": ["../tb-sep41"]
     },
     "esModuleInterop": true,
     "skipLibCheck": true
   },
   "references": [
+    {
+      "path": "../tb-creditManager"
+    },
     {
       "path": "../tb-creditStorage"
     },
@@ -57,6 +62,9 @@
     },
     {
       "path": "../tb-trancheVault"
+    },
+    {
+      "path": "../tb-sep41"
     }
   ]
 }

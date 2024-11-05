@@ -15,15 +15,16 @@ export enum StellarNetworkPassphrase {
 }
 
 export enum StellarPublicRpcUrl {
-  mainnet = 'https://horizon.stellar.org',
+  mainnet = 'https://soroban-rpc.mainnet.stellar.gateway.fm',
   testnet = 'https://soroban-testnet.stellar.org',
   futurenet = 'https://rpc-futurenet.stellar.org',
   localnet = 'http://localhost:8000/soroban/rpc',
-  humanet = 'http://172.31.7.67:8000/soroban/rpc',
+  humanet = 'https://dev.stellar.huma.finance/soroban/rpc',
 }
 
 export enum POOL_NAME {
   Arf = 'Arf',
+  Roam = 'Roam',
 }
 
 export enum POOL_TYPE {
@@ -39,11 +40,16 @@ export type PoolMetadata = {
     pool: string
     poolManager: string
     poolCredit: string
+    creditManager: string
     creditStorage: string
-    seniorTranche: string
     juniorTranche: string
+    seniorTranche?: string
+    underlyingToken: string
   }
+  borrowers: string[]
 }
+
+export type ContractType = keyof PoolMetadata['contracts']
 
 export type NetworkMetadata = {
   network: StellarNetwork
@@ -54,6 +60,39 @@ export type NetworkMetadata = {
 
 export const NetworkMetadatas: NetworkMetadata[] = [
   {
+    network: StellarNetwork.mainnet,
+    networkPassphrase: StellarNetworkPassphrase.mainnet,
+    rpcUrl: StellarPublicRpcUrl.mainnet,
+    pools: [
+      {
+        poolName: POOL_NAME.Arf,
+        poolType: POOL_TYPE.Creditline,
+        contracts: {
+          humaConfig:
+            'CCAIHLSVRKOU4XM2UWLBXRTWX3C2SFKZTCZ7ZDWSOWPHRAL4LVONLZSF',
+          poolStorage:
+            'CDETZGJWZZFLXSO5AJ5S5EWUQPJUKS2KSYIWTQNH5ZADJMSYXQVE6Z6Y',
+          pool: 'CCIH4TXFY32NM4CN5G5MVJHLIMLUZUJ72TUH3PWO7T7RDMYFIS6ME6LI',
+          poolManager:
+            'CCM4GBO7FW3EABFPLYBPU4GW6IPCSDUEET6WFW253IQIJ4MXYLUCXVAF',
+          poolCredit:
+            'CAJ6TKKHCE7Y7LIMPNTG5XZYYK7IZYAWRT2BOSZCKOZZCPX3RBZONPFJ',
+          creditManager:
+            'CCV47GK54O67WKCV4SQ6ZRCCQFZAUBKBOIYC6GENWDMCOJE7K2VYGVPI',
+          creditStorage:
+            'CCAGR4BX7NGUUVD55B7DCKH2ZY4ISYCHMWNVEA63AKUXAESHJTRNWDTB',
+          juniorTranche:
+            'CDHZGXZLW3Q2MJOC6RB4IYOSGI7P3T2AEE6DAIS4ATMOXYHHDQ5G5UWG',
+          seniorTranche:
+            'CAEGT76URZASBOLMWNASRDPMWM3TELHTH7CEZEMRJRTT3GO6HJCW4HSU',
+          underlyingToken:
+            'CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75',
+        },
+        borrowers: ['GBQ4MIGKASCJG4GNEOQ3G6Z6YDUXCAKYARB3MNJ7QOF54MNMYW7HP62V'],
+      },
+    ],
+  },
+  {
     network: StellarNetwork.testnet,
     networkPassphrase: StellarNetworkPassphrase.testnet,
     rpcUrl: StellarPublicRpcUrl.testnet,
@@ -63,21 +102,48 @@ export const NetworkMetadatas: NetworkMetadata[] = [
         poolType: POOL_TYPE.Creditline,
         contracts: {
           humaConfig:
-            'CD6E7GFRHBQ627ZXK5YNMQFBBLFCXBBEU6VYXBSQ77CYOYQC5UV3HS76',
+            'CBPPUTDLFGA73HFDLT45EXS2MBUK3ISNRM3CRJ5AGPQS2MY3JIWCNZ5R',
           poolStorage:
-            'CAKPKH2G3ALGKW2E5BJFUJ6WR3RXJVGIXEAPVI5S6Q4HKSDCMKEYJSBR',
-          pool: 'CC2GGLIHX5E75QIXB7G27EOC47V74PXA33KGYDQH4DFISIVZPWQRBVJV',
+            'CAV6Q25V3HFVCU5NGCHMVRHXD6IOU5HZNB453VH3CJIQ4E55RM7QU7I4',
+          pool: 'CCKEISAFFQIB44Y4OMOSDRXNSFBS5CBJHLPE2YU6INHU2IMWQDXOYW3H',
           poolManager:
-            'CC7TGDDRSA2R7F6RIW3POEZSH22RG7DYNZX6GY2YGQ2O33E5BZWSMPDT',
+            'CDHPUBZZZHCLZ7DC42EMRUJTEXRW7R3IX2VBYM7NUNFCT3BMLWWWZJG3',
           poolCredit:
-            'CBI7LGEWCJFO2APREGBRTUXB5JMZHJOVD76MESEB7V6W4IJ4ZLQJILDB',
+            'CAEGLPFETWBCFSKIKFPN7VY6SRAQHLW42N6FFJ6IRO6IBEECVVJQKHQ7',
+          creditManager:
+            'CAF346JT7XMFUZWHX2QKDIHDBQMMZOUPVA7Q4C2PRP7HOO6SMOGPKC7F',
           creditStorage:
-            'CCQMDMB2J6XRPZKG4QYNSXNN6W56HH5QCQXM6MDIW7ZEJRYSLL2ZEG2U',
+            'CDXG5THQJWEKY6XO6VH673J5KYUAU5Q2FPGLWO4YM2TXYMXEOEQOE4DZ',
           juniorTranche:
-            'CDXI5L5EFHBW3KYY3D6JGXJTGDOG5EZAQUDAK5LWZQVH4TEUDAO7PBGU',
-          seniorTranche:
-            'CDFZVYABKBUBCNBW4NLTZ63JWPZFE677PQOXRZLBCKSY6MDB5CHR2IJ2',
+            'CCDCJ5PYATGWFBNSVISW5B4GMSOTJSMK2T7TOB6XLIUA66OCSGPKB3RV',
+          underlyingToken:
+            'CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA',
         },
+        borrowers: ['GBK62KZMUVEKLGGB3UYCRUP2BVDUE6UEZWUHPUNJ54BKFDTW4CNSF6O7'],
+      },
+      {
+        poolName: POOL_NAME.Roam,
+        poolType: POOL_TYPE.Creditline,
+        contracts: {
+          humaConfig:
+            'CDX6NBJ3OV4TWRCZK4DFBHDHE37UUDS66PPGNIPBGUI56D254EKVFETX',
+          poolStorage:
+            'CBA35JCIXFRAEPRVD3JAQ5WLC7SYZP3RABUKJ52LU5EI2YQ6CDNIAQZF',
+          pool: 'CBAJF4BORH2YLIZH4QQSBGDD62VVUKVTNESXRV7KVXTSQ2X4WWP2M3NC',
+          poolManager:
+            'CDLLMPQMNIT7HE2Q6PGVSWYKAE7FLUHVM4QYV7D4ISLT3GD4XZDVSBXV',
+          poolCredit:
+            'CDPYWOCBSXC3W6BYRKO645OQLJNDDZ2EDSZ2Y547BL4LHMSRU7FUVTVG',
+          creditManager:
+            'CBEH5SKVKC6GXP5FQLAUFX43GAFRXZDOHDUQW3CRFD5BQVH7L6YSBP4V',
+          creditStorage:
+            'CADDOLDFYN6Y2DXNYMX2ILVLPLU5W7MAQ7GBOOYWJ6JCH4DGHLUH2FB3',
+          juniorTranche:
+            'CB6K4IUC3CJHIWVHHLBDTGXVS6CT64EKGD5CGBIDNMSAKVZHCWQ3LM2D',
+          underlyingToken:
+            'CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA',
+        },
+        borrowers: [], // TODO: Replace with Roam
       },
     ],
   },
@@ -99,13 +165,17 @@ export const NetworkMetadatas: NetworkMetadata[] = [
             'CDBZYAXIHNGPRAHOQU53AILDMSUO5UENFSCNHNT2ABXGLC2MEJ6RPV33',
           poolCredit:
             'CAC6ZM2HT2JVNS3TZ2LYVJ6JDR724J2SOV63YIWMP2RSLYA64EB5C7JH',
+          creditManager:
+            'CAC6ZM2HT2JVNS3TZ2LYVJ6JDR724J2SOV63YIWMP2RSLYA64EB5C7JH',
           creditStorage:
             'CCPTCRU7FUVQLNR4GGUBWQDHJCQTW3MXDZQYQQGB4OC2PNME7HNIV3R3',
           juniorTranche:
             'CD4TNCKN7PDNOBS2JHEXRXPHOL327EX4Z7EURDG2XFWBZ67XG5XW5Q7O',
           seniorTranche:
             'CDOB4BPE2AKSZYW27QP4IYVIIGVQD3C7E7YL6XRZ2ANM7MYJT2TKOVPC',
+          underlyingToken: '',
         },
+        borrowers: [],
       },
     ],
   },
@@ -119,21 +189,25 @@ export const NetworkMetadatas: NetworkMetadata[] = [
         poolType: POOL_TYPE.Creditline,
         contracts: {
           humaConfig:
-            'CDUARGZAEFXOLWPDVCYZ5Y4QD7ISG5QZL36CUVCYLGE22S4U2FQC7T5L',
+            'CCEI7LEMN2PT47VV6HMQDJI4UC25M2AT33IDMAZFPRH64GYG5WE266SW',
           poolStorage:
-            'CBO432DNOGKONUPMKY3FMN2XDOXQO6YF32RWU3AYEE6FE3ABNTLZ44AY',
-          pool: 'CDZ5RPSAEV52JRPNF5MIFIUSGPFETOB5GB4ZMHGDOYHNAMXZ6EZYYEIP',
+            'CDDNEIRXEFRDPRJP7MJ3TBCAG4ZG6X7V3TAZYOZSDSCQ3PNA6CUPGTF6',
+          pool: 'CBX53HW254W3ROTSVZSZ7RM3RVAFGCPTZFEE4RURXHHYOL2VDVGUOVWU',
           poolManager:
-            'CDAWXL4EEOTBKRMYPCRD4SHXJ5QW2ZCYWI64P6SWMRVPEQCL7GCENDNO',
+            'CAJJ75TGZYB2QXPF7PQQR43IRGEN4A3MXKGZWVIZESLNDGDU22FB6DRM',
           poolCredit:
-            'CC5QODELURRO4KUIHZ6IIDDDMKQ2DCUBANVEPFWC7MLGVGCGVIYRDDOZ',
+            'CBZ7UQSPU5DEX6I7ADGLRYB2YWJOF3XUYXRILPKYZDBBXBZC5EORZ3AM',
+          creditManager:
+            'CDSF3EVJAJOA7L4GNL2MUZBB4BPTOKZW2USXTUEWYD7W5H5HW6WUGMVA',
           creditStorage:
-            'CB2X3E7FBKWAG6EYSTKIMCSNNLM3FFVZVEWPNQVHOVTQER24DMHYYIBV',
+            'CB7KFMFHVENKUMLB3QYRGMLFQMJ5IPIEBLKOMWXYLRY537EHNAON6U56',
           juniorTranche:
-            'CCGIZUQOMU6FINZQHBSXTYWLGQNW2UEZD7ZSMEFHJKHJPHS64YZFDFZP',
+            'CBDPTKXAOUVRUCGPUJKRZGL3AKZVEOPUR5BFNRAHTJSI6WOUZLXU4KXP',
           seniorTranche:
-            'CBC2OBQATLC27ZCN2IR7YG33KL2J75O6PYJV33FPB6ZBFGJKWRZF6MVT',
+            'CBM2QHAXIELWLDITPPXU4ILWOFKA6RLO4M5OSJJS4QJNWDU5L7CSKJUP',
+          underlyingToken: '',
         },
+        borrowers: [],
       },
     ],
   },
