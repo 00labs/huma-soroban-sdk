@@ -24,7 +24,7 @@ jest.mock('../../src/utils/common', () => ({
 
 describe('approveSep41AllowanceIfInsufficient', () => {
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )

@@ -46,7 +46,7 @@ describe('getAvailableBalanceForPool', () => {
 
     const result = await getAvailableBalanceForPool(
       POOL_NAME.Arf,
-      StellarNetwork.testnet,
+      StellarNetwork.mainnet,
       wallet,
     )
     expect(result).toBe(100n)
@@ -59,7 +59,7 @@ describe('getCreditRecordForPool', () => {
   })
 
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )
@@ -122,7 +122,7 @@ describe('getAvailableCreditForPool', () => {
   })
 
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )
@@ -192,7 +192,7 @@ describe('getTotalDue', () => {
   })
 
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )
@@ -235,7 +235,7 @@ describe('approveAllowanceForSentinel', () => {
   })
 
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )
@@ -286,7 +286,7 @@ describe('drawdown', () => {
   })
 
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )
@@ -331,7 +331,7 @@ describe('makePayment', () => {
   })
 
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )

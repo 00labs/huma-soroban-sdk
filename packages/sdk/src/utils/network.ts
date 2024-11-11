@@ -98,30 +98,6 @@ export const NetworkMetadatas: NetworkMetadata[] = [
     rpcUrl: StellarPublicRpcUrl.testnet,
     pools: [
       {
-        poolName: POOL_NAME.Arf,
-        poolType: POOL_TYPE.Creditline,
-        contracts: {
-          humaConfig:
-            'CBPPUTDLFGA73HFDLT45EXS2MBUK3ISNRM3CRJ5AGPQS2MY3JIWCNZ5R',
-          poolStorage:
-            'CAV6Q25V3HFVCU5NGCHMVRHXD6IOU5HZNB453VH3CJIQ4E55RM7QU7I4',
-          pool: 'CCKEISAFFQIB44Y4OMOSDRXNSFBS5CBJHLPE2YU6INHU2IMWQDXOYW3H',
-          poolManager:
-            'CDHPUBZZZHCLZ7DC42EMRUJTEXRW7R3IX2VBYM7NUNFCT3BMLWWWZJG3',
-          poolCredit:
-            'CAEGLPFETWBCFSKIKFPN7VY6SRAQHLW42N6FFJ6IRO6IBEECVVJQKHQ7',
-          creditManager:
-            'CAF346JT7XMFUZWHX2QKDIHDBQMMZOUPVA7Q4C2PRP7HOO6SMOGPKC7F',
-          creditStorage:
-            'CDXG5THQJWEKY6XO6VH673J5KYUAU5Q2FPGLWO4YM2TXYMXEOEQOE4DZ',
-          juniorTranche:
-            'CCDCJ5PYATGWFBNSVISW5B4GMSOTJSMK2T7TOB6XLIUA66OCSGPKB3RV',
-          underlyingToken:
-            'CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA',
-        },
-        borrowers: ['GBK62KZMUVEKLGGB3UYCRUP2BVDUE6UEZWUHPUNJ54BKFDTW4CNSF6O7'],
-      },
-      {
         poolName: POOL_NAME.Roam,
         poolType: POOL_TYPE.Creditline,
         contracts: {
