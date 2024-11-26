@@ -30,70 +30,34 @@ if (typeof window !== "undefined") {
 }
 
 export const networks = {
-  testnet: {
-    networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CAI6UQAXZ6ICE5QQ4WFEEDQLZORGMYBCL2RB2NVY6AGMH4XT6PCH7IPX",
+  unknown: {
+    networkPassphrase: "Public Global Stellar Network ; September 2015",
+    contractId: "CAOYBU6OQWAF3OZBHW5N6ID7TPAKZBJ27XR63IGTXMWEI3NSNTCYI6SH",
   },
 } as const;
+
+export interface HumaConfigChangedEvent {
+  huma_config: string;
+}
+
+export interface PoolAddressesChangedEvent {
+  credit: string;
+  credit_manager: string;
+  pool_storage: string;
+}
 
 export type ClientDataKey =
   | { tag: "HumaConfig"; values: void }
   | { tag: "PoolStorage"; values: void }
-  | { tag: "PoolManager"; values: void }
   | { tag: "Credit"; values: void }
   | { tag: "CreditManager"; values: void };
 
-export interface HumaConfigChangedEvent {
-  huma_config: string;
-}
-
-export interface PoolAddressesChangedEvent {
-  credit: string;
-  credit_manager: string;
-  pool_manager: string;
-  pool_storage: string;
-}
-
-export interface HumaConfigChangedEvent {
-  huma_config: string;
-}
-
-export interface PoolAddressesChangedEvent {
-  pool_manager: string;
-  pool_storage: string;
-}
-
-export interface CreditAddressesChangedEvent {
-  credit: string;
-  credit_manager: string;
-}
-
-export interface TranchesPolicyTypeChangedEvent {
-  policy_type: TranchesPolicyType;
-}
-
-/**
- * Event for the distribution of profit in the pool.
- * # Fields:
- * * `profit` - The amount of profit distributed.
- * * `senior_total_assets` - The total amount of senior assets post profit distribution.
- * * `junior_total_assets` - The total amount of junior assets post profit distribution.
- */
 export interface ProfitDistributedEvent {
   junior_total_assets: u128;
   profit: u128;
   senior_total_assets: u128;
 }
 
-/**
- * Event for the distribution of loss in the pool.
- * # Fields:
- * * `loss` - The amount of loss distributed.
- * * `senior_total_assets` - The total amount of senior assets post loss distribution.
- * * `junior_total_assets` - The total amount of junior assets post loss distribution.
- * * `senior_total_loss` - The total amount of loss the senior tranche suffered post loss distribution.
- * * `junior_total_loss` - The total amount of loss the junior tranche suffered post loss distribution.
- */
 export interface LossDistributedEvent {
   junior_total_assets: u128;
   junior_total_loss: u128;
@@ -102,15 +66,6 @@ export interface LossDistributedEvent {
   senior_total_loss: u128;
 }
 
-/**
- * Event for the distribution of loss recovery in the pool.
- * # Fields:
- * * `loss_recovery` - The amount of loss recovery distributed.
- * * `senior_total_assets` - The total amount of senior assets post loss recovery distribution.
- * * `junior_total_assets` - The total amount of junior assets post loss recovery distribution.
- * * `senior_total_loss` - The remaining amount of loss the senior tranche suffered post loss recovery distribution.
- * * `junior_total_loss` - The remaining amount of loss the junior tranche suffered post loss recovery distribution.
- */
 export interface LossRecoveryDistributedEvent {
   junior_total_assets: u128;
   junior_total_loss: u128;
@@ -118,10 +73,6 @@ export interface LossRecoveryDistributedEvent {
   senior_total_assets: u128;
   senior_total_loss: u128;
 }
-
-export type TranchesPolicyType =
-  | { tag: "FixedSeniorYield"; values: void }
-  | { tag: "RiskAdjusted"; values: void };
 
 export interface TrancheLosses {
   losses: Array<u128>;
@@ -139,13 +90,25 @@ export type PayPeriodDuration =
   | { tag: "SemiAnnually"; values: void };
 
 export const Errors = {
-  101: { message: "" },
-  1: { message: "" },
-  2: { message: "" },
-  3: { message: "" },
-  4: { message: "" },
-  5: { message: "" },
+  801: { message: "StartDateLaterThanEndDate" },
+
+  1: { message: "AlreadyInitialized" },
+
+  2: { message: "ProtocolIsPausedOrPoolIsNotOn" },
+
+  3: { message: "PoolOwnerOrHumaOwnerRequired" },
+
+  4: { message: "PoolOperatorRequired" },
+
+  5: { message: "AuthorizedContractCallerRequired" },
+
+  6: { message: "UnsupportedFunction" },
+
+  7: { message: "ZeroAmountProvided" },
 };
+export type TranchesPolicyType =
+  | { tag: "FixedSeniorYield"; values: void }
+  | { tag: "RiskAdjusted"; values: void };
 
 export interface PoolSettings {
   default_grace_period_days: u32;
@@ -157,6 +120,7 @@ export interface PoolSettings {
 }
 
 export interface LPConfig {
+  auto_redemption_after_lockup: boolean;
   fixed_senior_yield_bps: u32;
   liquidity_cap: u128;
   max_senior_junior_ratio: u32;
@@ -203,13 +167,11 @@ export interface Client {
   initialize: (
     {
       huma_config,
-      pool_manager,
       pool_storage,
       credit_manager,
       credit,
     }: {
       huma_config: string;
-      pool_manager: string;
       pool_storage: string;
       credit_manager: string;
       credit: string;
@@ -260,13 +222,13 @@ export interface Client {
    */
   set_contract_addrs: (
     {
+      caller,
       pool_storage,
-      pool_manager,
       credit,
       credit_manager,
     }: {
+      caller: string;
       pool_storage: string;
-      pool_manager: string;
       credit: string;
       credit_manager: string;
     },
@@ -358,6 +320,29 @@ export interface Client {
   ) => Promise<AssembledTransaction<null>>;
 
   /**
+   * Construct and simulate a upgrade transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  upgrade: (
+    { new_wasm_hash }: { new_wasm_hash: Buffer },
+    options?: {
+      /**
+       * The fee to pay for the transaction. Default: BASE_FEE
+       */
+      fee?: number;
+
+      /**
+       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+       */
+      timeoutInSeconds?: number;
+
+      /**
+       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+       */
+      simulate?: boolean;
+    }
+  ) => Promise<AssembledTransaction<null>>;
+
+  /**
    * Construct and simulate a get_protocol_income_accrued transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
   get_protocol_income_accrued: (options?: {
@@ -421,34 +406,30 @@ export class Client extends ContractClient {
   constructor(public readonly options: ContractClientOptions) {
     super(
       new ContractSpec([
-        "AAAAAgAAAAAAAAAAAAAADUNsaWVudERhdGFLZXkAAAAAAAAFAAAAAAAAAAAAAAAKSHVtYUNvbmZpZwAAAAAAAAAAAAAAAAALUG9vbFN0b3JhZ2UAAAAAAAAAAAAAAAALUG9vbE1hbmFnZXIAAAAAAAAAAAAAAAAGQ3JlZGl0AAAAAAAAAAAAAAAAAA1DcmVkaXRNYW5hZ2VyAAAA",
         "AAAAAQAAAAAAAAAAAAAAFkh1bWFDb25maWdDaGFuZ2VkRXZlbnQAAAAAAAEAAAAAAAAAC2h1bWFfY29uZmlnAAAAABM=",
-        "AAAAAQAAAAAAAAAAAAAAGVBvb2xBZGRyZXNzZXNDaGFuZ2VkRXZlbnQAAAAAAAAEAAAAAAAAAAZjcmVkaXQAAAAAABMAAAAAAAAADmNyZWRpdF9tYW5hZ2VyAAAAAAATAAAAAAAAAAxwb29sX21hbmFnZXIAAAATAAAAAAAAAAxwb29sX3N0b3JhZ2UAAAAT",
-        "AAAAAQAAAAAAAAAAAAAAFkh1bWFDb25maWdDaGFuZ2VkRXZlbnQAAAAAAAEAAAAAAAAAC2h1bWFfY29uZmlnAAAAABM=",
-        "AAAAAQAAAAAAAAAAAAAAGVBvb2xBZGRyZXNzZXNDaGFuZ2VkRXZlbnQAAAAAAAACAAAAAAAAAAxwb29sX21hbmFnZXIAAAATAAAAAAAAAAxwb29sX3N0b3JhZ2UAAAAT",
-        "AAAAAQAAAAAAAAAAAAAAG0NyZWRpdEFkZHJlc3Nlc0NoYW5nZWRFdmVudAAAAAACAAAAAAAAAAZjcmVkaXQAAAAAABMAAAAAAAAADmNyZWRpdF9tYW5hZ2VyAAAAAAAT",
-        "AAAAAQAAAAAAAAAAAAAAHlRyYW5jaGVzUG9saWN5VHlwZUNoYW5nZWRFdmVudAAAAAAAAQAAAAAAAAALcG9saWN5X3R5cGUAAAAH0AAAABJUcmFuY2hlc1BvbGljeVR5cGUAAA==",
-        "AAAAAAAAAAAAAAAKaW5pdGlhbGl6ZQAAAAAABQAAAAAAAAALaHVtYV9jb25maWcAAAAAEwAAAAAAAAAMcG9vbF9tYW5hZ2VyAAAAEwAAAAAAAAAMcG9vbF9zdG9yYWdlAAAAEwAAAAAAAAAOY3JlZGl0X21hbmFnZXIAAAAAABMAAAAAAAAABmNyZWRpdAAAAAAAEwAAAAA=",
+        "AAAAAQAAAAAAAAAAAAAAGVBvb2xBZGRyZXNzZXNDaGFuZ2VkRXZlbnQAAAAAAAADAAAAAAAAAAZjcmVkaXQAAAAAABMAAAAAAAAADmNyZWRpdF9tYW5hZ2VyAAAAAAATAAAAAAAAAAxwb29sX3N0b3JhZ2UAAAAT",
+        "AAAAAgAAAAAAAAAAAAAADUNsaWVudERhdGFLZXkAAAAAAAAEAAAAAAAAAAAAAAAKSHVtYUNvbmZpZwAAAAAAAAAAAAAAAAALUG9vbFN0b3JhZ2UAAAAAAAAAAAAAAAAGQ3JlZGl0AAAAAAAAAAAAAAAAAA1DcmVkaXRNYW5hZ2VyAAAA",
+        "AAAAAAAAAAAAAAAKaW5pdGlhbGl6ZQAAAAAABAAAAAAAAAALaHVtYV9jb25maWcAAAAAEwAAAAAAAAAMcG9vbF9zdG9yYWdlAAAAEwAAAAAAAAAOY3JlZGl0X21hbmFnZXIAAAAAABMAAAAAAAAABmNyZWRpdAAAAAAAEwAAAAA=",
         "AAAAAAAAAAAAAAAPc2V0X2h1bWFfY29uZmlnAAAAAAEAAAAAAAAAC2h1bWFfY29uZmlnAAAAABMAAAAA",
-        "AAAAAAAAAAAAAAASc2V0X2NvbnRyYWN0X2FkZHJzAAAAAAAEAAAAAAAAAAxwb29sX3N0b3JhZ2UAAAATAAAAAAAAAAxwb29sX21hbmFnZXIAAAATAAAAAAAAAAZjcmVkaXQAAAAAABMAAAAAAAAADmNyZWRpdF9tYW5hZ2VyAAAAAAATAAAAAA==",
+        "AAAAAAAAAAAAAAASc2V0X2NvbnRyYWN0X2FkZHJzAAAAAAAEAAAAAAAAAAZjYWxsZXIAAAAAABMAAAAAAAAADHBvb2xfc3RvcmFnZQAAABMAAAAAAAAABmNyZWRpdAAAAAAAEwAAAAAAAAAOY3JlZGl0X21hbmFnZXIAAAAAABMAAAAA",
         "AAAAAAAAAAAAAAARZGlzdHJpYnV0ZV9wcm9maXQAAAAAAAACAAAAAAAAAAZjYWxsZXIAAAAAABMAAAAAAAAABnByb2ZpdAAAAAAACgAAAAA=",
         "AAAAAAAAAAAAAAAPZGlzdHJpYnV0ZV9sb3NzAAAAAAIAAAAAAAAABmNhbGxlcgAAAAAAEwAAAAAAAAAEbG9zcwAAAAoAAAAA",
         "AAAAAAAAAAAAAAAYZGlzdHJpYnV0ZV9sb3NzX3JlY292ZXJ5AAAAAgAAAAAAAAAGY2FsbGVyAAAAAAATAAAAAAAAAA1sb3NzX3JlY292ZXJ5AAAAAAAACgAAAAA=",
+        "AAAAAAAAAAAAAAAHdXBncmFkZQAAAAABAAAAAAAAAA1uZXdfd2FzbV9oYXNoAAAAAAAD7gAAACAAAAAA",
         "AAAAAAAAAAAAAAAbZ2V0X3Byb3RvY29sX2luY29tZV9hY2NydWVkAAAAAAAAAAABAAAACg==",
         "AAAAAAAAAAAAAAAdZ2V0X3Bvb2xfb3duZXJfaW5jb21lX2FjY3J1ZWQAAAAAAAAAAAAAAQAAAAo=",
         "AAAAAAAAAAAAAAAVZ2V0X2VhX2luY29tZV9hY2NydWVkAAAAAAAAAAAAAAEAAAAK",
-        "AAAAAQAAARZFdmVudCBmb3IgdGhlIGRpc3RyaWJ1dGlvbiBvZiBwcm9maXQgaW4gdGhlIHBvb2wuCiMgRmllbGRzOgoqIGBwcm9maXRgIC0gVGhlIGFtb3VudCBvZiBwcm9maXQgZGlzdHJpYnV0ZWQuCiogYHNlbmlvcl90b3RhbF9hc3NldHNgIC0gVGhlIHRvdGFsIGFtb3VudCBvZiBzZW5pb3IgYXNzZXRzIHBvc3QgcHJvZml0IGRpc3RyaWJ1dGlvbi4KKiBganVuaW9yX3RvdGFsX2Fzc2V0c2AgLSBUaGUgdG90YWwgYW1vdW50IG9mIGp1bmlvciBhc3NldHMgcG9zdCBwcm9maXQgZGlzdHJpYnV0aW9uLgAAAAAAAAAAABZQcm9maXREaXN0cmlidXRlZEV2ZW50AAAAAAADAAAAAAAAABNqdW5pb3JfdG90YWxfYXNzZXRzAAAAAAoAAAAAAAAABnByb2ZpdAAAAAAACgAAAAAAAAATc2VuaW9yX3RvdGFsX2Fzc2V0cwAAAAAK",
-        "AAAAAQAAAdZFdmVudCBmb3IgdGhlIGRpc3RyaWJ1dGlvbiBvZiBsb3NzIGluIHRoZSBwb29sLgojIEZpZWxkczoKKiBgbG9zc2AgLSBUaGUgYW1vdW50IG9mIGxvc3MgZGlzdHJpYnV0ZWQuCiogYHNlbmlvcl90b3RhbF9hc3NldHNgIC0gVGhlIHRvdGFsIGFtb3VudCBvZiBzZW5pb3IgYXNzZXRzIHBvc3QgbG9zcyBkaXN0cmlidXRpb24uCiogYGp1bmlvcl90b3RhbF9hc3NldHNgIC0gVGhlIHRvdGFsIGFtb3VudCBvZiBqdW5pb3IgYXNzZXRzIHBvc3QgbG9zcyBkaXN0cmlidXRpb24uCiogYHNlbmlvcl90b3RhbF9sb3NzYCAtIFRoZSB0b3RhbCBhbW91bnQgb2YgbG9zcyB0aGUgc2VuaW9yIHRyYW5jaGUgc3VmZmVyZWQgcG9zdCBsb3NzIGRpc3RyaWJ1dGlvbi4KKiBganVuaW9yX3RvdGFsX2xvc3NgIC0gVGhlIHRvdGFsIGFtb3VudCBvZiBsb3NzIHRoZSBqdW5pb3IgdHJhbmNoZSBzdWZmZXJlZCBwb3N0IGxvc3MgZGlzdHJpYnV0aW9uLgAAAAAAAAAAABRMb3NzRGlzdHJpYnV0ZWRFdmVudAAAAAUAAAAAAAAAE2p1bmlvcl90b3RhbF9hc3NldHMAAAAACgAAAAAAAAARanVuaW9yX3RvdGFsX2xvc3MAAAAAAAAKAAAAAAAAAARsb3NzAAAACgAAAAAAAAATc2VuaW9yX3RvdGFsX2Fzc2V0cwAAAAAKAAAAAAAAABFzZW5pb3JfdG90YWxfbG9zcwAAAAAAAAo=",
-        "AAAAAQAAAh1FdmVudCBmb3IgdGhlIGRpc3RyaWJ1dGlvbiBvZiBsb3NzIHJlY292ZXJ5IGluIHRoZSBwb29sLgojIEZpZWxkczoKKiBgbG9zc19yZWNvdmVyeWAgLSBUaGUgYW1vdW50IG9mIGxvc3MgcmVjb3ZlcnkgZGlzdHJpYnV0ZWQuCiogYHNlbmlvcl90b3RhbF9hc3NldHNgIC0gVGhlIHRvdGFsIGFtb3VudCBvZiBzZW5pb3IgYXNzZXRzIHBvc3QgbG9zcyByZWNvdmVyeSBkaXN0cmlidXRpb24uCiogYGp1bmlvcl90b3RhbF9hc3NldHNgIC0gVGhlIHRvdGFsIGFtb3VudCBvZiBqdW5pb3IgYXNzZXRzIHBvc3QgbG9zcyByZWNvdmVyeSBkaXN0cmlidXRpb24uCiogYHNlbmlvcl90b3RhbF9sb3NzYCAtIFRoZSByZW1haW5pbmcgYW1vdW50IG9mIGxvc3MgdGhlIHNlbmlvciB0cmFuY2hlIHN1ZmZlcmVkIHBvc3QgbG9zcyByZWNvdmVyeSBkaXN0cmlidXRpb24uCiogYGp1bmlvcl90b3RhbF9sb3NzYCAtIFRoZSByZW1haW5pbmcgYW1vdW50IG9mIGxvc3MgdGhlIGp1bmlvciB0cmFuY2hlIHN1ZmZlcmVkIHBvc3QgbG9zcyByZWNvdmVyeSBkaXN0cmlidXRpb24uAAAAAAAAAAAAABxMb3NzUmVjb3ZlcnlEaXN0cmlidXRlZEV2ZW50AAAABQAAAAAAAAATanVuaW9yX3RvdGFsX2Fzc2V0cwAAAAAKAAAAAAAAABFqdW5pb3JfdG90YWxfbG9zcwAAAAAAAAoAAAAAAAAADWxvc3NfcmVjb3ZlcnkAAAAAAAAKAAAAAAAAABNzZW5pb3JfdG90YWxfYXNzZXRzAAAAAAoAAAAAAAAAEXNlbmlvcl90b3RhbF9sb3NzAAAAAAAACg==",
-        "AAAAAgAAAAAAAAAAAAAAElRyYW5jaGVzUG9saWN5VHlwZQAAAAAAAgAAAAAAAAAAAAAAEEZpeGVkU2VuaW9yWWllbGQAAAAAAAAAAAAAAAxSaXNrQWRqdXN0ZWQ=",
+        "AAAAAQAAAAAAAAAAAAAAFlByb2ZpdERpc3RyaWJ1dGVkRXZlbnQAAAAAAAMAAAAAAAAAE2p1bmlvcl90b3RhbF9hc3NldHMAAAAACgAAAAAAAAAGcHJvZml0AAAAAAAKAAAAAAAAABNzZW5pb3JfdG90YWxfYXNzZXRzAAAAAAo=",
+        "AAAAAQAAAAAAAAAAAAAAFExvc3NEaXN0cmlidXRlZEV2ZW50AAAABQAAAAAAAAATanVuaW9yX3RvdGFsX2Fzc2V0cwAAAAAKAAAAAAAAABFqdW5pb3JfdG90YWxfbG9zcwAAAAAAAAoAAAAAAAAABGxvc3MAAAAKAAAAAAAAABNzZW5pb3JfdG90YWxfYXNzZXRzAAAAAAoAAAAAAAAAEXNlbmlvcl90b3RhbF9sb3NzAAAAAAAACg==",
+        "AAAAAQAAAAAAAAAAAAAAHExvc3NSZWNvdmVyeURpc3RyaWJ1dGVkRXZlbnQAAAAFAAAAAAAAABNqdW5pb3JfdG90YWxfYXNzZXRzAAAAAAoAAAAAAAAAEWp1bmlvcl90b3RhbF9sb3NzAAAAAAAACgAAAAAAAAANbG9zc19yZWNvdmVyeQAAAAAAAAoAAAAAAAAAE3Nlbmlvcl90b3RhbF9hc3NldHMAAAAACgAAAAAAAAARc2VuaW9yX3RvdGFsX2xvc3MAAAAAAAAK",
         "AAAAAQAAAAAAAAAAAAAADVRyYW5jaGVMb3NzZXMAAAAAAAABAAAAAAAAAAZsb3NzZXMAAAAAA+oAAAAK",
         "AAAAAQAAAAAAAAAAAAAADkFjY3J1ZWRJbmNvbWVzAAAAAAADAAAAAAAAAAllYV9pbmNvbWUAAAAAAAAKAAAAAAAAABFwb29sX293bmVyX2luY29tZQAAAAAAAAoAAAAAAAAAD3Byb3RvY29sX2luY29tZQAAAAAK",
         "AAAAAgAAAAAAAAAAAAAAEVBheVBlcmlvZER1cmF0aW9uAAAAAAAAAwAAAAAAAAAAAAAAB01vbnRobHkAAAAAAAAAAAAAAAAJUXVhcnRlcmx5AAAAAAAAAAAAAAAAAAAMU2VtaUFubnVhbGx5",
-        "AAAABAAAAAAAAAAAAAAADUNhbGVuZGFyRXJyb3IAAAAAAAABAAAAAAAAABlTdGFydERhdGVMYXRlclRoYW5FbmREYXRlAAAAAAAAZQ==",
-        "AAAABAAAAAAAAAAAAAAAC0NvbW1vbkVycm9yAAAAAAUAAAAAAAAAEkFscmVhZHlJbml0aWFsaXplZAAAAAAAAQAAAAAAAAAdUHJvdG9jb2xJc1BhdXNlZE9yUG9vbElzTm90T24AAAAAAAACAAAAAAAAACBBdXRob3JpemVkQ29udHJhY3RDYWxsZXJSZXF1aXJlZAAAAAMAAAAAAAAAE1Vuc3VwcG9ydGVkRnVuY3Rpb24AAAAABAAAAAAAAAASWmVyb0Ftb3VudFByb3ZpZGVkAAAAAAAF",
+        "AAAABAAAAAAAAAAAAAAADUNhbGVuZGFyRXJyb3IAAAAAAAABAAAAAAAAABlTdGFydERhdGVMYXRlclRoYW5FbmREYXRlAAAAAAADIQ==",
+        "AAAABAAAAAAAAAAAAAAAC0NvbW1vbkVycm9yAAAAAAcAAAAAAAAAEkFscmVhZHlJbml0aWFsaXplZAAAAAAAAQAAAAAAAAAdUHJvdG9jb2xJc1BhdXNlZE9yUG9vbElzTm90T24AAAAAAAACAAAAAAAAABxQb29sT3duZXJPckh1bWFPd25lclJlcXVpcmVkAAAAAwAAAAAAAAAUUG9vbE9wZXJhdG9yUmVxdWlyZWQAAAAEAAAAAAAAACBBdXRob3JpemVkQ29udHJhY3RDYWxsZXJSZXF1aXJlZAAAAAUAAAAAAAAAE1Vuc3VwcG9ydGVkRnVuY3Rpb24AAAAABgAAAAAAAAASWmVyb0Ftb3VudFByb3ZpZGVkAAAAAAAH",
         "AAAAAgAAAAAAAAAAAAAAElRyYW5jaGVzUG9saWN5VHlwZQAAAAAAAgAAAAAAAAAAAAAAEEZpeGVkU2VuaW9yWWllbGQAAAAAAAAAAAAAAAxSaXNrQWRqdXN0ZWQ=",
         "AAAAAQAAAAAAAAAAAAAADFBvb2xTZXR0aW5ncwAAAAYAAAAAAAAAGWRlZmF1bHRfZ3JhY2VfcGVyaW9kX2RheXMAAAAAAAAEAAAAAAAAAB5sYXRlX3BheW1lbnRfZ3JhY2VfcGVyaW9kX2RheXMAAAAAAAQAAAAAAAAAD21heF9jcmVkaXRfbGluZQAAAAAKAAAAAAAAABJtaW5fZGVwb3NpdF9hbW91bnQAAAAAAAoAAAAAAAAAE3BheV9wZXJpb2RfZHVyYXRpb24AAAAH0AAAABFQYXlQZXJpb2REdXJhdGlvbgAAAAAAAAAAAAAecHJpbmNpcGFsX29ubHlfcGF5bWVudF9hbGxvd2VkAAAAAAAB",
-        "AAAAAQAAAAAAAAAAAAAACExQQ29uZmlnAAAABQAAAAAAAAAWZml4ZWRfc2VuaW9yX3lpZWxkX2JwcwAAAAAABAAAAAAAAAANbGlxdWlkaXR5X2NhcAAAAAAAAAoAAAAAAAAAF21heF9zZW5pb3JfanVuaW9yX3JhdGlvAAAAAAQAAAAAAAAAHHRyYW5jaGVzX3Jpc2tfYWRqdXN0bWVudF9icHMAAAAEAAAAAAAAAB53aXRoZHJhd2FsX2xvY2tvdXRfcGVyaW9kX2RheXMAAAAAAAQ=",
+        "AAAAAQAAAAAAAAAAAAAACExQQ29uZmlnAAAABgAAAAAAAAAcYXV0b19yZWRlbXB0aW9uX2FmdGVyX2xvY2t1cAAAAAEAAAAAAAAAFmZpeGVkX3Nlbmlvcl95aWVsZF9icHMAAAAAAAQAAAAAAAAADWxpcXVpZGl0eV9jYXAAAAAAAAAKAAAAAAAAABdtYXhfc2VuaW9yX2p1bmlvcl9yYXRpbwAAAAAEAAAAAAAAABx0cmFuY2hlc19yaXNrX2FkanVzdG1lbnRfYnBzAAAABAAAAAAAAAAed2l0aGRyYXdhbF9sb2Nrb3V0X3BlcmlvZF9kYXlzAAAAAAAE",
         "AAAAAQAAAAAAAAAAAAAADEZlZVN0cnVjdHVyZQAAAAQAAAAAAAAAFWZyb250X2xvYWRpbmdfZmVlX2JwcwAAAAAAAAQAAAAAAAAAFmZyb250X2xvYWRpbmdfZmVlX2ZsYXQAAAAAAAoAAAAAAAAADGxhdGVfZmVlX2JwcwAAAAQAAAAAAAAACXlpZWxkX2JwcwAAAAAAAAQ=",
         "AAAAAgAAAAAAAAAAAAAAClBvb2xTdGF0dXMAAAAAAAMAAAAAAAAAAAAAAANPZmYAAAAAAAAAAAAAAAACT24AAAAAAAAAAAAAAAAABkNsb3NlZAAA",
         "AAAAAQAAAAAAAAAAAAAABUVwb2NoAAAAAAAAAgAAAAAAAAAIZW5kX3RpbWUAAAAGAAAAAAAAAAJpZAAAAAAABg==",
@@ -466,6 +447,7 @@ export class Client extends ContractClient {
     distribute_profit: this.txFromJSON<null>,
     distribute_loss: this.txFromJSON<null>,
     distribute_loss_recovery: this.txFromJSON<null>,
+    upgrade: this.txFromJSON<null>,
     get_protocol_income_accrued: this.txFromJSON<u128>,
     get_pool_owner_income_accrued: this.txFromJSON<u128>,
     get_ea_income_accrued: this.txFromJSON<u128>,
