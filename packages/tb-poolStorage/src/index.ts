@@ -30,31 +30,38 @@ if (typeof window !== "undefined") {
 }
 
 export const networks = {
-  testnet: {
-    networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CBHY4NM3DVEBX3QTL3X5XEOAKHDMP44HDP7SBDTCOAMFU7LFIBMFEV4N",
+  unknown: {
+    networkPassphrase: "Public Global Stellar Network ; September 2015",
+    contractId: "CBIJ2WP7TTSMINHJRUX52YR2T3YOD7T2X4335PW3DS4GIOOJ5JQT5WF2",
   },
 } as const;
 
 export const Errors = {
-  201: { message: "" },
-  202: { message: "" },
-  203: { message: "" },
-  101: { message: "" },
-  1: { message: "" },
-  2: { message: "" },
-  3: { message: "" },
-  4: { message: "" },
-  5: { message: "" },
+  201: { message: "InvalidTrancheAddress" },
+
+  202: { message: "PoolOwnerInsufficientLiquidity" },
+
+  203: { message: "EvaluationAgentInsufficientLiquidity" },
+
+  204: { message: "UnderlyingTokenNotApprovedForHumaProtocol" },
+
+  801: { message: "StartDateLaterThanEndDate" },
+
+  1: { message: "AlreadyInitialized" },
+
+  2: { message: "ProtocolIsPausedOrPoolIsNotOn" },
+
+  3: { message: "PoolOwnerOrHumaOwnerRequired" },
+
+  4: { message: "PoolOperatorRequired" },
+
+  5: { message: "AuthorizedContractCallerRequired" },
+
+  6: { message: "UnsupportedFunction" },
+
+  7: { message: "ZeroAmountProvided" },
 };
 
-/**
- * The senior yield tracker has been refreshed.
- * # Fields:
- * * `total_assets` - The total assets in the senior tranche after the refresh.
- * * `unpaid_yield` - The amount of unpaid yield to the senior tranche after the refresh.
- * * `last_updated_date` - The last time the tracker was updated after the refresh.
- */
 export interface YieldTrackerRefreshedEvent {
   last_updated_date: u64;
   total_assets: u128;
@@ -99,6 +106,7 @@ export interface PoolSettings {
 }
 
 export interface LPConfig {
+  auto_redemption_after_lockup: boolean;
   fixed_senior_yield_bps: u32;
   liquidity_cap: u128;
   max_senior_junior_ratio: u32;
@@ -145,12 +153,10 @@ export interface Client {
   initialize: (
     {
       addrs,
-      protocol_on,
       tranche_addrs,
       tranches_policy,
     }: {
       addrs: Array<string>;
-      protocol_on: boolean;
       tranche_addrs: Array<Option<string>>;
       tranches_policy: TranchesPolicyType;
     },
@@ -179,8 +185,8 @@ export interface Client {
     {
       pool,
       pool_manager,
-      pool_credit,
-    }: { pool: string; pool_manager: string; pool_credit: string },
+      credit,
+    }: { pool: string; pool_manager: string; credit: string },
     options?: {
       /**
        * The fee to pay for the transaction. Default: BASE_FEE
@@ -207,13 +213,7 @@ export interface Client {
       huma_config,
       huma_owner,
       sentinel,
-      protocol_on,
-    }: {
-      huma_config: string;
-      huma_owner: string;
-      sentinel: string;
-      protocol_on: boolean;
-    },
+    }: { huma_config: string; huma_owner: string; sentinel: string },
     options?: {
       /**
        * The fee to pay for the transaction. Default: BASE_FEE
@@ -476,12 +476,14 @@ export interface Client {
       fixed_senior_yield_bps,
       tranches_risk_adjustment_bps,
       withdrawal_lockout_period_days,
+      auto_redemption_after_lockup,
     }: {
       liquidity_cap: u128;
       max_senior_junior_ratio: u32;
       fixed_senior_yield_bps: u32;
       tranches_risk_adjustment_bps: u32;
       withdrawal_lockout_period_days: u32;
+      auto_redemption_after_lockup: boolean;
     },
     options?: {
       /**
@@ -632,9 +634,31 @@ export interface Client {
   update_assets: (
     {
       caller,
-      junior_assets,
-      senior_assets,
-    }: { caller: string; junior_assets: u128; senior_assets: u128 },
+      tranche_assets,
+    }: { caller: string; tranche_assets: TrancheAssets },
+    options?: {
+      /**
+       * The fee to pay for the transaction. Default: BASE_FEE
+       */
+      fee?: number;
+
+      /**
+       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+       */
+      timeoutInSeconds?: number;
+
+      /**
+       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+       */
+      simulate?: boolean;
+    }
+  ) => Promise<AssembledTransaction<null>>;
+
+  /**
+   * Construct and simulate a update_admin_fees_reserve transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  update_admin_fees_reserve: (
+    { amount, increase }: { amount: u128; increase: boolean },
     options?: {
       /**
        * The fee to pay for the transaction. Default: BASE_FEE
@@ -674,13 +698,36 @@ export interface Client {
        */
       simulate?: boolean;
     }
-  ) => Promise<AssembledTransaction<readonly [u128, u128]>>;
+  ) => Promise<AssembledTransaction<TrancheAssets>>;
 
   /**
    * Construct and simulate a refresh_yield_tracker transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
   refresh_yield_tracker: (
     { tranche_assets }: { tranche_assets: TrancheAssets },
+    options?: {
+      /**
+       * The fee to pay for the transaction. Default: BASE_FEE
+       */
+      fee?: number;
+
+      /**
+       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+       */
+      timeoutInSeconds?: number;
+
+      /**
+       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+       */
+      simulate?: boolean;
+    }
+  ) => Promise<AssembledTransaction<null>>;
+
+  /**
+   * Construct and simulate a upgrade transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  upgrade: (
+    { new_wasm_hash }: { new_wasm_hash: Buffer },
     options?: {
       /**
        * The fee to pay for the transaction. Default: BASE_FEE
@@ -718,6 +765,146 @@ export interface Client {
      */
     simulate?: boolean;
   }) => Promise<AssembledTransaction<string>>;
+
+  /**
+   * Construct and simulate a get_pool_owner transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  get_pool_owner: (options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
+
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
+
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<string>>;
+
+  /**
+   * Construct and simulate a get_pool_owner_treasury transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  get_pool_owner_treasury: (options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
+
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
+
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<string>>;
+
+  /**
+   * Construct and simulate a get_evaluation_agent transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  get_evaluation_agent: (options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
+
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
+
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<string>>;
+
+  /**
+   * Construct and simulate a get_sentinel transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  get_sentinel: (options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
+
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
+
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<string>>;
+
+  /**
+   * Construct and simulate a get_underlying_token transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  get_underlying_token: (options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
+
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
+
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<string>>;
+
+  /**
+   * Construct and simulate a get_available_balance transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  get_available_balance: (options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
+
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
+
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<u128>>;
+
+  /**
+   * Construct and simulate a get_pool_status transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  get_pool_status: (options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
+
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
+
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<PoolStatus>>;
 
   /**
    * Construct and simulate a get_pool_settings transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
@@ -798,172 +985,6 @@ export interface Client {
      */
     simulate?: boolean;
   }) => Promise<AssembledTransaction<AdminRnR>>;
-
-  /**
-   * Construct and simulate a get_pool_owner transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  get_pool_owner: (options?: {
-    /**
-     * The fee to pay for the transaction. Default: BASE_FEE
-     */
-    fee?: number;
-
-    /**
-     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-     */
-    timeoutInSeconds?: number;
-
-    /**
-     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-     */
-    simulate?: boolean;
-  }) => Promise<AssembledTransaction<string>>;
-
-  /**
-   * Construct and simulate a is_pool_owner_or_huma_owner transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  is_pool_owner_or_huma_owner: (
-    { addr }: { addr: string },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
-
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
-
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<boolean>>;
-
-  /**
-   * Construct and simulate a is_pool_operator transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  is_pool_operator: (
-    { addr }: { addr: string },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
-
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
-
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<boolean>>;
-
-  /**
-   * Construct and simulate a is_protocol_and_pool_on transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  is_protocol_and_pool_on: (options?: {
-    /**
-     * The fee to pay for the transaction. Default: BASE_FEE
-     */
-    fee?: number;
-
-    /**
-     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-     */
-    timeoutInSeconds?: number;
-
-    /**
-     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-     */
-    simulate?: boolean;
-  }) => Promise<AssembledTransaction<boolean>>;
-
-  /**
-   * Construct and simulate a get_evaluation_agent transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  get_evaluation_agent: (options?: {
-    /**
-     * The fee to pay for the transaction. Default: BASE_FEE
-     */
-    fee?: number;
-
-    /**
-     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-     */
-    timeoutInSeconds?: number;
-
-    /**
-     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-     */
-    simulate?: boolean;
-  }) => Promise<AssembledTransaction<string>>;
-
-  /**
-   * Construct and simulate a get_sentinel transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  get_sentinel: (options?: {
-    /**
-     * The fee to pay for the transaction. Default: BASE_FEE
-     */
-    fee?: number;
-
-    /**
-     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-     */
-    timeoutInSeconds?: number;
-
-    /**
-     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-     */
-    simulate?: boolean;
-  }) => Promise<AssembledTransaction<string>>;
-
-  /**
-   * Construct and simulate a get_pool_owner_treasury transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  get_pool_owner_treasury: (options?: {
-    /**
-     * The fee to pay for the transaction. Default: BASE_FEE
-     */
-    fee?: number;
-
-    /**
-     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-     */
-    timeoutInSeconds?: number;
-
-    /**
-     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-     */
-    simulate?: boolean;
-  }) => Promise<AssembledTransaction<string>>;
-
-  /**
-   * Construct and simulate a get_pool_status transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  get_pool_status: (options?: {
-    /**
-     * The fee to pay for the transaction. Default: BASE_FEE
-     */
-    fee?: number;
-
-    /**
-     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-     */
-    timeoutInSeconds?: number;
-
-    /**
-     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-     */
-    simulate?: boolean;
-  }) => Promise<AssembledTransaction<PoolStatus>>;
 
   /**
    * Construct and simulate a get_current_epoch transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
@@ -1049,6 +1070,72 @@ export interface Client {
   }) => Promise<AssembledTransaction<TrancheAddresses>>;
 
   /**
+   * Construct and simulate a is_pool_owner_or_huma_owner transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  is_pool_owner_or_huma_owner: (
+    { addr }: { addr: string },
+    options?: {
+      /**
+       * The fee to pay for the transaction. Default: BASE_FEE
+       */
+      fee?: number;
+
+      /**
+       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+       */
+      timeoutInSeconds?: number;
+
+      /**
+       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+       */
+      simulate?: boolean;
+    }
+  ) => Promise<AssembledTransaction<boolean>>;
+
+  /**
+   * Construct and simulate a is_pool_operator transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  is_pool_operator: (
+    { addr }: { addr: string },
+    options?: {
+      /**
+       * The fee to pay for the transaction. Default: BASE_FEE
+       */
+      fee?: number;
+
+      /**
+       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+       */
+      timeoutInSeconds?: number;
+
+      /**
+       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+       */
+      simulate?: boolean;
+    }
+  ) => Promise<AssembledTransaction<boolean>>;
+
+  /**
+   * Construct and simulate a is_protocol_and_pool_on transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  is_protocol_and_pool_on: (options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
+
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
+
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<boolean>>;
+
+  /**
    * Construct and simulate a check_liquidity_requirements transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
   check_liquidity_requirements: (
@@ -1122,50 +1209,10 @@ export interface Client {
   ) => Promise<AssembledTransaction<null>>;
 
   /**
-   * Construct and simulate a get_underlying_token transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   * Construct and simulate a get_pool_owner_min_liquidity_req transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  get_underlying_token: (options?: {
-    /**
-     * The fee to pay for the transaction. Default: BASE_FEE
-     */
-    fee?: number;
-
-    /**
-     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-     */
-    timeoutInSeconds?: number;
-
-    /**
-     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-     */
-    simulate?: boolean;
-  }) => Promise<AssembledTransaction<string>>;
-
-  /**
-   * Construct and simulate a get_available_balance transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  get_available_balance: (options?: {
-    /**
-     * The fee to pay for the transaction. Default: BASE_FEE
-     */
-    fee?: number;
-
-    /**
-     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-     */
-    timeoutInSeconds?: number;
-
-    /**
-     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-     */
-    simulate?: boolean;
-  }) => Promise<AssembledTransaction<u128>>;
-
-  /**
-   * Construct and simulate a reduce_admin_fees_reserve transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  reduce_admin_fees_reserve: (
-    { amount, increase }: { amount: u128; increase: boolean },
+  get_pool_owner_min_liquidity_req: (
+    { index }: { index: u32 },
     options?: {
       /**
        * The fee to pay for the transaction. Default: BASE_FEE
@@ -1182,13 +1229,13 @@ export interface Client {
        */
       simulate?: boolean;
     }
-  ) => Promise<AssembledTransaction<null>>;
+  ) => Promise<AssembledTransaction<u128>>;
 
   /**
-   * Construct and simulate a upgrade transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   * Construct and simulate a get_ea_min_liquidity_req transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  upgrade: (
-    { new_wasm_hash }: { new_wasm_hash: Buffer },
+  get_ea_min_liquidity_req: (
+    { index }: { index: u32 },
     options?: {
       /**
        * The fee to pay for the transaction. Default: BASE_FEE
@@ -1205,15 +1252,15 @@ export interface Client {
        */
       simulate?: boolean;
     }
-  ) => Promise<AssembledTransaction<null>>;
+  ) => Promise<AssembledTransaction<u128>>;
 }
 export class Client extends ContractClient {
   constructor(public readonly options: ContractClientOptions) {
     super(
       new ContractSpec([
-        "AAAAAAAAAAAAAAAKaW5pdGlhbGl6ZQAAAAAABAAAAAAAAAAFYWRkcnMAAAAAAAPqAAAAEwAAAAAAAAALcHJvdG9jb2xfb24AAAAAAQAAAAAAAAANdHJhbmNoZV9hZGRycwAAAAAAA+oAAAPoAAAAEwAAAAAAAAAPdHJhbmNoZXNfcG9saWN5AAAAB9AAAAASVHJhbmNoZXNQb2xpY3lUeXBlAAAAAAAA",
-        "AAAAAAAAAAAAAAASc2V0X2NvbnRyYWN0X2FkZHJzAAAAAAADAAAAAAAAAARwb29sAAAAEwAAAAAAAAAMcG9vbF9tYW5hZ2VyAAAAEwAAAAAAAAALcG9vbF9jcmVkaXQAAAAAEwAAAAA=",
-        "AAAAAAAAAAAAAAAPc2V0X2h1bWFfY29uZmlnAAAAAAQAAAAAAAAAC2h1bWFfY29uZmlnAAAAABMAAAAAAAAACmh1bWFfb3duZXIAAAAAABMAAAAAAAAACHNlbnRpbmVsAAAAEwAAAAAAAAALcHJvdG9jb2xfb24AAAAAAQAAAAA=",
+        "AAAAAAAAAAAAAAAKaW5pdGlhbGl6ZQAAAAAAAwAAAAAAAAAFYWRkcnMAAAAAAAPqAAAAEwAAAAAAAAANdHJhbmNoZV9hZGRycwAAAAAAA+oAAAPoAAAAEwAAAAAAAAAPdHJhbmNoZXNfcG9saWN5AAAAB9AAAAASVHJhbmNoZXNQb2xpY3lUeXBlAAAAAAAA",
+        "AAAAAAAAAAAAAAASc2V0X2NvbnRyYWN0X2FkZHJzAAAAAAADAAAAAAAAAARwb29sAAAAEwAAAAAAAAAMcG9vbF9tYW5hZ2VyAAAAEwAAAAAAAAAGY3JlZGl0AAAAAAATAAAAAA==",
+        "AAAAAAAAAAAAAAAPc2V0X2h1bWFfY29uZmlnAAAAAAMAAAAAAAAAC2h1bWFfY29uZmlnAAAAABMAAAAAAAAACmh1bWFfb3duZXIAAAAAABMAAAAAAAAACHNlbnRpbmVsAAAAEwAAAAA=",
         "AAAAAAAAAAAAAAAOc2V0X3Bvb2xfb3duZXIAAAAAAAEAAAAAAAAACnBvb2xfb3duZXIAAAAAABMAAAAA",
         "AAAAAAAAAAAAAAAXc2V0X3Bvb2xfb3duZXJfdHJlYXN1cnkAAAAAAQAAAAAAAAATcG9vbF9vd25lcl90cmVhc3VyeQAAAAATAAAAAA==",
         "AAAAAAAAAAAAAAAUc2V0X2V2YWx1YXRpb25fYWdlbnQAAAABAAAAAAAAAAJlYQAAAAAAEwAAAAA=",
@@ -1223,51 +1270,53 @@ export class Client extends ContractClient {
         "AAAAAAAAAAAAAAAJc2V0X2Vwb2NoAAAAAAAAAQAAAAAAAAAFZXBvY2gAAAAAAAfQAAAABUVwb2NoAAAAAAAAAA==",
         "AAAAAAAAAAAAAAANc2V0X2FkbWluX3JucgAAAAAAAAQAAAAAAAAAFnBvb2xfb3duZXJfcmV3YXJkX3JhdGUAAAAAAAQAAAAAAAAAGXBvb2xfb3duZXJfbGlxdWlkaXR5X3JhdGUAAAAAAAAEAAAAAAAAAA5lYV9yZXdhcmRfcmF0ZQAAAAAABAAAAAAAAAARZWFfbGlxdWlkaXR5X3JhdGUAAAAAAAAEAAAAAA==",
         "AAAAAAAAAAAAAAARc2V0X3Bvb2xfc2V0dGluZ3MAAAAAAAAGAAAAAAAAAA9tYXhfY3JlZGl0X2xpbmUAAAAACgAAAAAAAAASbWluX2RlcG9zaXRfYW1vdW50AAAAAAAKAAAAAAAAABNwYXlfcGVyaW9kX2R1cmF0aW9uAAAAB9AAAAARUGF5UGVyaW9kRHVyYXRpb24AAAAAAAAAAAAAHmxhdGVfcGF5bWVudF9ncmFjZV9wZXJpb2RfZGF5cwAAAAAABAAAAAAAAAAZZGVmYXVsdF9ncmFjZV9wZXJpb2RfZGF5cwAAAAAAAAQAAAAAAAAAHnByaW5jaXBhbF9vbmx5X3BheW1lbnRfYWxsb3dlZAAAAAAAAQAAAAA=",
-        "AAAAAAAAAAAAAAANc2V0X2xwX2NvbmZpZwAAAAAAAAUAAAAAAAAADWxpcXVpZGl0eV9jYXAAAAAAAAAKAAAAAAAAABdtYXhfc2VuaW9yX2p1bmlvcl9yYXRpbwAAAAAEAAAAAAAAABZmaXhlZF9zZW5pb3JfeWllbGRfYnBzAAAAAAAEAAAAAAAAABx0cmFuY2hlc19yaXNrX2FkanVzdG1lbnRfYnBzAAAABAAAAAAAAAAed2l0aGRyYXdhbF9sb2Nrb3V0X3BlcmlvZF9kYXlzAAAAAAAEAAAAAA==",
+        "AAAAAAAAAAAAAAANc2V0X2xwX2NvbmZpZwAAAAAAAAYAAAAAAAAADWxpcXVpZGl0eV9jYXAAAAAAAAAKAAAAAAAAABdtYXhfc2VuaW9yX2p1bmlvcl9yYXRpbwAAAAAEAAAAAAAAABZmaXhlZF9zZW5pb3JfeWllbGRfYnBzAAAAAAAEAAAAAAAAABx0cmFuY2hlc19yaXNrX2FkanVzdG1lbnRfYnBzAAAABAAAAAAAAAAed2l0aGRyYXdhbF9sb2Nrb3V0X3BlcmlvZF9kYXlzAAAAAAAEAAAAAAAAABxhdXRvX3JlZGVtcHRpb25fYWZ0ZXJfbG9ja3VwAAAAAQAAAAA=",
         "AAAAAAAAAAAAAAARc2V0X2ZlZV9zdHJ1Y3R1cmUAAAAAAAAEAAAAAAAAAAl5aWVsZF9icHMAAAAAAAAEAAAAAAAAAAxsYXRlX2ZlZV9icHMAAAAEAAAAAAAAABZmcm9udF9sb2FkaW5nX2ZlZV9mbGF0AAAAAAAKAAAAAAAAABVmcm9udF9sb2FkaW5nX2ZlZV9icHMAAAAAAAAEAAAAAA==",
         "AAAAAAAAAAAAAAAYc2V0X3RyYW5jaGVzX3BvbGljeV90eXBlAAAAAQAAAAAAAAALcG9saWN5X3R5cGUAAAAH0AAAABJUcmFuY2hlc1BvbGljeVR5cGUAAAAAAAA=",
         "AAAAAAAAAAAAAAALc2VuZF90b2tlbnMAAAAAAwAAAAAAAAACdG8AAAAAABMAAAAAAAAABmFtb3VudAAAAAAACgAAAAAAAAAGY2FsbGVyAAAAAAATAAAAAA==",
         "AAAAAAAAAAAAAAASYWRkX3RyYW5jaGVfYXNzZXRzAAAAAAACAAAAAAAAAARhZGRyAAAAEwAAAAAAAAAGYW1vdW50AAAAAAAKAAAAAA==",
         "AAAAAAAAAAAAAAAVcmVkdWNlX3RyYW5jaGVfYXNzZXRzAAAAAAAAAgAAAAAAAAAEYWRkcgAAABMAAAAAAAAABmFtb3VudAAAAAAACgAAAAA=",
-        "AAAAAAAAAAAAAAANdXBkYXRlX2Fzc2V0cwAAAAAAAAMAAAAAAAAABmNhbGxlcgAAAAAAEwAAAAAAAAANanVuaW9yX2Fzc2V0cwAAAAAAAAoAAAAAAAAADXNlbmlvcl9hc3NldHMAAAAAAAAKAAAAAA==",
-        "AAAAAAAAAAAAAAAdZGlzdHJpYnV0ZV9wcm9maXRfdG9fdHJhbmNoZXMAAAAAAAACAAAAAAAAAAZwcm9maXQAAAAAAAoAAAAAAAAACmFkbWluX2ZlZXMAAAAAAAoAAAABAAAD7QAAAAIAAAAKAAAACg==",
+        "AAAAAAAAAAAAAAANdXBkYXRlX2Fzc2V0cwAAAAAAAAIAAAAAAAAABmNhbGxlcgAAAAAAEwAAAAAAAAAOdHJhbmNoZV9hc3NldHMAAAAAB9AAAAANVHJhbmNoZUFzc2V0cwAAAAAAAAA=",
+        "AAAAAAAAAAAAAAAZdXBkYXRlX2FkbWluX2ZlZXNfcmVzZXJ2ZQAAAAAAAAIAAAAAAAAABmFtb3VudAAAAAAACgAAAAAAAAAIaW5jcmVhc2UAAAABAAAAAA==",
+        "AAAAAAAAAAAAAAAdZGlzdHJpYnV0ZV9wcm9maXRfdG9fdHJhbmNoZXMAAAAAAAACAAAAAAAAAAZwcm9maXQAAAAAAAoAAAAAAAAACmFkbWluX2ZlZXMAAAAAAAoAAAABAAAH0AAAAA1UcmFuY2hlQXNzZXRzAAAA",
         "AAAAAAAAAAAAAAAVcmVmcmVzaF95aWVsZF90cmFja2VyAAAAAAAAAQAAAAAAAAAOdHJhbmNoZV9hc3NldHMAAAAAB9AAAAANVHJhbmNoZUFzc2V0cwAAAAAAAAA=",
+        "AAAAAAAAAAAAAAAHdXBncmFkZQAAAAABAAAAAAAAAA1uZXdfd2FzbV9oYXNoAAAAAAAD7gAAACAAAAAA",
         "AAAAAAAAAAAAAAAOZ2V0X2h1bWFfb3duZXIAAAAAAAAAAAABAAAAEw==",
+        "AAAAAAAAAAAAAAAOZ2V0X3Bvb2xfb3duZXIAAAAAAAAAAAABAAAAEw==",
+        "AAAAAAAAAAAAAAAXZ2V0X3Bvb2xfb3duZXJfdHJlYXN1cnkAAAAAAAAAAAEAAAAT",
+        "AAAAAAAAAAAAAAAUZ2V0X2V2YWx1YXRpb25fYWdlbnQAAAAAAAAAAQAAABM=",
+        "AAAAAAAAAAAAAAAMZ2V0X3NlbnRpbmVsAAAAAAAAAAEAAAAT",
+        "AAAAAAAAAAAAAAAUZ2V0X3VuZGVybHlpbmdfdG9rZW4AAAAAAAAAAQAAABM=",
+        "AAAAAAAAAAAAAAAVZ2V0X2F2YWlsYWJsZV9iYWxhbmNlAAAAAAAAAAAAAAEAAAAK",
+        "AAAAAAAAAAAAAAAPZ2V0X3Bvb2xfc3RhdHVzAAAAAAAAAAABAAAH0AAAAApQb29sU3RhdHVzAAA=",
         "AAAAAAAAAAAAAAARZ2V0X3Bvb2xfc2V0dGluZ3MAAAAAAAAAAAAAAQAAB9AAAAAMUG9vbFNldHRpbmdz",
         "AAAAAAAAAAAAAAANZ2V0X2xwX2NvbmZpZwAAAAAAAAAAAAABAAAH0AAAAAhMUENvbmZpZw==",
         "AAAAAAAAAAAAAAARZ2V0X2ZlZV9zdHJ1Y3R1cmUAAAAAAAAAAAAAAQAAB9AAAAAMRmVlU3RydWN0dXJl",
         "AAAAAAAAAAAAAAANZ2V0X2FkbWluX3JucgAAAAAAAAAAAAABAAAH0AAAAAhBZG1pblJuUg==",
-        "AAAAAAAAAAAAAAAOZ2V0X3Bvb2xfb3duZXIAAAAAAAAAAAABAAAAEw==",
-        "AAAAAAAAAAAAAAAbaXNfcG9vbF9vd25lcl9vcl9odW1hX293bmVyAAAAAAEAAAAAAAAABGFkZHIAAAATAAAAAQAAAAE=",
-        "AAAAAAAAAAAAAAAQaXNfcG9vbF9vcGVyYXRvcgAAAAEAAAAAAAAABGFkZHIAAAATAAAAAQAAAAE=",
-        "AAAAAAAAAAAAAAAXaXNfcHJvdG9jb2xfYW5kX3Bvb2xfb24AAAAAAAAAAAEAAAAB",
-        "AAAAAAAAAAAAAAAUZ2V0X2V2YWx1YXRpb25fYWdlbnQAAAAAAAAAAQAAABM=",
-        "AAAAAAAAAAAAAAAMZ2V0X3NlbnRpbmVsAAAAAAAAAAEAAAAT",
-        "AAAAAAAAAAAAAAAXZ2V0X3Bvb2xfb3duZXJfdHJlYXN1cnkAAAAAAAAAAAEAAAAT",
-        "AAAAAAAAAAAAAAAPZ2V0X3Bvb2xfc3RhdHVzAAAAAAAAAAABAAAH0AAAAApQb29sU3RhdHVzAAA=",
         "AAAAAAAAAAAAAAARZ2V0X2N1cnJlbnRfZXBvY2gAAAAAAAAAAAAAAQAAB9AAAAAFRXBvY2gAAAA=",
         "AAAAAAAAAAAAAAAaZ2V0X3RyYW5jaGVfYXNzZXRzX2J5X2FkZHIAAAAAAAEAAAAAAAAABGFkZHIAAAATAAAAAQAAAAo=",
         "AAAAAAAAAAAAAAASZ2V0X3RyYW5jaGVfYXNzZXRzAAAAAAAAAAAAAQAAB9AAAAANVHJhbmNoZUFzc2V0cwAAAA==",
         "AAAAAAAAAAAAAAAVZ2V0X3RyYW5jaGVfYWRkcmVzc2VzAAAAAAAAAAAAAAEAAAfQAAAAEFRyYW5jaGVBZGRyZXNzZXM=",
+        "AAAAAAAAAAAAAAAbaXNfcG9vbF9vd25lcl9vcl9odW1hX293bmVyAAAAAAEAAAAAAAAABGFkZHIAAAATAAAAAQAAAAE=",
+        "AAAAAAAAAAAAAAAQaXNfcG9vbF9vcGVyYXRvcgAAAAEAAAAAAAAABGFkZHIAAAATAAAAAQAAAAE=",
+        "AAAAAAAAAAAAAAAXaXNfcHJvdG9jb2xfYW5kX3Bvb2xfb24AAAAAAAAAAAEAAAAB",
         "AAAAAAAAAAAAAAAcY2hlY2tfbGlxdWlkaXR5X3JlcXVpcmVtZW50cwAAAAMAAAAAAAAABmxlbmRlcgAAAAAAEwAAAAAAAAANdHJhbmNoZV92YXVsdAAAAAAAABMAAAAAAAAAB2JhbGFuY2UAAAAACgAAAAA=",
         "AAAAAAAAAAAAAAAeY2hlY2tfcG9vbF9vd25lcl9saXF1aWRpdHlfcmVxAAAAAAACAAAAAAAAAA10cmFuY2hlX3ZhdWx0AAAAAAAAEwAAAAAAAAAHYmFsYW5jZQAAAAAKAAAAAA==",
         "AAAAAAAAAAAAAAAWY2hlY2tfZWFfbGlxdWlkaXR5X3JlcQAAAAAAAgAAAAAAAAANdHJhbmNoZV92YXVsdAAAAAAAABMAAAAAAAAAB2JhbGFuY2UAAAAACgAAAAA=",
-        "AAAAAAAAAAAAAAAUZ2V0X3VuZGVybHlpbmdfdG9rZW4AAAAAAAAAAQAAABM=",
-        "AAAAAAAAAAAAAAAVZ2V0X2F2YWlsYWJsZV9iYWxhbmNlAAAAAAAAAAAAAAEAAAAK",
-        "AAAAAAAAAAAAAAAZcmVkdWNlX2FkbWluX2ZlZXNfcmVzZXJ2ZQAAAAAAAAIAAAAAAAAABmFtb3VudAAAAAAACgAAAAAAAAAIaW5jcmVhc2UAAAABAAAAAA==",
-        "AAAAAAAAAAAAAAAHdXBncmFkZQAAAAABAAAAAAAAAA1uZXdfd2FzbV9oYXNoAAAAAAAD7gAAACAAAAAA",
-        "AAAABAAAAAAAAAAAAAAAEFBvb2xTdG9yYWdlRXJyb3IAAAADAAAAAAAAABVJbnZhbGlkVHJhbmNoZUFkZHJlc3MAAAAAAADJAAAAAAAAAB5Qb29sT3duZXJJbnN1ZmZpY2llbnRMaXF1aWRpdHkAAAAAAMoAAAAAAAAAJEV2YWx1YXRpb25BZ2VudEluc3VmZmljaWVudExpcXVpZGl0eQAAAMs=",
-        "AAAAAQAAAStUaGUgc2VuaW9yIHlpZWxkIHRyYWNrZXIgaGFzIGJlZW4gcmVmcmVzaGVkLgojIEZpZWxkczoKKiBgdG90YWxfYXNzZXRzYCAtIFRoZSB0b3RhbCBhc3NldHMgaW4gdGhlIHNlbmlvciB0cmFuY2hlIGFmdGVyIHRoZSByZWZyZXNoLgoqIGB1bnBhaWRfeWllbGRgIC0gVGhlIGFtb3VudCBvZiB1bnBhaWQgeWllbGQgdG8gdGhlIHNlbmlvciB0cmFuY2hlIGFmdGVyIHRoZSByZWZyZXNoLgoqIGBsYXN0X3VwZGF0ZWRfZGF0ZWAgLSBUaGUgbGFzdCB0aW1lIHRoZSB0cmFja2VyIHdhcyB1cGRhdGVkIGFmdGVyIHRoZSByZWZyZXNoLgAAAAAAAAAAGllpZWxkVHJhY2tlclJlZnJlc2hlZEV2ZW50AAAAAAADAAAAAAAAABFsYXN0X3VwZGF0ZWRfZGF0ZQAAAAAAAAYAAAAAAAAADHRvdGFsX2Fzc2V0cwAAAAoAAAAAAAAADHVucGFpZF95aWVsZAAAAAo=",
+        "AAAAAAAAAAAAAAAgZ2V0X3Bvb2xfb3duZXJfbWluX2xpcXVpZGl0eV9yZXEAAAABAAAAAAAAAAVpbmRleAAAAAAAAAQAAAABAAAACg==",
+        "AAAAAAAAAAAAAAAYZ2V0X2VhX21pbl9saXF1aWRpdHlfcmVxAAAAAQAAAAAAAAAFaW5kZXgAAAAAAAAEAAAAAQAAAAo=",
+        "AAAABAAAAAAAAAAAAAAAEFBvb2xTdG9yYWdlRXJyb3IAAAAEAAAAAAAAABVJbnZhbGlkVHJhbmNoZUFkZHJlc3MAAAAAAADJAAAAAAAAAB5Qb29sT3duZXJJbnN1ZmZpY2llbnRMaXF1aWRpdHkAAAAAAMoAAAAAAAAAJEV2YWx1YXRpb25BZ2VudEluc3VmZmljaWVudExpcXVpZGl0eQAAAMsAAAAAAAAAKVVuZGVybHlpbmdUb2tlbk5vdEFwcHJvdmVkRm9ySHVtYVByb3RvY29sAAAAAAAAzA==",
+        "AAAAAQAAAAAAAAAAAAAAGllpZWxkVHJhY2tlclJlZnJlc2hlZEV2ZW50AAAAAAADAAAAAAAAABFsYXN0X3VwZGF0ZWRfZGF0ZQAAAAAAAAYAAAAAAAAADHRvdGFsX2Fzc2V0cwAAAAoAAAAAAAAADHVucGFpZF95aWVsZAAAAAo=",
         "AAAAAgAAAAAAAAAAAAAAJUZpeGVkU2VuaW9yWWllbGRUcmFuY2hlc1BvbGljeURhdGFLZXkAAAAAAAABAAAAAAAAAAAAAAASU2VuaW9yWWllbGRUcmFja2VyAAA=",
         "AAAAAQAAAAAAAAAAAAAAElNlbmlvcllpZWxkVHJhY2tlcgAAAAAAAwAAAAAAAAARbGFzdF91cGRhdGVkX2RhdGUAAAAAAAAGAAAAAAAAAAx0b3RhbF9hc3NldHMAAAAKAAAAAAAAAAx1bnBhaWRfeWllbGQAAAAK",
         "AAAAAQAAAAAAAAAAAAAAHkZpeGVkU2VuaW9yWWllbGRUcmFuY2hlc1BvbGljeQAAAAAAAQAAAAAAAAALcGxhY2Vob2xkZXIAAAAAAQ==",
         "AAAAAQAAAAAAAAAAAAAAGlJpc2tBZGp1c3RlZFRyYW5jaGVzUG9saWN5AAAAAAABAAAAAAAAAAtwbGFjZWhvbGRlcgAAAAAB",
         "AAAAAgAAAAAAAAAAAAAAEVBheVBlcmlvZER1cmF0aW9uAAAAAAAAAwAAAAAAAAAAAAAAB01vbnRobHkAAAAAAAAAAAAAAAAJUXVhcnRlcmx5AAAAAAAAAAAAAAAAAAAMU2VtaUFubnVhbGx5",
-        "AAAABAAAAAAAAAAAAAAADUNhbGVuZGFyRXJyb3IAAAAAAAABAAAAAAAAABlTdGFydERhdGVMYXRlclRoYW5FbmREYXRlAAAAAAAAZQ==",
-        "AAAABAAAAAAAAAAAAAAAC0NvbW1vbkVycm9yAAAAAAUAAAAAAAAAEkFscmVhZHlJbml0aWFsaXplZAAAAAAAAQAAAAAAAAAdUHJvdG9jb2xJc1BhdXNlZE9yUG9vbElzTm90T24AAAAAAAACAAAAAAAAACBBdXRob3JpemVkQ29udHJhY3RDYWxsZXJSZXF1aXJlZAAAAAMAAAAAAAAAE1Vuc3VwcG9ydGVkRnVuY3Rpb24AAAAABAAAAAAAAAASWmVyb0Ftb3VudFByb3ZpZGVkAAAAAAAF",
+        "AAAABAAAAAAAAAAAAAAADUNhbGVuZGFyRXJyb3IAAAAAAAABAAAAAAAAABlTdGFydERhdGVMYXRlclRoYW5FbmREYXRlAAAAAAADIQ==",
+        "AAAABAAAAAAAAAAAAAAAC0NvbW1vbkVycm9yAAAAAAcAAAAAAAAAEkFscmVhZHlJbml0aWFsaXplZAAAAAAAAQAAAAAAAAAdUHJvdG9jb2xJc1BhdXNlZE9yUG9vbElzTm90T24AAAAAAAACAAAAAAAAABxQb29sT3duZXJPckh1bWFPd25lclJlcXVpcmVkAAAAAwAAAAAAAAAUUG9vbE9wZXJhdG9yUmVxdWlyZWQAAAAEAAAAAAAAACBBdXRob3JpemVkQ29udHJhY3RDYWxsZXJSZXF1aXJlZAAAAAUAAAAAAAAAE1Vuc3VwcG9ydGVkRnVuY3Rpb24AAAAABgAAAAAAAAASWmVyb0Ftb3VudFByb3ZpZGVkAAAAAAAH",
         "AAAAAgAAAAAAAAAAAAAAElRyYW5jaGVzUG9saWN5VHlwZQAAAAAAAgAAAAAAAAAAAAAAEEZpeGVkU2VuaW9yWWllbGQAAAAAAAAAAAAAAAxSaXNrQWRqdXN0ZWQ=",
         "AAAAAQAAAAAAAAAAAAAADFBvb2xTZXR0aW5ncwAAAAYAAAAAAAAAGWRlZmF1bHRfZ3JhY2VfcGVyaW9kX2RheXMAAAAAAAAEAAAAAAAAAB5sYXRlX3BheW1lbnRfZ3JhY2VfcGVyaW9kX2RheXMAAAAAAAQAAAAAAAAAD21heF9jcmVkaXRfbGluZQAAAAAKAAAAAAAAABJtaW5fZGVwb3NpdF9hbW91bnQAAAAAAAoAAAAAAAAAE3BheV9wZXJpb2RfZHVyYXRpb24AAAAH0AAAABFQYXlQZXJpb2REdXJhdGlvbgAAAAAAAAAAAAAecHJpbmNpcGFsX29ubHlfcGF5bWVudF9hbGxvd2VkAAAAAAAB",
-        "AAAAAQAAAAAAAAAAAAAACExQQ29uZmlnAAAABQAAAAAAAAAWZml4ZWRfc2VuaW9yX3lpZWxkX2JwcwAAAAAABAAAAAAAAAANbGlxdWlkaXR5X2NhcAAAAAAAAAoAAAAAAAAAF21heF9zZW5pb3JfanVuaW9yX3JhdGlvAAAAAAQAAAAAAAAAHHRyYW5jaGVzX3Jpc2tfYWRqdXN0bWVudF9icHMAAAAEAAAAAAAAAB53aXRoZHJhd2FsX2xvY2tvdXRfcGVyaW9kX2RheXMAAAAAAAQ=",
+        "AAAAAQAAAAAAAAAAAAAACExQQ29uZmlnAAAABgAAAAAAAAAcYXV0b19yZWRlbXB0aW9uX2FmdGVyX2xvY2t1cAAAAAEAAAAAAAAAFmZpeGVkX3Nlbmlvcl95aWVsZF9icHMAAAAAAAQAAAAAAAAADWxpcXVpZGl0eV9jYXAAAAAAAAAKAAAAAAAAABdtYXhfc2VuaW9yX2p1bmlvcl9yYXRpbwAAAAAEAAAAAAAAABx0cmFuY2hlc19yaXNrX2FkanVzdG1lbnRfYnBzAAAABAAAAAAAAAAed2l0aGRyYXdhbF9sb2Nrb3V0X3BlcmlvZF9kYXlzAAAAAAAE",
         "AAAAAQAAAAAAAAAAAAAADEZlZVN0cnVjdHVyZQAAAAQAAAAAAAAAFWZyb250X2xvYWRpbmdfZmVlX2JwcwAAAAAAAAQAAAAAAAAAFmZyb250X2xvYWRpbmdfZmVlX2ZsYXQAAAAAAAoAAAAAAAAADGxhdGVfZmVlX2JwcwAAAAQAAAAAAAAACXlpZWxkX2JwcwAAAAAAAAQ=",
         "AAAAAgAAAAAAAAAAAAAAClBvb2xTdGF0dXMAAAAAAAMAAAAAAAAAAAAAAANPZmYAAAAAAAAAAAAAAAACT24AAAAAAAAAAAAAAAAABkNsb3NlZAAA",
         "AAAAAQAAAAAAAAAAAAAABUVwb2NoAAAAAAAAAgAAAAAAAAAIZW5kX3RpbWUAAAAGAAAAAAAAAAJpZAAAAAAABg==",
@@ -1298,31 +1347,33 @@ export class Client extends ContractClient {
     add_tranche_assets: this.txFromJSON<null>,
     reduce_tranche_assets: this.txFromJSON<null>,
     update_assets: this.txFromJSON<null>,
-    distribute_profit_to_tranches: this.txFromJSON<readonly [u128, u128]>,
+    update_admin_fees_reserve: this.txFromJSON<null>,
+    distribute_profit_to_tranches: this.txFromJSON<TrancheAssets>,
     refresh_yield_tracker: this.txFromJSON<null>,
+    upgrade: this.txFromJSON<null>,
     get_huma_owner: this.txFromJSON<string>,
+    get_pool_owner: this.txFromJSON<string>,
+    get_pool_owner_treasury: this.txFromJSON<string>,
+    get_evaluation_agent: this.txFromJSON<string>,
+    get_sentinel: this.txFromJSON<string>,
+    get_underlying_token: this.txFromJSON<string>,
+    get_available_balance: this.txFromJSON<u128>,
+    get_pool_status: this.txFromJSON<PoolStatus>,
     get_pool_settings: this.txFromJSON<PoolSettings>,
     get_lp_config: this.txFromJSON<LPConfig>,
     get_fee_structure: this.txFromJSON<FeeStructure>,
     get_admin_rnr: this.txFromJSON<AdminRnR>,
-    get_pool_owner: this.txFromJSON<string>,
-    is_pool_owner_or_huma_owner: this.txFromJSON<boolean>,
-    is_pool_operator: this.txFromJSON<boolean>,
-    is_protocol_and_pool_on: this.txFromJSON<boolean>,
-    get_evaluation_agent: this.txFromJSON<string>,
-    get_sentinel: this.txFromJSON<string>,
-    get_pool_owner_treasury: this.txFromJSON<string>,
-    get_pool_status: this.txFromJSON<PoolStatus>,
     get_current_epoch: this.txFromJSON<Epoch>,
     get_tranche_assets_by_addr: this.txFromJSON<u128>,
     get_tranche_assets: this.txFromJSON<TrancheAssets>,
     get_tranche_addresses: this.txFromJSON<TrancheAddresses>,
+    is_pool_owner_or_huma_owner: this.txFromJSON<boolean>,
+    is_pool_operator: this.txFromJSON<boolean>,
+    is_protocol_and_pool_on: this.txFromJSON<boolean>,
     check_liquidity_requirements: this.txFromJSON<null>,
     check_pool_owner_liquidity_req: this.txFromJSON<null>,
     check_ea_liquidity_req: this.txFromJSON<null>,
-    get_underlying_token: this.txFromJSON<string>,
-    get_available_balance: this.txFromJSON<u128>,
-    reduce_admin_fees_reserve: this.txFromJSON<null>,
-    upgrade: this.txFromJSON<null>,
+    get_pool_owner_min_liquidity_req: this.txFromJSON<u128>,
+    get_ea_min_liquidity_req: this.txFromJSON<u128>,
   };
 }

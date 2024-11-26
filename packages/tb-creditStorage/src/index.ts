@@ -30,9 +30,9 @@ if (typeof window !== "undefined") {
 }
 
 export const networks = {
-  testnet: {
-    networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CBZHE4LD4FYGELCFDVRNBLNO4743X4UJDIDC7CGYS3MLJ3CIHC4SGLHC",
+  unknown: {
+    networkPassphrase: "Public Global Stellar Network ; September 2015",
+    contractId: "CB6W2Z5ZRKLUL5A3OIHD7IAYMFLNRJ2VHFEXG7TSBB4LFE3YYSJII5JG",
   },
 } as const;
 
@@ -42,14 +42,25 @@ export type ClientDataKey =
   | { tag: "PoolStorage"; values: void };
 
 export const Errors = {
-  501: { message: "" },
-  101: { message: "" },
-  1: { message: "" },
-  2: { message: "" },
-  3: { message: "" },
-  4: { message: "" },
-  5: { message: "" },
+  501: { message: "BorrowerRequired" },
+
+  801: { message: "StartDateLaterThanEndDate" },
+
+  1: { message: "AlreadyInitialized" },
+
+  2: { message: "ProtocolIsPausedOrPoolIsNotOn" },
+
+  3: { message: "PoolOwnerOrHumaOwnerRequired" },
+
+  4: { message: "PoolOperatorRequired" },
+
+  5: { message: "AuthorizedContractCallerRequired" },
+
+  6: { message: "UnsupportedFunction" },
+
+  7: { message: "ZeroAmountProvided" },
 };
+
 export type CreditDataKey =
   | { tag: "CreditConfig"; values: readonly [Buffer] }
   | { tag: "CreditRecord"; values: readonly [Buffer] }
@@ -61,14 +72,6 @@ export type PayPeriodDuration =
   | { tag: "Quarterly"; values: void }
   | { tag: "SemiAnnually"; values: void };
 
-/**
- * Account billing info refreshed with the updated due amount and date.
- * # Fields:
- * * `credit_hash` - The hash of the credit.
- * * `new_due_date` - The updated due date of the bill.
- * * `next_due` - The amount of next due on the bill.
- * * `total_past_due` - The total amount of past due on the bill.
- */
 export interface BillRefreshedEvent {
   credit_hash: Buffer;
   new_due_date: u64;
@@ -83,22 +86,6 @@ export type CreditState =
   | { tag: "Delayed"; values: void }
   | { tag: "Defaulted"; values: void };
 
-/**
- * `CreditConfig` keeps track of the static settings of a credit.
- * A `CreditConfig` is created after the approval of each credit.
- * # Fields:
- * * `credit_limit` - The maximum amount that can be borrowed.
- * * `committed_amount` - The amount that the borrower has committed to use. If the used credit
- * is less than this amount, the borrower will be charged yield using this amount.
- * * `pay_period_duration` - The duration of each pay period, e.g., monthly, quarterly, or semi-annually.
- * * `num_of_periods` - The number of periods before the credit expires.
- * * `yield_bps` - The expected yield expressed in basis points, where 1% is 100, and 100% is 10,000. It means different things
- * for different credit types:
- * 1. For credit line, it is APR.
- * 2. For factoring, it is factoring fee for the given period.
- * 3. For dynamic yield credit, it is the estimated APY.
- * * `revolving` - A flag indicating if repeated borrowing is allowed.
- */
 export interface CreditConfig {
   committed_amount: u128;
   credit_limit: u128;
@@ -281,6 +268,29 @@ export interface Client {
   ) => Promise<AssembledTransaction<null>>;
 
   /**
+   * Construct and simulate a upgrade transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  upgrade: (
+    { new_wasm_hash }: { new_wasm_hash: Buffer },
+    options?: {
+      /**
+       * The fee to pay for the transaction. Default: BASE_FEE
+       */
+      fee?: number;
+
+      /**
+       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+       */
+      timeoutInSeconds?: number;
+
+      /**
+       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+       */
+      simulate?: boolean;
+    }
+  ) => Promise<AssembledTransaction<null>>;
+
+  /**
    * Construct and simulate a get_credit_hash transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
   get_credit_hash: (
@@ -417,29 +427,6 @@ export interface Client {
       simulate?: boolean;
     }
   ) => Promise<AssembledTransaction<Buffer>>;
-
-  /**
-   * Construct and simulate a upgrade transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  upgrade: (
-    { new_wasm_hash }: { new_wasm_hash: Buffer },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
-
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
-
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<null>>;
 }
 export class Client extends ContractClient {
   constructor(public readonly options: ContractClientOptions) {
@@ -452,21 +439,21 @@ export class Client extends ContractClient {
         "AAAAAAAAAAAAAAARc2V0X2NyZWRpdF9yZWNvcmQAAAAAAAADAAAAAAAAAAZjYWxsZXIAAAAAABMAAAAAAAAAC2NyZWRpdF9oYXNoAAAAA+4AAAAgAAAAAAAAAAJjcgAAAAAH0AAAAAxDcmVkaXRSZWNvcmQAAAAA",
         "AAAAAAAAAAAAAAAOc2V0X2R1ZV9kZXRhaWwAAAAAAAMAAAAAAAAABmNhbGxlcgAAAAAAEwAAAAAAAAALY3JlZGl0X2hhc2gAAAAD7gAAACAAAAAAAAAAAmRkAAAAAAfQAAAACUR1ZURldGFpbAAAAAAAAAA=",
         "AAAAAAAAAAAAAAAMc2V0X2JvcnJvd2VyAAAAAgAAAAAAAAALY3JlZGl0X2hhc2gAAAAD7gAAACAAAAAAAAAABGFkZHIAAAATAAAAAA==",
+        "AAAAAAAAAAAAAAAHdXBncmFkZQAAAAABAAAAAAAAAA1uZXdfd2FzbV9oYXNoAAAAAAAD7gAAACAAAAAA",
         "AAAAAAAAAAAAAAAPZ2V0X2NyZWRpdF9oYXNoAAAAAAEAAAAAAAAACGJvcnJvd2VyAAAAEwAAAAEAAAPuAAAAIA==",
         "AAAAAAAAAAAAAAARZ2V0X2NyZWRpdF9jb25maWcAAAAAAAABAAAAAAAAAAtjcmVkaXRfaGFzaAAAAAPuAAAAIAAAAAEAAAfQAAAADENyZWRpdENvbmZpZw==",
         "AAAAAAAAAAAAAAARZ2V0X2NyZWRpdF9yZWNvcmQAAAAAAAABAAAAAAAAAAtjcmVkaXRfaGFzaAAAAAPuAAAAIAAAAAEAAAfQAAAADENyZWRpdFJlY29yZA==",
         "AAAAAAAAAAAAAAAOZ2V0X2R1ZV9kZXRhaWwAAAAAAAEAAAAAAAAAC2NyZWRpdF9oYXNoAAAAA+4AAAAgAAAAAQAAB9AAAAAJRHVlRGV0YWlsAAAA",
         "AAAAAAAAAAAAAAAMZ2V0X2JvcnJvd2VyAAAAAQAAAAAAAAALY3JlZGl0X2hhc2gAAAAD7gAAACAAAAABAAAAEw==",
         "AAAAAAAAAAAAAAAQcmVxdWlyZV9ib3Jyb3dlcgAAAAEAAAAAAAAACGJvcnJvd2VyAAAAEwAAAAEAAAPuAAAAIA==",
-        "AAAAAAAAAAAAAAAHdXBncmFkZQAAAAABAAAAAAAAAA1uZXdfd2FzbV9oYXNoAAAAAAAD7gAAACAAAAAA",
         "AAAABAAAAAAAAAAAAAAAEkNyZWRpdFN0b3JhZ2VFcnJvcgAAAAAAAQAAAAAAAAAQQm9ycm93ZXJSZXF1aXJlZAAAAfU=",
         "AAAAAgAAAAAAAAAAAAAADUNyZWRpdERhdGFLZXkAAAAAAAAEAAAAAQAAAAAAAAAMQ3JlZGl0Q29uZmlnAAAAAQAAA+4AAAAgAAAAAQAAAAAAAAAMQ3JlZGl0UmVjb3JkAAAAAQAAA+4AAAAgAAAAAQAAAAAAAAAJRHVlRGV0YWlsAAAAAAAAAQAAA+4AAAAgAAAAAQAAAAAAAAAIQm9ycm93ZXIAAAABAAAD7gAAACA=",
         "AAAAAgAAAAAAAAAAAAAAEVBheVBlcmlvZER1cmF0aW9uAAAAAAAAAwAAAAAAAAAAAAAAB01vbnRobHkAAAAAAAAAAAAAAAAJUXVhcnRlcmx5AAAAAAAAAAAAAAAAAAAMU2VtaUFubnVhbGx5",
-        "AAAABAAAAAAAAAAAAAAADUNhbGVuZGFyRXJyb3IAAAAAAAABAAAAAAAAABlTdGFydERhdGVMYXRlclRoYW5FbmREYXRlAAAAAAAAZQ==",
-        "AAAABAAAAAAAAAAAAAAAC0NvbW1vbkVycm9yAAAAAAUAAAAAAAAAEkFscmVhZHlJbml0aWFsaXplZAAAAAAAAQAAAAAAAAAdUHJvdG9jb2xJc1BhdXNlZE9yUG9vbElzTm90T24AAAAAAAACAAAAAAAAACBBdXRob3JpemVkQ29udHJhY3RDYWxsZXJSZXF1aXJlZAAAAAMAAAAAAAAAE1Vuc3VwcG9ydGVkRnVuY3Rpb24AAAAABAAAAAAAAAASWmVyb0Ftb3VudFByb3ZpZGVkAAAAAAAF",
-        "AAAAAQAAAR9BY2NvdW50IGJpbGxpbmcgaW5mbyByZWZyZXNoZWQgd2l0aCB0aGUgdXBkYXRlZCBkdWUgYW1vdW50IGFuZCBkYXRlLgojIEZpZWxkczoKKiBgY3JlZGl0X2hhc2hgIC0gVGhlIGhhc2ggb2YgdGhlIGNyZWRpdC4KKiBgbmV3X2R1ZV9kYXRlYCAtIFRoZSB1cGRhdGVkIGR1ZSBkYXRlIG9mIHRoZSBiaWxsLgoqIGBuZXh0X2R1ZWAgLSBUaGUgYW1vdW50IG9mIG5leHQgZHVlIG9uIHRoZSBiaWxsLgoqIGB0b3RhbF9wYXN0X2R1ZWAgLSBUaGUgdG90YWwgYW1vdW50IG9mIHBhc3QgZHVlIG9uIHRoZSBiaWxsLgAAAAAAAAAAEkJpbGxSZWZyZXNoZWRFdmVudAAAAAAABAAAAAAAAAALY3JlZGl0X2hhc2gAAAAD7gAAACAAAAAAAAAADG5ld19kdWVfZGF0ZQAAAAYAAAAAAAAACG5leHRfZHVlAAAACgAAAAAAAAAOdG90YWxfcGFzdF9kdWUAAAAAAAo=",
+        "AAAABAAAAAAAAAAAAAAADUNhbGVuZGFyRXJyb3IAAAAAAAABAAAAAAAAABlTdGFydERhdGVMYXRlclRoYW5FbmREYXRlAAAAAAADIQ==",
+        "AAAABAAAAAAAAAAAAAAAC0NvbW1vbkVycm9yAAAAAAcAAAAAAAAAEkFscmVhZHlJbml0aWFsaXplZAAAAAAAAQAAAAAAAAAdUHJvdG9jb2xJc1BhdXNlZE9yUG9vbElzTm90T24AAAAAAAACAAAAAAAAABxQb29sT3duZXJPckh1bWFPd25lclJlcXVpcmVkAAAAAwAAAAAAAAAUUG9vbE9wZXJhdG9yUmVxdWlyZWQAAAAEAAAAAAAAACBBdXRob3JpemVkQ29udHJhY3RDYWxsZXJSZXF1aXJlZAAAAAUAAAAAAAAAE1Vuc3VwcG9ydGVkRnVuY3Rpb24AAAAABgAAAAAAAAASWmVyb0Ftb3VudFByb3ZpZGVkAAAAAAAH",
+        "AAAAAQAAAAAAAAAAAAAAEkJpbGxSZWZyZXNoZWRFdmVudAAAAAAABAAAAAAAAAALY3JlZGl0X2hhc2gAAAAD7gAAACAAAAAAAAAADG5ld19kdWVfZGF0ZQAAAAYAAAAAAAAACG5leHRfZHVlAAAACgAAAAAAAAAOdG90YWxfcGFzdF9kdWUAAAAAAAo=",
         "AAAAAgAAAAAAAAAAAAAAC0NyZWRpdFN0YXRlAAAAAAUAAAAAAAAAAAAAAAdEZWxldGVkAAAAAAAAAAAAAAAACEFwcHJvdmVkAAAAAAAAAAAAAAAMR29vZFN0YW5kaW5nAAAAAAAAAAAAAAAHRGVsYXllZAAAAAAAAAAAAAAAAAlEZWZhdWx0ZWQAAAA=",
-        "AAAAAQAAA4tgQ3JlZGl0Q29uZmlnYCBrZWVwcyB0cmFjayBvZiB0aGUgc3RhdGljIHNldHRpbmdzIG9mIGEgY3JlZGl0LgpBIGBDcmVkaXRDb25maWdgIGlzIGNyZWF0ZWQgYWZ0ZXIgdGhlIGFwcHJvdmFsIG9mIGVhY2ggY3JlZGl0LgojIEZpZWxkczoKKiBgY3JlZGl0X2xpbWl0YCAtIFRoZSBtYXhpbXVtIGFtb3VudCB0aGF0IGNhbiBiZSBib3Jyb3dlZC4KKiBgY29tbWl0dGVkX2Ftb3VudGAgLSBUaGUgYW1vdW50IHRoYXQgdGhlIGJvcnJvd2VyIGhhcyBjb21taXR0ZWQgdG8gdXNlLiBJZiB0aGUgdXNlZCBjcmVkaXQKaXMgbGVzcyB0aGFuIHRoaXMgYW1vdW50LCB0aGUgYm9ycm93ZXIgd2lsbCBiZSBjaGFyZ2VkIHlpZWxkIHVzaW5nIHRoaXMgYW1vdW50LgoqIGBwYXlfcGVyaW9kX2R1cmF0aW9uYCAtIFRoZSBkdXJhdGlvbiBvZiBlYWNoIHBheSBwZXJpb2QsIGUuZy4sIG1vbnRobHksIHF1YXJ0ZXJseSwgb3Igc2VtaS1hbm51YWxseS4KKiBgbnVtX29mX3BlcmlvZHNgIC0gVGhlIG51bWJlciBvZiBwZXJpb2RzIGJlZm9yZSB0aGUgY3JlZGl0IGV4cGlyZXMuCiogYHlpZWxkX2Jwc2AgLSBUaGUgZXhwZWN0ZWQgeWllbGQgZXhwcmVzc2VkIGluIGJhc2lzIHBvaW50cywgd2hlcmUgMSUgaXMgMTAwLCBhbmQgMTAwJSBpcyAxMCwwMDAuIEl0IG1lYW5zIGRpZmZlcmVudCB0aGluZ3MKZm9yIGRpZmZlcmVudCBjcmVkaXQgdHlwZXM6CjEuIEZvciBjcmVkaXQgbGluZSwgaXQgaXMgQVBSLgoyLiBGb3IgZmFjdG9yaW5nLCBpdCBpcyBmYWN0b3JpbmcgZmVlIGZvciB0aGUgZ2l2ZW4gcGVyaW9kLgozLiBGb3IgZHluYW1pYyB5aWVsZCBjcmVkaXQsIGl0IGlzIHRoZSBlc3RpbWF0ZWQgQVBZLgoqIGByZXZvbHZpbmdgIC0gQSBmbGFnIGluZGljYXRpbmcgaWYgcmVwZWF0ZWQgYm9ycm93aW5nIGlzIGFsbG93ZWQuAAAAAAAAAAAMQ3JlZGl0Q29uZmlnAAAABgAAAAAAAAAQY29tbWl0dGVkX2Ftb3VudAAAAAoAAAAAAAAADGNyZWRpdF9saW1pdAAAAAoAAAAAAAAAC251bV9wZXJpb2RzAAAAAAQAAAAAAAAAE3BheV9wZXJpb2RfZHVyYXRpb24AAAAH0AAAABFQYXlQZXJpb2REdXJhdGlvbgAAAAAAAAAAAAAJcmV2b2x2aW5nAAAAAAAAAQAAAAAAAAAJeWllbGRfYnBzAAAAAAAABA==",
+        "AAAAAQAAAAAAAAAAAAAADENyZWRpdENvbmZpZwAAAAYAAAAAAAAAEGNvbW1pdHRlZF9hbW91bnQAAAAKAAAAAAAAAAxjcmVkaXRfbGltaXQAAAAKAAAAAAAAAAtudW1fcGVyaW9kcwAAAAAEAAAAAAAAABNwYXlfcGVyaW9kX2R1cmF0aW9uAAAAB9AAAAARUGF5UGVyaW9kRHVyYXRpb24AAAAAAAAAAAAACXJldm9sdmluZwAAAAAAAAEAAAAAAAAACXlpZWxkX2JwcwAAAAAAAAQ=",
         "AAAAAQAAAAAAAAAAAAAADENyZWRpdFJlY29yZAAAAAgAAAAAAAAADm1pc3NlZF9wZXJpb2RzAAAAAAAEAAAAAAAAAAhuZXh0X2R1ZQAAAAoAAAAAAAAADW5leHRfZHVlX2RhdGUAAAAAAAAGAAAAAAAAABFyZW1haW5pbmdfcGVyaW9kcwAAAAAAAAQAAAAAAAAABXN0YXRlAAAAAAAH0AAAAAtDcmVkaXRTdGF0ZQAAAAAAAAAADnRvdGFsX3Bhc3RfZHVlAAAAAAAKAAAAAAAAABJ1bmJpbGxlZF9wcmluY2lwYWwAAAAAAAoAAAAAAAAACXlpZWxkX2R1ZQAAAAAAAAo=",
         "AAAAAQAAAAAAAAAAAAAACUR1ZURldGFpbAAAAAAAAAcAAAAAAAAAB2FjY3J1ZWQAAAAACgAAAAAAAAAJY29tbWl0dGVkAAAAAAAACgAAAAAAAAAIbGF0ZV9mZWUAAAAKAAAAAAAAABVsYXRlX2ZlZV91cGRhdGVkX2RhdGUAAAAAAAAGAAAAAAAAAARwYWlkAAAACgAAAAAAAAAScHJpbmNpcGFsX3Bhc3RfZHVlAAAAAAAKAAAAAAAAAA55aWVsZF9wYXN0X2R1ZQAAAAAACg==",
       ]),
@@ -480,12 +467,12 @@ export class Client extends ContractClient {
     set_credit_record: this.txFromJSON<null>,
     set_due_detail: this.txFromJSON<null>,
     set_borrower: this.txFromJSON<null>,
+    upgrade: this.txFromJSON<null>,
     get_credit_hash: this.txFromJSON<Buffer>,
     get_credit_config: this.txFromJSON<CreditConfig>,
     get_credit_record: this.txFromJSON<CreditRecord>,
     get_due_detail: this.txFromJSON<DueDetail>,
     get_borrower: this.txFromJSON<string>,
     require_borrower: this.txFromJSON<Buffer>,
-    upgrade: this.txFromJSON<null>,
   };
 }
