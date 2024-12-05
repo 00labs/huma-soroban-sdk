@@ -1,14 +1,19 @@
 {
   "version": "0.0.15",
   "name": "@huma-finance/soroban-credit-manager",
-  "exports": "./dist/index.js",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/index.js"
+    }
+  },
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@stellar/stellar-sdk": "^12.1.0",
     "buffer": "6.0.3"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc --project ./tsconfig.json && tsc --project ./tsconfig.cjs.json"
   },
   "devDependencies": {
     "typescript": "5.3.3"

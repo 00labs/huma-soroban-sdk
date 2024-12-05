@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "module": "commonjs", // Set to CommonJS for Node.js compatibility
+    "target": "es6", // Use ES6 or another compatible target
     "paths": {
       "@huma-finance/soroban-sdk": ["../sdk/src"]
     }
