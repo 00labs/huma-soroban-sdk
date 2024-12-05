@@ -1,6 +1,5 @@
 import { CreditConfig } from '@huma-finance/soroban-credit-storage'
 import { CreditRecord } from '@huma-finance/soroban-pool-credit'
-import { SentTransaction } from '@stellar/stellar-sdk/lib/contract'
 
 import { StellarWallet } from '../services'
 import {
@@ -31,7 +30,7 @@ export async function getAvailableBalanceForPool(
     'poolStorage',
   )
 
-  const { result } = await sendTransaction<bigint>({
+  const { result }: { result: bigint } = await sendTransaction({
     context: poolStorageContext,
     method: 'get_available_balance',
   })
@@ -60,7 +59,7 @@ export async function getCreditRecordForPool(
     'creditStorage',
   )
 
-  const { result: creditHash } = await sendTransaction<Buffer>({
+  const { result: creditHash }: { result: Buffer } = await sendTransaction({
     context: creditStorageContext,
     method: 'get_credit_hash',
     params: [
@@ -75,17 +74,18 @@ export async function getCreditRecordForPool(
     throw new Error('Could not find credit hash')
   }
 
-  const { result: creditRecord } = await sendTransaction<CreditRecord>({
-    context: creditStorageContext,
-    method: 'get_credit_record',
-    params: [
-      {
-        name: 'credit_hash',
-        type: ScValType.buffer,
-        value: creditHash,
-      },
-    ],
-  })
+  const { result: creditRecord }: { result: CreditRecord } =
+    await sendTransaction({
+      context: creditStorageContext,
+      method: 'get_credit_record',
+      params: [
+        {
+          name: 'credit_hash',
+          type: ScValType.buffer,
+          value: creditHash,
+        },
+      ],
+    })
   if (!creditRecord) {
     throw new Error('Could not find credit record')
   }
@@ -116,7 +116,7 @@ export async function getAvailableCreditForPool(
     'creditStorage',
   )
 
-  const { result: creditHash } = await sendTransaction<Buffer>({
+  const { result: creditHash }: { result: Buffer } = await sendTransaction({
     context: creditStorageContext,
     method: 'get_credit_hash',
     params: [
@@ -136,16 +136,18 @@ export async function getAvailableCreditForPool(
     type: ScValType.buffer,
     value: creditHash,
   }
-  const { result: creditConfig } = await sendTransaction<CreditConfig>({
-    context: creditStorageContext,
-    method: 'get_credit_config',
-    params: [creditHashParam],
-  })
-  const { result: creditRecord } = await sendTransaction<CreditRecord>({
-    context: creditStorageContext,
-    method: 'get_credit_record',
-    params: [creditHashParam],
-  })
+  const { result: creditConfig }: { result: CreditConfig } =
+    await sendTransaction({
+      context: creditStorageContext,
+      method: 'get_credit_config',
+      params: [creditHashParam],
+    })
+  const { result: creditRecord }: { result: CreditRecord } =
+    await sendTransaction({
+      context: creditStorageContext,
+      method: 'get_credit_record',
+      params: [creditHashParam],
+    })
 
   if (!creditConfig || !creditRecord) {
     throw new Error('Could not find credit config or credit record')
@@ -194,13 +196,12 @@ export async function getTotalDue(
  * @param {POOL_NAME} poolName - The name of the credit pool to get the contract instance for.
  * @param {StellarNetwork} network - The stellar network.
  * @param {StellarWallet} wallet - The stellar wallet.
- * @returns {Promise<SentTransaction>} - A Promise of the SentTransaction.
  */
 export async function approveAllowanceForSentinel(
   poolName: POOL_NAME,
   network: StellarNetwork,
   wallet: StellarWallet,
-): Promise<SentTransaction<null> | null> {
+) {
   const totalDue = await getTotalDue(
     poolName,
     network,
@@ -217,7 +218,7 @@ export async function approveAllowanceForSentinel(
     wallet,
     'poolStorage',
   )
-  const { result: sentinel } = await sendTransaction<string>({
+  const { result: sentinel }: { result: string } = await sendTransaction({
     context: poolStorageContext,
     method: 'get_sentinel',
   })
@@ -249,7 +250,7 @@ export async function drawdown(
   network: StellarNetwork,
   wallet: StellarWallet,
   drawdownAmount: bigint,
-): Promise<SentTransaction<null>> {
+) {
   await approveAllowanceForSentinel(poolName, network, wallet)
 
   const poolCreditContext = new TransactionContext(
@@ -296,7 +297,7 @@ export async function makePayment(
   wallet: StellarWallet,
   paymentAmount: bigint,
   principalOnly: boolean,
-): Promise<SentTransaction<readonly [bigint, boolean]>> {
+) {
   await approveAllowanceForSentinel(poolName, network, wallet)
 
   const poolStorageContext = new TransactionContext(
@@ -305,7 +306,7 @@ export async function makePayment(
     wallet,
     'poolStorage',
   )
-  const { result: sentinel } = await sendTransaction<string>({
+  const { result: sentinel }: { result: string } = await sendTransaction({
     context: poolStorageContext,
     method: 'get_sentinel',
   })
@@ -343,7 +344,7 @@ export async function makePayment(
       value: wallet.userInfo.publicKey,
     })
   }
-  const result = await sendTransaction<readonly [bigint, boolean]>({
+  const result: { result: readonly [bigint, boolean] } = await sendTransaction({
     context: poolCreditContext,
     method: principalOnly ? 'make_principal_payment' : 'make_payment',
     params: params,

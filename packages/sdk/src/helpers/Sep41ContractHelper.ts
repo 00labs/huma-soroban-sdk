@@ -1,5 +1,3 @@
-import { SentTransaction } from '@stellar/stellar-sdk/lib/contract'
-
 import { StellarWallet } from '../services'
 import {
   getLatestLedger,
@@ -29,7 +27,7 @@ export async function approveSep41AllowanceIfInsufficient(
   wallet: StellarWallet,
   spenderAddress: string,
   allowanceAmount: bigint,
-): Promise<SentTransaction<null> | null> {
+) {
   const underlyingTokenContext = new TransactionContext(
     poolName,
     network,
@@ -37,7 +35,7 @@ export async function approveSep41AllowanceIfInsufficient(
     'underlyingToken',
   )
 
-  const { result: allowance } = await sendTransaction<number>({
+  const { result: allowance }: { result: bigint } = await sendTransaction({
     context: underlyingTokenContext,
     method: 'allowance',
     params: [
@@ -53,7 +51,7 @@ export async function approveSep41AllowanceIfInsufficient(
       },
     ],
   })
-  const { result: decimals } = await sendTransaction<number>({
+  const { result: decimals }: { result: number } = await sendTransaction({
     context: underlyingTokenContext,
     method: 'decimals',
   })

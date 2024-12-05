@@ -12,7 +12,7 @@ getPoolBalance() to get the current available pool balance.</p></dd>
 <dt><a href="#getTotalDue">getTotalDue(poolName, network, wallet, borrower)</a> ⇒ <code>bigint</code> | <code>null</code></dt>
 <dd><p>Returns borrower's total due amount in bigint format
 associated with the given pool name on the current chain.</p></dd>
-<dt><a href="#approveAllowanceForSentinel">approveAllowanceForSentinel(poolName, network, wallet)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
+<dt><a href="#approveAllowanceForSentinel">approveAllowanceForSentinel(poolName, network, wallet)</a></dt>
 <dd><p>Approve allowance for sentinel if not enough allowance is approved.</p></dd>
 <dt><a href="#drawdown">drawdown(poolName, network, wallet, drawdownAmount)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
 <dd><p>Draws down from a pool.</p></dd>
@@ -84,13 +84,10 @@ associated with the given pool name on the current chain.</p>
 
 <a name="approveAllowanceForSentinel"></a>
 
-## approveAllowanceForSentinel(poolName, network, wallet) ⇒ <code>Promise.&lt;SentTransaction&gt;</code>
+## approveAllowanceForSentinel(poolName, network, wallet)
 <p>Approve allowance for sentinel if not enough allowance is approved.</p>
 
 **Kind**: global function  
-**Returns**: <code>Promise.&lt;SentTransaction&gt;</code> - <ul>
-<li>A Promise of the SentTransaction.</li>
-</ul>  
 
 | Param | Type | Description |
 | --- | --- | --- |

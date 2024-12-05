@@ -73,9 +73,7 @@ const main = async () => {
     100_0000000 as any,
     false
   );
-  console.log(
-    `Payment success. Tx hash: ${paymentResult.sendTransactionResponse?.hash}`
-  );
+  console.log(`Payment success. Tx hash: ${paymentResult}`);
 };
 
 main();
