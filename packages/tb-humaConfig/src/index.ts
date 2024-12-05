@@ -6,7 +6,7 @@ import {
   ClientOptions as ContractClientOptions,
   Result,
   Spec as ContractSpec,
-} from "@stellar/stellar-sdk/contract";
+} from "@stellar/stellar-sdk/lib/contract";
 import type {
   u32,
   i32,
@@ -19,10 +19,10 @@ import type {
   Option,
   Typepoint,
   Duration,
-} from "@stellar/stellar-sdk/contract";
+} from "@stellar/stellar-sdk/lib/contract";
 export * from "@stellar/stellar-sdk";
-export * as contract from "@stellar/stellar-sdk/contract";
-export * as rpc from "@stellar/stellar-sdk/rpc";
+export * as contract from "@stellar/stellar-sdk/lib/contract";
+export * as rpc from "@stellar/stellar-sdk/lib/rpc";
 
 if (typeof window !== "undefined") {
   //@ts-ignore Buffer exists
