@@ -36,9 +36,6 @@ describe('approveSep41Allowance', () => {
         result: 500n,
       })
       .mockResolvedValueOnce({
-        result: 2,
-      })
-      .mockResolvedValueOnce({
         result: 'transactionResult',
       })
 
