@@ -8,7 +8,8 @@
     "buffer": "6.0.3"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "clean": "tsc --build --clean"
   },
   "devDependencies": {
     "typescript": "5.3.3"

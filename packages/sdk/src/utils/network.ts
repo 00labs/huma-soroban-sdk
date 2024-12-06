@@ -88,7 +88,7 @@ export const NetworkMetadatas: NetworkMetadata[] = [
           underlyingToken:
             'CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75',
         },
-        borrowers: ['GBQ4MIGKASCJG4GNEOQ3G6Z6YDUXCAKYARB3MNJ7QOF54MNMYW7HP62V'], // TODO: Replace with Arf
+        borrowers: ['GBQ4MIGKASCJG4GNEOQ3G6Z6YDUXCAKYARB3MNJ7QOF54MNMYW7HP62V'],
       },
     ],
   },

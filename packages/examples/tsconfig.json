@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2020",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "paths": {
       "@huma-finance/soroban-sdk": ["../sdk/src"]
     }
