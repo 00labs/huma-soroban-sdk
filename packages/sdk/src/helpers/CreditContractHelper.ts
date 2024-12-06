@@ -9,7 +9,7 @@ import {
   StellarNetwork,
   TransactionContext,
 } from '../utils'
-import { approveSep41AllowanceIfInsufficient } from './Sep41ContractHelper'
+import { approveSep41Allowance } from './Sep41ContractHelper'
 
 /**
  * Returns the current pool balance available for borrowing
@@ -223,13 +223,7 @@ export async function approveAllowanceForSentinel(
     method: 'get_sentinel',
   })
 
-  const tx = await approveSep41AllowanceIfInsufficient(
-    poolName,
-    network,
-    wallet,
-    sentinel,
-    totalDue,
-  )
+  const tx = await approveSep41Allowance(poolName, network, wallet, sentinel)
 
   return tx
 }
@@ -311,13 +305,7 @@ export async function makePayment(
     method: 'get_sentinel',
   })
 
-  await approveSep41AllowanceIfInsufficient(
-    poolName,
-    network,
-    wallet,
-    sentinel,
-    paymentAmount,
-  )
+  await approveSep41Allowance(poolName, network, wallet, sentinel)
 
   const poolCreditContext = new TransactionContext(
     poolName,
@@ -344,7 +332,7 @@ export async function makePayment(
       value: wallet.userInfo.publicKey,
     })
   }
-  const result: { result: readonly [bigint, boolean] } = await sendTransaction({
+  const result = await sendTransaction({
     context: poolCreditContext,
     method: principalOnly ? 'make_principal_payment' : 'make_payment',
     params: params,
