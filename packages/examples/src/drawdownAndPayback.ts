@@ -15,8 +15,8 @@ import {
 
 const main = async () => {
   const borrower = new StellarWallet(process.env.TEST_PRIVATE_KEY as string);
-  const poolName = POOL_NAME.Arf;
-  const network = StellarNetwork.humanet;
+  const poolName = POOL_NAME.Roam;
+  const network = StellarNetwork.testnet;
 
   const availableBalanceForPool = await getAvailableBalanceForPool(
     poolName,
@@ -54,7 +54,10 @@ const main = async () => {
     network,
     borrower
   );
-  console.log("approveAllowance:", approveAllowance);
+  console.log(
+    "approveAllowance:",
+    approveAllowance.sendTransactionResponse?.hash
+  );
 
   const drawdownResult = await drawdown(
     poolName,

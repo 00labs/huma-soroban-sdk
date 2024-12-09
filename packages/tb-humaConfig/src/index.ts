@@ -30,37 +30,42 @@ if (typeof window !== "undefined") {
 }
 
 export const networks = {
-  testnet: {
-    networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CDEH36NMZK6AV5I675A2BSRIWLJGBVXWN5HHABKJKHNIGKSKJQVXPXFB",
+  unknown: {
+    networkPassphrase: "Public Global Stellar Network ; September 2015",
+    contractId: "CAVRWN3JYHZLKREHPDXFRCMEXPLPF2LIYRWKBHIRWSE62OCRTELBLQ4O",
   },
 } as const;
 
 export const Errors = {
-  101: { message: "" },
-  102: { message: "" },
-  1: { message: "" },
-  2: { message: "" },
-  3: { message: "" },
-  4: { message: "" },
-  5: { message: "" },
+  101: { message: "PauserRequired" },
+
+  102: { message: "ProtocolFeeHigherThanUpperLimit" },
+
+  103: { message: "InvalidNumberOfDecimalsForLiquidityAsset" },
+
+  1: { message: "AlreadyInitialized" },
+
+  2: { message: "ProtocolIsPausedOrPoolIsNotOn" },
+
+  3: { message: "PoolOwnerOrHumaOwnerRequired" },
+
+  4: { message: "PoolOperatorRequired" },
+
+  5: { message: "AuthorizedContractCallerRequired" },
+
+  6: { message: "UnsupportedFunction" },
+
+  7: { message: "ZeroAmountProvided" },
 };
 export type HumaConfigDataKey =
   | { tag: "HumaOwner"; values: void }
   | { tag: "HumaTreasury"; values: void }
   | { tag: "Sentinel"; values: void }
-  | { tag: "ProtocolFeeInBps"; values: void }
+  | { tag: "ProtocolFeeBps"; values: void }
   | { tag: "IsPaused"; values: void }
   | { tag: "Pauser"; values: readonly [string] }
   | { tag: "ValidLiquidityAsset"; values: readonly [string] };
 
-/**
- * The Huma protocol has been initialized.
- * # Fields
- * * `huma_owner` - The address of the Huma owner account.
- * * `huma_treasury` - The address of the Huma treasury account.
- * * `sentinel` - The address of the Sentinel service account.
- */
 export interface ProtocolInitializedEvent {
   huma_owner: string;
   huma_treasury: string;
@@ -71,86 +76,38 @@ export interface HumaOwnerChangedEvent {
   huma_owner: string;
 }
 
-/**
- * The Huma protocol has been paused.
- * # Fields
- * * `paused` - Whether the protocol is paused. The value acts as a placeholder only to get around
- * the restriction that `contracttype` doesn't allow empty structs. The value is always `true`.
- */
 export interface ProtocolPausedEvent {
   paused: boolean;
 }
 
-/**
- * The Huma protocol has been unpaused.
- * # Fields
- * * `paused` - Whether the protocol is paused. The value acts as a placeholder only to get around
- * the restriction that `contractype` doesn't allow empty structs. The value is always `false`.
- */
 export interface ProtocolUnpausedEvent {
   paused: boolean;
 }
 
-/**
- * The treasury address for the Huma protocol has changed.
- * # Fields
- * * `treasury` - The address of the new Huma treasury.
- */
 export interface HumaTreasuryChangedEvent {
   treasury: string;
 }
 
-/**
- * A pauser has been added. A pauser is someone who can pause the protocol.
- * # Fields
- * * `pauser` - The address of the pauser being added.
- */
 export interface PauserAddedEvent {
   pauser: string;
 }
 
-/**
- * A pauser has been removed.
- * # Fields
- * * `pauser` - The address of the pauser being removed.
- */
 export interface PauserRemovedEvent {
   pauser: string;
 }
 
-/**
- * New underlying asset supported by the protocol is added.
- * # Fields
- * * `asset` - The address of the liquidity asset being added.
- */
 export interface LiquidityAssetAddedEvent {
   asset: string;
 }
 
-/**
- * Remove the asset that is no longer supported by the protocol.
- * # Fields
- * * `asset` - The address of the liquidity asset being removed.
- */
 export interface LiquidityAssetRemovedEvent {
   asset: string;
 }
 
-/**
- * The account for the Sentinel Service has been changed.
- * # Fields
- * * `account` - The address of the new Sentinel Service.
- */
 export interface SentinelServiceAccountChangedEvent {
   account: string;
 }
 
-/**
- * The protocol fee has been changed.
- * # Fields
- * * `old_fee_bps` - The old protocol fee in bps.
- * * `new_fee_bps` - The new protocol fee in bps.
- */
 export interface ProtocolFeeChangedEvent {
   new_fee_bps: u32;
   old_fee_bps: u32;
@@ -185,26 +142,6 @@ export interface Client {
   ) => Promise<AssembledTransaction<null>>;
 
   /**
-   * Construct and simulate a get_huma_owner transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  get_huma_owner: (options?: {
-    /**
-     * The fee to pay for the transaction. Default: BASE_FEE
-     */
-    fee?: number;
-
-    /**
-     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-     */
-    timeoutInSeconds?: number;
-
-    /**
-     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-     */
-    simulate?: boolean;
-  }) => Promise<AssembledTransaction<string>>;
-
-  /**
    * Construct and simulate a set_huma_owner transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
   set_huma_owner: (
@@ -226,26 +163,6 @@ export interface Client {
       simulate?: boolean;
     }
   ) => Promise<AssembledTransaction<null>>;
-
-  /**
-   * Construct and simulate a get_huma_treasury transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  get_huma_treasury: (options?: {
-    /**
-     * The fee to pay for the transaction. Default: BASE_FEE
-     */
-    fee?: number;
-
-    /**
-     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-     */
-    timeoutInSeconds?: number;
-
-    /**
-     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-     */
-    simulate?: boolean;
-  }) => Promise<AssembledTransaction<string>>;
 
   /**
    * Construct and simulate a set_huma_treasury transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
@@ -271,26 +188,6 @@ export interface Client {
   ) => Promise<AssembledTransaction<null>>;
 
   /**
-   * Construct and simulate a get_sentinel transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  get_sentinel: (options?: {
-    /**
-     * The fee to pay for the transaction. Default: BASE_FEE
-     */
-    fee?: number;
-
-    /**
-     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-     */
-    timeoutInSeconds?: number;
-
-    /**
-     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-     */
-    simulate?: boolean;
-  }) => Promise<AssembledTransaction<string>>;
-
-  /**
    * Construct and simulate a set_sentinel transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
   set_sentinel: (
@@ -314,24 +211,50 @@ export interface Client {
   ) => Promise<AssembledTransaction<null>>;
 
   /**
-   * Construct and simulate a is_protocol_paused transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   * Construct and simulate a set_liquidity_asset transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  is_protocol_paused: (options?: {
-    /**
-     * The fee to pay for the transaction. Default: BASE_FEE
-     */
-    fee?: number;
+  set_liquidity_asset: (
+    { addr, valid }: { addr: string; valid: boolean },
+    options?: {
+      /**
+       * The fee to pay for the transaction. Default: BASE_FEE
+       */
+      fee?: number;
 
-    /**
-     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-     */
-    timeoutInSeconds?: number;
+      /**
+       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+       */
+      timeoutInSeconds?: number;
 
-    /**
-     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-     */
-    simulate?: boolean;
-  }) => Promise<AssembledTransaction<boolean>>;
+      /**
+       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+       */
+      simulate?: boolean;
+    }
+  ) => Promise<AssembledTransaction<null>>;
+
+  /**
+   * Construct and simulate a set_protocol_fee_bps transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  set_protocol_fee_bps: (
+    { fee_bps }: { fee_bps: u32 },
+    options?: {
+      /**
+       * The fee to pay for the transaction. Default: BASE_FEE
+       */
+      fee?: number;
+
+      /**
+       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+       */
+      timeoutInSeconds?: number;
+
+      /**
+       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+       */
+      simulate?: boolean;
+    }
+  ) => Promise<AssembledTransaction<null>>;
 
   /**
    * Construct and simulate a pause_protocol transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
@@ -375,29 +298,6 @@ export interface Client {
      */
     simulate?: boolean;
   }) => Promise<AssembledTransaction<null>>;
-
-  /**
-   * Construct and simulate a is_pauser transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  is_pauser: (
-    { addr }: { addr: string },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
-
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
-
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<boolean>>;
 
   /**
    * Construct and simulate a add_pauser transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
@@ -446,33 +346,10 @@ export interface Client {
   ) => Promise<AssembledTransaction<null>>;
 
   /**
-   * Construct and simulate a is_asset_valid transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   * Construct and simulate a upgrade transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  is_asset_valid: (
-    { addr }: { addr: string },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
-
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
-
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<boolean>>;
-
-  /**
-   * Construct and simulate a set_liquidity_asset transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
-   */
-  set_liquidity_asset: (
-    { addr, valid }: { addr: string; valid: boolean },
+  upgrade: (
+    { new_wasm_hash }: { new_wasm_hash: Buffer },
     options?: {
       /**
        * The fee to pay for the transaction. Default: BASE_FEE
@@ -490,6 +367,66 @@ export interface Client {
       simulate?: boolean;
     }
   ) => Promise<AssembledTransaction<null>>;
+
+  /**
+   * Construct and simulate a get_huma_owner transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  get_huma_owner: (options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
+
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
+
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<string>>;
+
+  /**
+   * Construct and simulate a get_huma_treasury transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  get_huma_treasury: (options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
+
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
+
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<string>>;
+
+  /**
+   * Construct and simulate a get_sentinel transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  get_sentinel: (options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
+
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
+
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<string>>;
 
   /**
    * Construct and simulate a get_protocol_fee_bps transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
@@ -512,10 +449,10 @@ export interface Client {
   }) => Promise<AssembledTransaction<u32>>;
 
   /**
-   * Construct and simulate a set_protocol_fee_bps transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   * Construct and simulate a is_pauser transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  set_protocol_fee_bps: (
-    { fee_bps }: { fee_bps: u32 },
+  is_pauser: (
+    { addr }: { addr: string },
     options?: {
       /**
        * The fee to pay for the transaction. Default: BASE_FEE
@@ -532,13 +469,33 @@ export interface Client {
        */
       simulate?: boolean;
     }
-  ) => Promise<AssembledTransaction<null>>;
+  ) => Promise<AssembledTransaction<boolean>>;
 
   /**
-   * Construct and simulate a upgrade transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   * Construct and simulate a is_protocol_paused transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  upgrade: (
-    { new_wasm_hash }: { new_wasm_hash: Buffer },
+  is_protocol_paused: (options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
+
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
+
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<boolean>>;
+
+  /**
+   * Construct and simulate a is_asset_valid transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
+   */
+  is_asset_valid: (
+    { addr }: { addr: string },
     options?: {
       /**
        * The fee to pay for the transaction. Default: BASE_FEE
@@ -555,66 +512,66 @@ export interface Client {
        */
       simulate?: boolean;
     }
-  ) => Promise<AssembledTransaction<null>>;
+  ) => Promise<AssembledTransaction<boolean>>;
 }
 export class Client extends ContractClient {
   constructor(public readonly options: ContractClientOptions) {
     super(
       new ContractSpec([
         "AAAAAAAAAAAAAAAKaW5pdGlhbGl6ZQAAAAAAAwAAAAAAAAAKaHVtYV9vd25lcgAAAAAAEwAAAAAAAAANaHVtYV90cmVhc3VyeQAAAAAAABMAAAAAAAAACHNlbnRpbmVsAAAAEwAAAAA=",
-        "AAAAAAAAAAAAAAAOZ2V0X2h1bWFfb3duZXIAAAAAAAAAAAABAAAAEw==",
         "AAAAAAAAAAAAAAAOc2V0X2h1bWFfb3duZXIAAAAAAAEAAAAAAAAABGFkZHIAAAATAAAAAA==",
-        "AAAAAAAAAAAAAAARZ2V0X2h1bWFfdHJlYXN1cnkAAAAAAAAAAAAAAQAAABM=",
         "AAAAAAAAAAAAAAARc2V0X2h1bWFfdHJlYXN1cnkAAAAAAAABAAAAAAAAAARhZGRyAAAAEwAAAAA=",
-        "AAAAAAAAAAAAAAAMZ2V0X3NlbnRpbmVsAAAAAAAAAAEAAAAT",
         "AAAAAAAAAAAAAAAMc2V0X3NlbnRpbmVsAAAAAQAAAAAAAAAEYWRkcgAAABMAAAAA",
-        "AAAAAAAAAAAAAAASaXNfcHJvdG9jb2xfcGF1c2VkAAAAAAAAAAAAAQAAAAE=",
+        "AAAAAAAAAAAAAAATc2V0X2xpcXVpZGl0eV9hc3NldAAAAAACAAAAAAAAAARhZGRyAAAAEwAAAAAAAAAFdmFsaWQAAAAAAAABAAAAAA==",
+        "AAAAAAAAAAAAAAAUc2V0X3Byb3RvY29sX2ZlZV9icHMAAAABAAAAAAAAAAdmZWVfYnBzAAAAAAQAAAAA",
         "AAAAAAAAAAAAAAAOcGF1c2VfcHJvdG9jb2wAAAAAAAEAAAAAAAAABmNhbGxlcgAAAAAAEwAAAAA=",
         "AAAAAAAAAAAAAAAQdW5wYXVzZV9wcm90b2NvbAAAAAAAAAAA",
-        "AAAAAAAAAAAAAAAJaXNfcGF1c2VyAAAAAAAAAQAAAAAAAAAEYWRkcgAAABMAAAABAAAAAQ==",
         "AAAAAAAAAAAAAAAKYWRkX3BhdXNlcgAAAAAAAQAAAAAAAAAEYWRkcgAAABMAAAAA",
         "AAAAAAAAAAAAAAANcmVtb3ZlX3BhdXNlcgAAAAAAAAEAAAAAAAAABGFkZHIAAAATAAAAAA==",
-        "AAAAAAAAAAAAAAAOaXNfYXNzZXRfdmFsaWQAAAAAAAEAAAAAAAAABGFkZHIAAAATAAAAAQAAAAE=",
-        "AAAAAAAAAAAAAAATc2V0X2xpcXVpZGl0eV9hc3NldAAAAAACAAAAAAAAAARhZGRyAAAAEwAAAAAAAAAFdmFsaWQAAAAAAAABAAAAAA==",
-        "AAAAAAAAAAAAAAAUZ2V0X3Byb3RvY29sX2ZlZV9icHMAAAAAAAAAAQAAAAQ=",
-        "AAAAAAAAAAAAAAAUc2V0X3Byb3RvY29sX2ZlZV9icHMAAAABAAAAAAAAAAdmZWVfYnBzAAAAAAQAAAAA",
         "AAAAAAAAAAAAAAAHdXBncmFkZQAAAAABAAAAAAAAAA1uZXdfd2FzbV9oYXNoAAAAAAAD7gAAACAAAAAA",
-        "AAAABAAAAAAAAAAAAAAAD0h1bWFDb25maWdFcnJvcgAAAAACAAAAAAAAAA5QYXVzZXJSZXF1aXJlZAAAAAAAZQAAAAAAAAAfUHJvdG9jb2xGZWVIaWdoZXJUaGFuVXBwZXJMaW1pdAAAAABm",
-        "AAAAAgAAAAAAAAAAAAAAEUh1bWFDb25maWdEYXRhS2V5AAAAAAAABwAAAAAAAAAAAAAACUh1bWFPd25lcgAAAAAAAAAAAAAAAAAADEh1bWFUcmVhc3VyeQAAAAAAAAAAAAAACFNlbnRpbmVsAAAAAAAAAAAAAAAQUHJvdG9jb2xGZWVJbkJwcwAAAAAAAAAAAAAACElzUGF1c2VkAAAAAQAAAAAAAAAGUGF1c2VyAAAAAAABAAAAEwAAAAEAAAAAAAAAE1ZhbGlkTGlxdWlkaXR5QXNzZXQAAAAAAQAAABM=",
-        "AAAAAQAAAOJUaGUgSHVtYSBwcm90b2NvbCBoYXMgYmVlbiBpbml0aWFsaXplZC4KIyBGaWVsZHMKKiBgaHVtYV9vd25lcmAgLSBUaGUgYWRkcmVzcyBvZiB0aGUgSHVtYSBvd25lciBhY2NvdW50LgoqIGBodW1hX3RyZWFzdXJ5YCAtIFRoZSBhZGRyZXNzIG9mIHRoZSBIdW1hIHRyZWFzdXJ5IGFjY291bnQuCiogYHNlbnRpbmVsYCAtIFRoZSBhZGRyZXNzIG9mIHRoZSBTZW50aW5lbCBzZXJ2aWNlIGFjY291bnQuAAAAAAAAAAAAGFByb3RvY29sSW5pdGlhbGl6ZWRFdmVudAAAAAMAAAAAAAAACmh1bWFfb3duZXIAAAAAABMAAAAAAAAADWh1bWFfdHJlYXN1cnkAAAAAAAATAAAAAAAAAAhzZW50aW5lbAAAABM=",
+        "AAAAAAAAAAAAAAAOZ2V0X2h1bWFfb3duZXIAAAAAAAAAAAABAAAAEw==",
+        "AAAAAAAAAAAAAAARZ2V0X2h1bWFfdHJlYXN1cnkAAAAAAAAAAAAAAQAAABM=",
+        "AAAAAAAAAAAAAAAMZ2V0X3NlbnRpbmVsAAAAAAAAAAEAAAAT",
+        "AAAAAAAAAAAAAAAUZ2V0X3Byb3RvY29sX2ZlZV9icHMAAAAAAAAAAQAAAAQ=",
+        "AAAAAAAAAAAAAAAJaXNfcGF1c2VyAAAAAAAAAQAAAAAAAAAEYWRkcgAAABMAAAABAAAAAQ==",
+        "AAAAAAAAAAAAAAASaXNfcHJvdG9jb2xfcGF1c2VkAAAAAAAAAAAAAQAAAAE=",
+        "AAAAAAAAAAAAAAAOaXNfYXNzZXRfdmFsaWQAAAAAAAEAAAAAAAAABGFkZHIAAAATAAAAAQAAAAE=",
+        "AAAABAAAAAAAAAAAAAAAD0h1bWFDb25maWdFcnJvcgAAAAADAAAAAAAAAA5QYXVzZXJSZXF1aXJlZAAAAAAAZQAAAAAAAAAfUHJvdG9jb2xGZWVIaWdoZXJUaGFuVXBwZXJMaW1pdAAAAABmAAAAAAAAAChJbnZhbGlkTnVtYmVyT2ZEZWNpbWFsc0ZvckxpcXVpZGl0eUFzc2V0AAAAZw==",
+        "AAAAAgAAAAAAAAAAAAAAEUh1bWFDb25maWdEYXRhS2V5AAAAAAAABwAAAAAAAAAAAAAACUh1bWFPd25lcgAAAAAAAAAAAAAAAAAADEh1bWFUcmVhc3VyeQAAAAAAAAAAAAAACFNlbnRpbmVsAAAAAAAAAAAAAAAOUHJvdG9jb2xGZWVCcHMAAAAAAAAAAAAAAAAACElzUGF1c2VkAAAAAQAAAAAAAAAGUGF1c2VyAAAAAAABAAAAEwAAAAEAAAAAAAAAE1ZhbGlkTGlxdWlkaXR5QXNzZXQAAAAAAQAAABM=",
+        "AAAAAQAAAAAAAAAAAAAAGFByb3RvY29sSW5pdGlhbGl6ZWRFdmVudAAAAAMAAAAAAAAACmh1bWFfb3duZXIAAAAAABMAAAAAAAAADWh1bWFfdHJlYXN1cnkAAAAAAAATAAAAAAAAAAhzZW50aW5lbAAAABM=",
         "AAAAAQAAAAAAAAAAAAAAFUh1bWFPd25lckNoYW5nZWRFdmVudAAAAAAAAAEAAAAAAAAACmh1bWFfb3duZXIAAAAAABM=",
-        "AAAAAQAAAOhUaGUgSHVtYSBwcm90b2NvbCBoYXMgYmVlbiBwYXVzZWQuCiMgRmllbGRzCiogYHBhdXNlZGAgLSBXaGV0aGVyIHRoZSBwcm90b2NvbCBpcyBwYXVzZWQuIFRoZSB2YWx1ZSBhY3RzIGFzIGEgcGxhY2Vob2xkZXIgb25seSB0byBnZXQgYXJvdW5kCnRoZSByZXN0cmljdGlvbiB0aGF0IGBjb250cmFjdHR5cGVgIGRvZXNuJ3QgYWxsb3cgZW1wdHkgc3RydWN0cy4gVGhlIHZhbHVlIGlzIGFsd2F5cyBgdHJ1ZWAuAAAAAAAAABNQcm90b2NvbFBhdXNlZEV2ZW50AAAAAAEAAAAAAAAABnBhdXNlZAAAAAAAAQ==",
-        "AAAAAQAAAOpUaGUgSHVtYSBwcm90b2NvbCBoYXMgYmVlbiB1bnBhdXNlZC4KIyBGaWVsZHMKKiBgcGF1c2VkYCAtIFdoZXRoZXIgdGhlIHByb3RvY29sIGlzIHBhdXNlZC4gVGhlIHZhbHVlIGFjdHMgYXMgYSBwbGFjZWhvbGRlciBvbmx5IHRvIGdldCBhcm91bmQKdGhlIHJlc3RyaWN0aW9uIHRoYXQgYGNvbnRyYWN0eXBlYCBkb2Vzbid0IGFsbG93IGVtcHR5IHN0cnVjdHMuIFRoZSB2YWx1ZSBpcyBhbHdheXMgYGZhbHNlYC4AAAAAAAAAAAAVUHJvdG9jb2xVbnBhdXNlZEV2ZW50AAAAAAAAAQAAAAAAAAAGcGF1c2VkAAAAAAAB",
-        "AAAAAQAAAHVUaGUgdHJlYXN1cnkgYWRkcmVzcyBmb3IgdGhlIEh1bWEgcHJvdG9jb2wgaGFzIGNoYW5nZWQuCiMgRmllbGRzCiogYHRyZWFzdXJ5YCAtIFRoZSBhZGRyZXNzIG9mIHRoZSBuZXcgSHVtYSB0cmVhc3VyeS4AAAAAAAAAAAAAGEh1bWFUcmVhc3VyeUNoYW5nZWRFdmVudAAAAAEAAAAAAAAACHRyZWFzdXJ5AAAAEw==",
-        "AAAAAQAAAIVBIHBhdXNlciBoYXMgYmVlbiBhZGRlZC4gQSBwYXVzZXIgaXMgc29tZW9uZSB3aG8gY2FuIHBhdXNlIHRoZSBwcm90b2NvbC4KIyBGaWVsZHMKKiBgcGF1c2VyYCAtIFRoZSBhZGRyZXNzIG9mIHRoZSBwYXVzZXIgYmVpbmcgYWRkZWQuAAAAAAAAAAAAABBQYXVzZXJBZGRlZEV2ZW50AAAAAQAAAAAAAAAGcGF1c2VyAAAAAAAT",
-        "AAAAAQAAAFlBIHBhdXNlciBoYXMgYmVlbiByZW1vdmVkLgojIEZpZWxkcwoqIGBwYXVzZXJgIC0gVGhlIGFkZHJlc3Mgb2YgdGhlIHBhdXNlciBiZWluZyByZW1vdmVkLgAAAAAAAAAAAAASUGF1c2VyUmVtb3ZlZEV2ZW50AAAAAAABAAAAAAAAAAZwYXVzZXIAAAAAABM=",
-        "AAAAAQAAAH1OZXcgdW5kZXJseWluZyBhc3NldCBzdXBwb3J0ZWQgYnkgdGhlIHByb3RvY29sIGlzIGFkZGVkLgojIEZpZWxkcwoqIGBhc3NldGAgLSBUaGUgYWRkcmVzcyBvZiB0aGUgbGlxdWlkaXR5IGFzc2V0IGJlaW5nIGFkZGVkLgAAAAAAAAAAAAAYTGlxdWlkaXR5QXNzZXRBZGRlZEV2ZW50AAAAAQAAAAAAAAAFYXNzZXQAAAAAAAAT",
-        "AAAAAQAAAIRSZW1vdmUgdGhlIGFzc2V0IHRoYXQgaXMgbm8gbG9uZ2VyIHN1cHBvcnRlZCBieSB0aGUgcHJvdG9jb2wuCiMgRmllbGRzCiogYGFzc2V0YCAtIFRoZSBhZGRyZXNzIG9mIHRoZSBsaXF1aWRpdHkgYXNzZXQgYmVpbmcgcmVtb3ZlZC4AAAAAAAAAGkxpcXVpZGl0eUFzc2V0UmVtb3ZlZEV2ZW50AAAAAAABAAAAAAAAAAVhc3NldAAAAAAAABM=",
-        "AAAAAQAAAHZUaGUgYWNjb3VudCBmb3IgdGhlIFNlbnRpbmVsIFNlcnZpY2UgaGFzIGJlZW4gY2hhbmdlZC4KIyBGaWVsZHMKKiBgYWNjb3VudGAgLSBUaGUgYWRkcmVzcyBvZiB0aGUgbmV3IFNlbnRpbmVsIFNlcnZpY2UuAAAAAAAAAAAAIlNlbnRpbmVsU2VydmljZUFjY291bnRDaGFuZ2VkRXZlbnQAAAAAAAEAAAAAAAAAB2FjY291bnQAAAAAEw==",
-        "AAAAAQAAAIlUaGUgcHJvdG9jb2wgZmVlIGhhcyBiZWVuIGNoYW5nZWQuCiMgRmllbGRzCiogYG9sZF9mZWVfYnBzYCAtIFRoZSBvbGQgcHJvdG9jb2wgZmVlIGluIGJwcy4KKiBgbmV3X2ZlZV9icHNgIC0gVGhlIG5ldyBwcm90b2NvbCBmZWUgaW4gYnBzLgAAAAAAAAAAAAAXUHJvdG9jb2xGZWVDaGFuZ2VkRXZlbnQAAAAAAgAAAAAAAAALbmV3X2ZlZV9icHMAAAAABAAAAAAAAAALb2xkX2ZlZV9icHMAAAAABA==",
-        "AAAABAAAAAAAAAAAAAAAC0NvbW1vbkVycm9yAAAAAAUAAAAAAAAAEkFscmVhZHlJbml0aWFsaXplZAAAAAAAAQAAAAAAAAAdUHJvdG9jb2xJc1BhdXNlZE9yUG9vbElzTm90T24AAAAAAAACAAAAAAAAACBBdXRob3JpemVkQ29udHJhY3RDYWxsZXJSZXF1aXJlZAAAAAMAAAAAAAAAE1Vuc3VwcG9ydGVkRnVuY3Rpb24AAAAABAAAAAAAAAASWmVyb0Ftb3VudFByb3ZpZGVkAAAAAAAF",
+        "AAAAAQAAAAAAAAAAAAAAE1Byb3RvY29sUGF1c2VkRXZlbnQAAAAAAQAAAAAAAAAGcGF1c2VkAAAAAAAB",
+        "AAAAAQAAAAAAAAAAAAAAFVByb3RvY29sVW5wYXVzZWRFdmVudAAAAAAAAAEAAAAAAAAABnBhdXNlZAAAAAAAAQ==",
+        "AAAAAQAAAAAAAAAAAAAAGEh1bWFUcmVhc3VyeUNoYW5nZWRFdmVudAAAAAEAAAAAAAAACHRyZWFzdXJ5AAAAEw==",
+        "AAAAAQAAAAAAAAAAAAAAEFBhdXNlckFkZGVkRXZlbnQAAAABAAAAAAAAAAZwYXVzZXIAAAAAABM=",
+        "AAAAAQAAAAAAAAAAAAAAElBhdXNlclJlbW92ZWRFdmVudAAAAAAAAQAAAAAAAAAGcGF1c2VyAAAAAAAT",
+        "AAAAAQAAAAAAAAAAAAAAGExpcXVpZGl0eUFzc2V0QWRkZWRFdmVudAAAAAEAAAAAAAAABWFzc2V0AAAAAAAAEw==",
+        "AAAAAQAAAAAAAAAAAAAAGkxpcXVpZGl0eUFzc2V0UmVtb3ZlZEV2ZW50AAAAAAABAAAAAAAAAAVhc3NldAAAAAAAABM=",
+        "AAAAAQAAAAAAAAAAAAAAIlNlbnRpbmVsU2VydmljZUFjY291bnRDaGFuZ2VkRXZlbnQAAAAAAAEAAAAAAAAAB2FjY291bnQAAAAAEw==",
+        "AAAAAQAAAAAAAAAAAAAAF1Byb3RvY29sRmVlQ2hhbmdlZEV2ZW50AAAAAAIAAAAAAAAAC25ld19mZWVfYnBzAAAAAAQAAAAAAAAAC29sZF9mZWVfYnBzAAAAAAQ=",
+        "AAAABAAAAAAAAAAAAAAAC0NvbW1vbkVycm9yAAAAAAcAAAAAAAAAEkFscmVhZHlJbml0aWFsaXplZAAAAAAAAQAAAAAAAAAdUHJvdG9jb2xJc1BhdXNlZE9yUG9vbElzTm90T24AAAAAAAACAAAAAAAAABxQb29sT3duZXJPckh1bWFPd25lclJlcXVpcmVkAAAAAwAAAAAAAAAUUG9vbE9wZXJhdG9yUmVxdWlyZWQAAAAEAAAAAAAAACBBdXRob3JpemVkQ29udHJhY3RDYWxsZXJSZXF1aXJlZAAAAAUAAAAAAAAAE1Vuc3VwcG9ydGVkRnVuY3Rpb24AAAAABgAAAAAAAAASWmVyb0Ftb3VudFByb3ZpZGVkAAAAAAAH",
       ]),
       options
     );
   }
   public readonly fromJSON = {
     initialize: this.txFromJSON<null>,
-    get_huma_owner: this.txFromJSON<string>,
     set_huma_owner: this.txFromJSON<null>,
-    get_huma_treasury: this.txFromJSON<string>,
     set_huma_treasury: this.txFromJSON<null>,
-    get_sentinel: this.txFromJSON<string>,
     set_sentinel: this.txFromJSON<null>,
-    is_protocol_paused: this.txFromJSON<boolean>,
+    set_liquidity_asset: this.txFromJSON<null>,
+    set_protocol_fee_bps: this.txFromJSON<null>,
     pause_protocol: this.txFromJSON<null>,
     unpause_protocol: this.txFromJSON<null>,
-    is_pauser: this.txFromJSON<boolean>,
     add_pauser: this.txFromJSON<null>,
     remove_pauser: this.txFromJSON<null>,
-    is_asset_valid: this.txFromJSON<boolean>,
-    set_liquidity_asset: this.txFromJSON<null>,
-    get_protocol_fee_bps: this.txFromJSON<u32>,
-    set_protocol_fee_bps: this.txFromJSON<null>,
     upgrade: this.txFromJSON<null>,
+    get_huma_owner: this.txFromJSON<string>,
+    get_huma_treasury: this.txFromJSON<string>,
+    get_sentinel: this.txFromJSON<string>,
+    get_protocol_fee_bps: this.txFromJSON<u32>,
+    is_pauser: this.txFromJSON<boolean>,
+    is_protocol_paused: this.txFromJSON<boolean>,
+    is_asset_valid: this.txFromJSON<boolean>,
   };
 }

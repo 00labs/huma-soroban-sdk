@@ -8,7 +8,7 @@ import {
   getTotalDue,
   makePayment,
 } from '../../src/helpers/CreditContractHelper'
-import { approveSep41AllowanceIfInsufficient } from '../../src/helpers/Sep41ContractHelper'
+import { approveSep41Allowance } from '../../src/helpers/Sep41ContractHelper'
 import { StellarWallet } from '../../src/services'
 import { POOL_NAME, ScValType, StellarNetwork } from '../../src/utils'
 import { sendTransaction } from '../../src/utils/transaction'
@@ -27,7 +27,7 @@ jest.mock('../../src/utils/transaction', () => ({
 
 jest.mock('../../src/helpers/Sep41ContractHelper', () => ({
   ...jest.requireActual('../../src/helpers/Sep41ContractHelper'),
-  approveSep41AllowanceIfInsufficient: jest.fn(),
+  approveSep41Allowance: jest.fn(),
 }))
 
 describe('getAvailableBalanceForPool', () => {
@@ -46,7 +46,7 @@ describe('getAvailableBalanceForPool', () => {
 
     const result = await getAvailableBalanceForPool(
       POOL_NAME.Arf,
-      StellarNetwork.testnet,
+      StellarNetwork.mainnet,
       wallet,
     )
     expect(result).toBe(100n)
@@ -59,7 +59,7 @@ describe('getCreditRecordForPool', () => {
   })
 
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )
@@ -122,7 +122,7 @@ describe('getAvailableCreditForPool', () => {
   })
 
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )
@@ -192,7 +192,7 @@ describe('getTotalDue', () => {
   })
 
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )
@@ -235,7 +235,7 @@ describe('approveAllowanceForSentinel', () => {
   })
 
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )
@@ -267,9 +267,7 @@ describe('approveAllowanceForSentinel', () => {
       .mockResolvedValueOnce({
         result: 'sentinel123',
       })
-    ;(approveSep41AllowanceIfInsufficient as jest.Mock).mockResolvedValueOnce(
-      mockTransaction,
-    )
+    ;(approveSep41Allowance as jest.Mock).mockResolvedValueOnce(mockTransaction)
 
     const result = await approveAllowanceForSentinel(
       mockPoolName,
@@ -286,7 +284,7 @@ describe('drawdown', () => {
   })
 
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )
@@ -309,9 +307,7 @@ describe('drawdown', () => {
       .mockResolvedValueOnce({
         result: 'transactionResult',
       })
-    ;(approveSep41AllowanceIfInsufficient as jest.Mock).mockResolvedValueOnce(
-      {},
-    )
+    ;(approveSep41Allowance as jest.Mock).mockResolvedValueOnce({})
 
     const result = await drawdown(
       mockPoolName,
@@ -331,7 +327,7 @@ describe('makePayment', () => {
   })
 
   const mockPoolName = POOL_NAME.Arf
-  const mockNetwork = StellarNetwork.testnet
+  const mockNetwork = StellarNetwork.mainnet
   const mockWallet = new StellarWallet(
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )
@@ -358,7 +354,7 @@ describe('makePayment', () => {
       .mockResolvedValueOnce({
         result: 'transactionResult',
       })
-    ;(approveSep41AllowanceIfInsufficient as jest.Mock).mockResolvedValue({})
+    ;(approveSep41Allowance as jest.Mock).mockResolvedValue({})
 
     const result = await makePayment(
       mockPoolName,
@@ -410,7 +406,7 @@ describe('makePayment', () => {
       .mockResolvedValueOnce({
         result: 'transactionResult',
       })
-    ;(approveSep41AllowanceIfInsufficient as jest.Mock).mockResolvedValue({})
+    ;(approveSep41Allowance as jest.Mock).mockResolvedValue({})
 
     const result = await makePayment(
       mockPoolName,

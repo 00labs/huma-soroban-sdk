@@ -6,8 +6,7 @@ import {
   TransactionBuilder,
   xdr,
 } from '@stellar/stellar-sdk'
-import { SentTransaction } from '@stellar/stellar-sdk/lib/contract'
-import { StellarWallet } from 'services'
+import { StellarWallet } from '../services'
 
 import { TransactionContext } from './client'
 import { ScValType, toScVal } from './common'
@@ -154,7 +153,7 @@ export const restoreAndExtendTTL = async (
   await extendTTLTransaction(wallet, network, simResponse)
 }
 
-export const sendTransaction = async <T = null>({
+export const sendTransaction = async ({
   context,
   method,
   params = [],
@@ -168,7 +167,7 @@ export const sendTransaction = async <T = null>({
     value: string | number | bigint | Buffer
   }[]
   shouldSignTransaction?: boolean
-}): Promise<SentTransaction<T>> => {
+}) => {
   const paramsXDR = params.map((param) => {
     return toScVal(param.value, param.type)
   })

@@ -1,9 +1,26 @@
 {
-  "extends": "./tsconfig",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "CommonJS",
-    "rootDir": "./src",
-    "outDir": "./dist/cjs" /* Redirect output structure to the directory. */
-  },
-  "exclude": ["tests/**/*.test.ts", "src/examples/**/*"]
+    "module": "commonjs",
+    "target": "ESNext",
+    "outDir": "./dist/cjs" /* Redirect output structure to the directory. */,
+    "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
+    "paths": {
+      "@stellar/stellar-sdk/contract": [
+        "../../node_modules/@stellar/stellar-sdk/lib/contract"
+      ],
+      "@stellar/stellar-sdk/rpc": [
+        "../../node_modules/@stellar/stellar-sdk/lib/rpc"
+      ],
+      "@huma-finance/soroban-credit-manager": ["../tb-creditManager/dist/cjs"],
+      "@huma-finance/soroban-credit-storage": ["../tb-creditStorage/dist/cjs"],
+      "@huma-finance/soroban-huma-config": ["../tb-humaConfig/dist/cjs"],
+      "@huma-finance/soroban-pool": ["../tb-pool/dist/cjs"],
+      "@huma-finance/soroban-pool-credit": ["../tb-poolCredit/dist/cjs"],
+      "@huma-finance/soroban-pool-manager": ["../tb-poolManager/dist/cjs"],
+      "@huma-finance/soroban-pool-storage": ["../tb-poolStorage/dist/cjs"],
+      "@huma-finance/soroban-tranche-vault": ["../tb-trancheVault/dist/cjs"],
+      "@huma-finance/soroban-sep41": ["../tb-sep41/dist/cjs"]
+    }
+  }
 }

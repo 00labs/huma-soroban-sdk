@@ -1,6 +1,8 @@
 import { Client as CreditManagerClient } from '@huma-finance/soroban-credit-manager'
 import { Client as CreditStorageClient } from '@huma-finance/soroban-credit-storage'
+import { Client as HumaConfigClient } from '@huma-finance/soroban-huma-config'
 import { Client as PoolClient } from '@huma-finance/soroban-pool'
+import { Client as PoolManagerClient } from '@huma-finance/soroban-pool-manager'
 import { Client as PoolCreditClient } from '@huma-finance/soroban-pool-credit'
 import { Client as PoolStorageClient } from '@huma-finance/soroban-pool-storage'
 import { Client as Sep41Client } from '@huma-finance/soroban-sep41'
@@ -17,23 +19,27 @@ import {
 } from './network'
 
 export type Client =
-  | PoolCreditClient
-  | CreditStorageClient
   | CreditManagerClient
+  | CreditStorageClient
+  | HumaConfigClient
   | PoolClient
+  | PoolCreditClient
+  | PoolManagerClient
   | PoolStorageClient
-  | TrancheVaultClient
   | Sep41Client
+  | TrancheVaultClient
 
 const ClientMap = {
-  poolCredit: PoolCreditClient,
-  creditStorage: CreditStorageClient,
   creditManager: CreditManagerClient,
+  creditStorage: CreditStorageClient,
+  humaConfig: HumaConfigClient,
   pool: PoolClient,
+  poolCredit: PoolCreditClient,
+  poolManager: PoolManagerClient,
   poolStorage: PoolStorageClient,
+  underlyingToken: Sep41Client,
   juniorTranche: TrancheVaultClient,
   seniorTranche: TrancheVaultClient,
-  underlyingToken: Sep41Client,
 }
 
 const getCommonProps = (network: StellarNetwork, wallet: StellarWallet) => {
@@ -181,7 +187,7 @@ export class TransactionContext {
       throw new Error(`Could not find client by contract type: ${contractType}`)
     }
     const client = new clientClass({
-      contractId: poolMetadata.contracts[contractType],
+      contractId: poolMetadata.contracts[contractType]!,
       ...getCommonProps(network, wallet),
     })
 
