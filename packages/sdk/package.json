@@ -2,8 +2,12 @@
   "name": "@huma-finance/soroban-sdk",
   "version": "0.0.15",
   "types": "./dist/index.d.ts",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/index.js"
+    }
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -17,15 +21,15 @@
   "scripts": {
     "start": "tsc -w",
     "generateDocs": "jsdoc2md --files \"src/**/*.ts\" --configure ./jsdoc2md.json > API.md",
-    "build": "tsc --project ./tsconfig.build.json && tsc --project ./tsconfig.cjs.json",
-    "clean": "rm -f tsconfig.build.tsbuildinfo && rm -rf dist",
+    "build": "tsc --project ./tsconfig.json && tsc --project ./tsconfig.cjs.json",
+    "clean": "rm -f tsconfig.tsbuildinfo && rm -rf dist",
     "lint": "eslint --max-warnings=0 \"src/**/*.{js,ts,tsx,graphql}\"",
     "lint-staged": "lint-staged",
     "prettier": "prettier --write \"src/**/*.{js,ts,tsx,graphql}\"",
     "test": "jest",
     "test:coverage": "jest --verbose --coverage",
     "test:badges": "yarn run test:coverage && yarn jest-coverage-badges",
-    "binding": "ts-node --project ./tsconfig.script.json scripts/bindings.ts"
+    "binding": "ts-node scripts/bindings.ts"
   },
   "dependencies": {
     "@huma-finance/soroban-credit-manager": "^0.0.15",

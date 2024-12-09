@@ -1,11 +1,16 @@
 {
   "version": "0.0.15",
   "name": "@huma-finance/soroban-pool-manager",
-  "exports": "./dist/index.js",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/index.js"
+    }
+  },
   "typings": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "clean": "tsc --build --clean"
+    "build": "tsc --project ./tsconfig.json && tsc --project ./tsconfig.cjs.json",
+    "clean": "tsc --build --clean && rm -rf dist"
   },
   "dependencies": {
     "@stellar/stellar-sdk": "12.1.0",

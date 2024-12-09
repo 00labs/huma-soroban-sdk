@@ -6,7 +6,7 @@ import {
   TransactionBuilder,
   xdr,
 } from '@stellar/stellar-sdk'
-import { StellarWallet } from 'services'
+import { StellarWallet } from '../services'
 
 import { TransactionContext } from './client'
 import { ScValType, toScVal } from './common'

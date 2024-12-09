@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ESNext",
+    "rootDir": "./src",
+    "outDir": "./dist/cjs" /* Redirect output structure to the directory. */,
+    "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@stellar/stellar-sdk/contract": [
+        "../../node_modules/@stellar/stellar-sdk/lib/contract"
+      ],
+      "@stellar/stellar-sdk/rpc": [
+        "../../node_modules/@stellar/stellar-sdk/lib/rpc"
+      ]
+    }
+  }
+}
