@@ -1,12 +1,12 @@
 import { Buffer } from "buffer";
-import { Address } from "@stellar/stellar-sdk";
+import { Address } from '@stellar/stellar-sdk';
 import {
   AssembledTransaction,
   Client as ContractClient,
   ClientOptions as ContractClientOptions,
   Result,
   Spec as ContractSpec,
-} from "@stellar/stellar-sdk/contract";
+} from '@stellar/stellar-sdk/contract';
 import type {
   u32,
   i32,
@@ -19,22 +19,24 @@ import type {
   Option,
   Typepoint,
   Duration,
-} from "@stellar/stellar-sdk/contract";
-export * from "@stellar/stellar-sdk";
-export * as contract from "@stellar/stellar-sdk/contract";
-export * as rpc from "@stellar/stellar-sdk/rpc";
+} from '@stellar/stellar-sdk/contract';
+export * from '@stellar/stellar-sdk'
+export * as contract from '@stellar/stellar-sdk/contract'
+export * as rpc from '@stellar/stellar-sdk/rpc'
 
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   //@ts-ignore Buffer exists
   window.Buffer = window.Buffer || Buffer;
 }
 
+
 export const networks = {
-  unknown: {
-    networkPassphrase: "Public Global Stellar Network ; September 2015",
-    contractId: "CANCNGJEAAN4GS6WVI3OAFWD2IAJW6WMI7TOD4UHC623QTDMD3LVTN3G",
-  },
-} as const;
+  testnet: {
+    networkPassphrase: "Test SDF Network ; September 2015",
+    contractId: "CBFWHLTTTQHRIK5KKXMV2DRXFE4TZDPBXJUWLHW7HPWL5HUU3X7MNUFZ",
+  }
+} as const
+
 
 export interface CreditAddressesChangedEvent {
   credit_storage: string;
@@ -42,16 +44,15 @@ export interface CreditAddressesChangedEvent {
   pool_storage: string;
 }
 
-export type ClientDataKey =
-  | { tag: "Pool"; values: void }
-  | { tag: "PoolStorage"; values: void }
-  | { tag: "CreditStorage"; values: void };
+export type ClientDataKey = {tag: "Pool", values: void} | {tag: "PoolStorage", values: void} | {tag: "CreditStorage", values: void};
+
 
 export interface DrawdownMadeEvent {
   borrow_amount: u128;
   borrower: string;
   net_amount_to_borrower: u128;
 }
+
 
 export interface PaymentMadeEvent {
   amount: u128;
@@ -67,6 +68,7 @@ export interface PaymentMadeEvent {
   yield_past_due_paid: u128;
 }
 
+
 export interface PrincipalPaymentMadeEvent {
   amount: u128;
   borrower: string;
@@ -77,54 +79,51 @@ export interface PrincipalPaymentMadeEvent {
   unbilled_principal_paid: u128;
 }
 
+
 export interface CreditClosedAfterPayOffEvent {
   credit_hash: Buffer;
 }
 
 export const Errors = {
-  601: { message: "BorrowerOrSentinelRequired" },
+  601: {message:"BorrowerOrSentinelRequired"},
 
-  602: { message: "AttemptedDrawdownOnNonRevolvingCredit" },
+  602: {message:"AttemptedDrawdownOnNonRevolvingCredit"},
 
-  603: { message: "CreditLimitExceeded" },
+  603: {message:"CreditLimitExceeded"},
 
-  604: { message: "DrawdownNotAllowedInFinalPeriodAndBeyond" },
+  604: {message:"DrawdownNotAllowedInFinalPeriodAndBeyond"},
 
-  605: { message: "InsufficientPoolBalanceForDrawdown" },
+  605: {message:"InsufficientPoolBalanceForDrawdown"},
 
-  606: { message: "FirstDrawdownTooEarly" },
+  606: {message:"FirstDrawdownTooEarly"},
 
-  607: { message: "CreditNotInStateForDrawdown" },
+  607: {message:"CreditNotInStateForDrawdown"},
 
-  608: { message: "DrawdownNotAllowedAfterDueDateWithUnpaidDue" },
+  608: {message:"DrawdownNotAllowedAfterDueDateWithUnpaidDue"},
 
-  609: { message: "CreditNotInStateForMakingPayment" },
+  609: {message:"CreditNotInStateForMakingPayment"},
 
-  610: { message: "CreditNotInStateForMakingPrincipalPayment" },
+  610: {message:"CreditNotInStateForMakingPrincipalPayment"},
 
-  801: { message: "StartDateLaterThanEndDate" },
+  801: {message:"StartDateLaterThanEndDate"},
 
-  1: { message: "AlreadyInitialized" },
+  1: {message:"AlreadyInitialized"},
 
-  2: { message: "ProtocolIsPausedOrPoolIsNotOn" },
+  2: {message:"ProtocolIsPausedOrPoolIsNotOn"},
 
-  3: { message: "PoolOwnerOrHumaOwnerRequired" },
+  3: {message:"PoolOwnerOrHumaOwnerRequired"},
 
-  4: { message: "PoolOperatorRequired" },
+  4: {message:"PoolOperatorRequired"},
 
-  5: { message: "AuthorizedContractCallerRequired" },
+  5: {message:"AuthorizedContractCallerRequired"},
 
-  6: { message: "UnsupportedFunction" },
+  6: {message:"UnsupportedFunction"},
 
-  7: { message: "ZeroAmountProvided" },
+  7: {message:"ZeroAmountProvided"},
 
-  221: { message: "BorrowAmountLessThanPlatformFees" },
-};
-
-export type PayPeriodDuration =
-  | { tag: "Monthly"; values: void }
-  | { tag: "Quarterly"; values: void }
-  | { tag: "SemiAnnually"; values: void };
+  221: {message:"BorrowAmountLessThanPlatformFees"}
+}
+export type PayPeriodDuration = {tag: "Monthly", values: void} | {tag: "Quarterly", values: void} | {tag: "SemiAnnually", values: void};
 
 export interface BillRefreshedEvent {
   credit_hash: Buffer;
@@ -133,12 +132,8 @@ export interface BillRefreshedEvent {
   total_past_due: u128;
 }
 
-export type CreditState =
-  | { tag: "Deleted"; values: void }
-  | { tag: "Approved"; values: void }
-  | { tag: "GoodStanding"; values: void }
-  | { tag: "Delayed"; values: void }
-  | { tag: "Defaulted"; values: void };
+export type CreditState = {tag: "Deleted", values: void} | {tag: "Approved", values: void} | {tag: "GoodStanding", values: void} | {tag: "Delayed", values: void} | {tag: "Defaulted", values: void};
+
 
 export interface CreditConfig {
   committed_amount: u128;
@@ -148,6 +143,7 @@ export interface CreditConfig {
   revolving: boolean;
   yield_bps: u32;
 }
+
 
 export interface CreditRecord {
   missed_periods: u32;
@@ -160,6 +156,7 @@ export interface CreditRecord {
   yield_due: u128;
 }
 
+
 export interface DueDetail {
   accrued: u128;
   committed: u128;
@@ -170,9 +167,8 @@ export interface DueDetail {
   yield_past_due: u128;
 }
 
-export type TranchesPolicyType =
-  | { tag: "FixedSeniorYield"; values: void }
-  | { tag: "RiskAdjusted"; values: void };
+export type TranchesPolicyType = {tag: "FixedSeniorYield", values: void} | {tag: "RiskAdjusted", values: void};
+
 
 export interface PoolSettings {
   default_grace_period_days: u32;
@@ -183,6 +179,7 @@ export interface PoolSettings {
   principal_only_payment_allowed: boolean;
 }
 
+
 export interface LPConfig {
   auto_redemption_after_lockup: boolean;
   fixed_senior_yield_bps: u32;
@@ -192,6 +189,7 @@ export interface LPConfig {
   withdrawal_lockout_period_days: u32;
 }
 
+
 export interface FeeStructure {
   front_loading_fee_bps: u32;
   front_loading_fee_flat: u128;
@@ -199,15 +197,14 @@ export interface FeeStructure {
   yield_bps: u32;
 }
 
-export type PoolStatus =
-  | { tag: "Off"; values: void }
-  | { tag: "On"; values: void }
-  | { tag: "Closed"; values: void };
+export type PoolStatus = {tag: "Off", values: void} | {tag: "On", values: void} | {tag: "Closed", values: void};
+
 
 export interface Epoch {
   end_time: u64;
   id: u64;
 }
+
 
 export interface AdminRnR {
   liquidity_rate_bps_ea: u32;
@@ -216,245 +213,203 @@ export interface AdminRnR {
   reward_rate_bps_pool_owner: u32;
 }
 
+
 export interface TrancheAddresses {
   addrs: Array<Option<string>>;
 }
+
 
 export interface TrancheAssets {
   assets: Array<u128>;
 }
 
+
 export interface Client {
   /**
    * Construct and simulate a initialize transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  initialize: (
-    {
-      pool,
-      pool_storage,
-      credit_storage,
-    }: { pool: string; pool_storage: string; credit_storage: string },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
+  initialize: ({pool, pool_storage, credit_storage}: {pool: string, pool_storage: string, credit_storage: string}, options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
 
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
 
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<null>>;
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<null>>
 
   /**
    * Construct and simulate a set_contract_addrs transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  set_contract_addrs: (
-    {
-      caller,
-      pool_storage,
-      pool,
-      credit_storage,
-    }: {
-      caller: string;
-      pool_storage: string;
-      pool: string;
-      credit_storage: string;
-    },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
+  set_contract_addrs: ({caller, pool_storage, pool, credit_storage}: {caller: string, pool_storage: string, pool: string, credit_storage: string}, options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
 
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
 
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<null>>;
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<null>>
 
   /**
    * Construct and simulate a drawdown transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  drawdown: (
-    { borrower, amount }: { borrower: string; amount: u128 },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
+  drawdown: ({borrower, amount}: {borrower: string, amount: u128}, options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
 
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
 
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<u128>>;
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<u128>>
 
   /**
    * Construct and simulate a make_payment transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  make_payment: (
-    {
-      caller,
-      borrower,
-      amount,
-    }: { caller: string; borrower: string; amount: u128 },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
+  make_payment: ({caller, borrower, amount}: {caller: string, borrower: string, amount: u128}, options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
 
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
 
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<readonly [u128, boolean]>>;
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<readonly [u128, boolean]>>
 
   /**
    * Construct and simulate a make_principal_payment transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  make_principal_payment: (
-    { borrower, amount }: { borrower: string; amount: u128 },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
+  make_principal_payment: ({borrower, amount}: {borrower: string, amount: u128}, options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
 
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
 
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<readonly [u128, boolean]>>;
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<readonly [u128, boolean]>>
 
   /**
    * Construct and simulate a upgrade transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  upgrade: (
-    { new_wasm_hash }: { new_wasm_hash: Buffer },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
+  upgrade: ({new_wasm_hash}: {new_wasm_hash: Buffer}, options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
 
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
 
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<null>>;
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<null>>
 
   /**
    * Construct and simulate a get_due_info transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  get_due_info: (
-    { borrower }: { borrower: string },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
+  get_due_info: ({borrower}: {borrower: string}, options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
 
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
 
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<readonly [CreditRecord, DueDetail]>>;
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<readonly [CreditRecord, DueDetail]>>
 
   /**
    * Construct and simulate a get_next_bill_refresh_date transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  get_next_bill_refresh_date: (
-    { borrower }: { borrower: string },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
+  get_next_bill_refresh_date: ({borrower}: {borrower: string}, options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
 
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
 
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<u64>>;
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<u64>>
 
   /**
    * Construct and simulate a get_amt_available_for_drawdown transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  get_amt_available_for_drawdown: (
-    { borrower }: { borrower: string },
-    options?: {
-      /**
-       * The fee to pay for the transaction. Default: BASE_FEE
-       */
-      fee?: number;
+  get_amt_available_for_drawdown: ({borrower}: {borrower: string}, options?: {
+    /**
+     * The fee to pay for the transaction. Default: BASE_FEE
+     */
+    fee?: number;
 
-      /**
-       * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
-       */
-      timeoutInSeconds?: number;
+    /**
+     * The maximum amount of time to wait for the transaction to complete. Default: DEFAULT_TIMEOUT
+     */
+    timeoutInSeconds?: number;
 
-      /**
-       * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
-       */
-      simulate?: boolean;
-    }
-  ) => Promise<AssembledTransaction<u128>>;
+    /**
+     * Whether to automatically simulate the transaction when constructing the AssembledTransaction. Default: true
+     */
+    simulate?: boolean;
+  }) => Promise<AssembledTransaction<u128>>
+
 }
 export class Client extends ContractClient {
   constructor(public readonly options: ContractClientOptions) {
     super(
-      new ContractSpec([
-        "AAAAAQAAAAAAAAAAAAAAG0NyZWRpdEFkZHJlc3Nlc0NoYW5nZWRFdmVudAAAAAADAAAAAAAAAA5jcmVkaXRfc3RvcmFnZQAAAAAAEwAAAAAAAAAEcG9vbAAAABMAAAAAAAAADHBvb2xfc3RvcmFnZQAAABM=",
+      new ContractSpec([ "AAAAAQAAAAAAAAAAAAAAG0NyZWRpdEFkZHJlc3Nlc0NoYW5nZWRFdmVudAAAAAADAAAAAAAAAA5jcmVkaXRfc3RvcmFnZQAAAAAAEwAAAAAAAAAEcG9vbAAAABMAAAAAAAAADHBvb2xfc3RvcmFnZQAAABM=",
         "AAAAAgAAAAAAAAAAAAAADUNsaWVudERhdGFLZXkAAAAAAAADAAAAAAAAAAAAAAAEUG9vbAAAAAAAAAAAAAAAC1Bvb2xTdG9yYWdlAAAAAAAAAAAAAAAADUNyZWRpdFN0b3JhZ2UAAAA=",
         "AAAAAAAAAAAAAAAKaW5pdGlhbGl6ZQAAAAAAAwAAAAAAAAAEcG9vbAAAABMAAAAAAAAADHBvb2xfc3RvcmFnZQAAABMAAAAAAAAADmNyZWRpdF9zdG9yYWdlAAAAAAATAAAAAA==",
         "AAAAAAAAAAAAAAASc2V0X2NvbnRyYWN0X2FkZHJzAAAAAAAEAAAAAAAAAAZjYWxsZXIAAAAAABMAAAAAAAAADHBvb2xfc3RvcmFnZQAAABMAAAAAAAAABHBvb2wAAAATAAAAAAAAAA5jcmVkaXRfc3RvcmFnZQAAAAAAEwAAAAA=",
@@ -487,20 +442,19 @@ export class Client extends ContractClient {
         "AAAAAQAAAAAAAAAAAAAABUVwb2NoAAAAAAAAAgAAAAAAAAAIZW5kX3RpbWUAAAAGAAAAAAAAAAJpZAAAAAAABg==",
         "AAAAAQAAAAAAAAAAAAAACEFkbWluUm5SAAAABAAAAAAAAAAVbGlxdWlkaXR5X3JhdGVfYnBzX2VhAAAAAAAABAAAAAAAAAAdbGlxdWlkaXR5X3JhdGVfYnBzX3Bvb2xfb3duZXIAAAAAAAAEAAAAAAAAABJyZXdhcmRfcmF0ZV9icHNfZWEAAAAAAAQAAAAAAAAAGnJld2FyZF9yYXRlX2Jwc19wb29sX293bmVyAAAAAAAE",
         "AAAAAQAAAAAAAAAAAAAAEFRyYW5jaGVBZGRyZXNzZXMAAAABAAAAAAAAAAVhZGRycwAAAAAAA+oAAAPoAAAAEw==",
-        "AAAAAQAAAAAAAAAAAAAADVRyYW5jaGVBc3NldHMAAAAAAAABAAAAAAAAAAZhc3NldHMAAAAAA+oAAAAK",
-      ]),
+        "AAAAAQAAAAAAAAAAAAAADVRyYW5jaGVBc3NldHMAAAAAAAABAAAAAAAAAAZhc3NldHMAAAAAA+oAAAAK" ]),
       options
-    );
+    )
   }
   public readonly fromJSON = {
     initialize: this.txFromJSON<null>,
-    set_contract_addrs: this.txFromJSON<null>,
-    drawdown: this.txFromJSON<u128>,
-    make_payment: this.txFromJSON<readonly [u128, boolean]>,
-    make_principal_payment: this.txFromJSON<readonly [u128, boolean]>,
-    upgrade: this.txFromJSON<null>,
-    get_due_info: this.txFromJSON<readonly [CreditRecord, DueDetail]>,
-    get_next_bill_refresh_date: this.txFromJSON<u64>,
-    get_amt_available_for_drawdown: this.txFromJSON<u128>,
-  };
+        set_contract_addrs: this.txFromJSON<null>,
+        drawdown: this.txFromJSON<u128>,
+        make_payment: this.txFromJSON<readonly [u128, boolean]>,
+        make_principal_payment: this.txFromJSON<readonly [u128, boolean]>,
+        upgrade: this.txFromJSON<null>,
+        get_due_info: this.txFromJSON<readonly [CreditRecord, DueDetail]>,
+        get_next_bill_refresh_date: this.txFromJSON<u64>,
+        get_amt_available_for_drawdown: this.txFromJSON<u128>
+  }
 }

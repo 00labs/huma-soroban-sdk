@@ -29,7 +29,7 @@ const cmd = (...command: string[]) => {
 // Typescript bindings doc: https://developers.stellar.org/docs/smart-contracts/getting-started/create-an-app#generate-an-npm-package-for-the-hello-world-contract
 (async () => {
   const metadata = NetworkMetadatas.find(
-    (x) => x.network === StellarNetwork.mainnet
+    (x) => x.network === StellarNetwork.testnet
   )!;
   const { contracts } = metadata.pools[0];
   const contractNames = Object.keys(contracts);
@@ -46,8 +46,8 @@ const cmd = (...command: string[]) => {
     console.log("Starting bindings for", contractName);
 
     let test = `soroban contract bindings typescript \
-    --network-passphrase 'Public Global Stellar Network ; September 2015' \
-    --rpc-url https://mainnet.sorobanrpc.com \
+    --network-passphrase 'Test SDF Network ; September 2015' \
+    --rpc-url https://soroban-testnet.stellar.org \
     --output-dir packages/tb-${contractName} \
     --overwrite \
     --contract-id ${contractAddress}`;

@@ -39,7 +39,10 @@ describe('StellarWallet', () => {
     const opts = { networkPassphrase: 'Test SDF Network ; September 2015' }
     const signedXDR = await wallet.signTransaction(tx, opts)
 
-    expect(signedXDR).toEqual('xdr_representation')
+    expect(signedXDR).toEqual({
+      signedTxXdr: 'xdr_representation',
+      signerAddress: 'GABC123DEF456',
+    })
     expect(Transaction).toHaveBeenCalledWith(tx, opts.networkPassphrase)
   })
 })
