@@ -17,10 +17,19 @@ export class StellarWallet {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public async signTransaction(tx: string, opts: any) {
+  public async signTransaction(
+    tx: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    opts: any,
+  ): Promise<{
+    signedTxXdr: string
+    signerAddress?: string
+  }> {
     const txFromXDR = new Transaction(tx, opts.networkPassphrase)
     txFromXDR.sign(this.#sourceKeypair)
-    return txFromXDR.toXDR()
+    return {
+      signedTxXdr: txFromXDR.toXDR(),
+      signerAddress: this.#sourceKeypair.publicKey(), // optional
+    }
   }
 }
