@@ -30,9 +30,9 @@ if (typeof window !== "undefined") {
 }
 
 export const networks = {
-  unknown: {
-    networkPassphrase: "Public Global Stellar Network ; September 2015",
-    contractId: "CD7FKCTK2Z3KX7RZEEKD632RIR7J65KALICV6G7W4UPRMF65RNXAT5AM",
+  testnet: {
+    networkPassphrase: "Test SDF Network ; September 2015",
+    contractId: "CBLFQXZ5IK5ROO5RB7IUMZEIOENK7BTOL6PTM4FMOJOENDOQ4JZCBQG7",
   },
 } as const;
 
@@ -136,8 +136,6 @@ export const Errors = {
 
   715: { message: "CreditHasUnfulfilledCommitment" },
 
-  221: { message: "BorrowAmountLessThanPlatformFees" },
-
   801: { message: "StartDateLaterThanEndDate" },
 
   1: { message: "AlreadyInitialized" },
@@ -153,8 +151,9 @@ export const Errors = {
   6: { message: "UnsupportedFunction" },
 
   7: { message: "ZeroAmountProvided" },
-};
 
+  221: { message: "BorrowAmountLessThanPlatformFees" },
+};
 export type PayPeriodDuration =
   | { tag: "Monthly"; values: void }
   | { tag: "Quarterly"; values: void }
