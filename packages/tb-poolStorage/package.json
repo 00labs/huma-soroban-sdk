@@ -1,5 +1,5 @@
 {
-  "version": "0.0.16",
+  "version": "0.0.17",
   "name": "@huma-finance/soroban-pool-storage",
   "exports": {
     ".": {
@@ -9,8 +9,8 @@
   },
   "typings": "dist/index.d.ts",
   "scripts": {
-     "build": "tsc --project ./tsconfig.json && tsc --project ./tsconfig.cjs.json",     
-     "clean": "tsc --build --clean && rm -rf dist"
+    "build": "tsc --project ./tsconfig.json && tsc --project ./tsconfig.cjs.json",
+    "clean": "tsc --build --clean && rm -rf dist"
   },
   "dependencies": {
     "@stellar/stellar-sdk": "13.0.0",
