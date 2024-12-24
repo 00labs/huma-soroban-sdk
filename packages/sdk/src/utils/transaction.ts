@@ -2,7 +2,7 @@ import {
   BASE_FEE,
   Contract,
   Operation,
-  SorobanRpc,
+  rpc,
   TransactionBuilder,
   xdr,
 } from '@stellar/stellar-sdk'
@@ -17,8 +17,8 @@ import {
 } from './network'
 
 const handlePendingTransaction = async (
-  sendResponse: SorobanRpc.Api.SendTransactionResponse,
-  server: SorobanRpc.Server,
+  sendResponse: rpc.Api.SendTransactionResponse,
+  server: rpc.Server,
 ) => {
   if (sendResponse.status === 'PENDING') {
     let getResponse = await server.getTransaction(sendResponse.hash)
@@ -48,7 +48,7 @@ export const simulateTransaction = async (
   method: string,
   params: xdr.ScVal[] = [],
 ) => {
-  const server = new SorobanRpc.Server(StellarPublicRpcUrl[network])
+  const server = new rpc.Server(StellarPublicRpcUrl[network])
   const contract = new Contract(contractAddress)
   const account = await server.getAccount(wallet.userInfo.publicKey)
   const builtTransaction = new TransactionBuilder(account, {
@@ -65,12 +65,12 @@ export const simulateTransaction = async (
 export const restoreTransaction = async (
   wallet: StellarWallet,
   network: StellarNetwork,
-  simResponse: SorobanRpc.Api.SimulateTransactionResponse,
+  simResponse: rpc.Api.SimulateTransactionResponse,
 ) => {
-  const server = new SorobanRpc.Server(StellarPublicRpcUrl[network])
+  const server = new rpc.Server(StellarPublicRpcUrl[network])
   const account = await server.getAccount(wallet.userInfo.publicKey)
 
-  const restoreNeeded = SorobanRpc.Api.isSimulationRestore(simResponse)
+  const restoreNeeded = rpc.Api.isSimulationRestore(simResponse)
   if (!restoreNeeded) {
     return
   }
@@ -98,12 +98,12 @@ export const restoreTransaction = async (
 export const extendTTLTransaction = async (
   wallet: StellarWallet,
   network: StellarNetwork,
-  simResponse: SorobanRpc.Api.SimulateTransactionResponse,
+  simResponse: rpc.Api.SimulateTransactionResponse,
 ) => {
-  const server = new SorobanRpc.Server(StellarPublicRpcUrl[network])
+  const server = new rpc.Server(StellarPublicRpcUrl[network])
   const account = await server.getAccount(wallet.userInfo.publicKey)
 
-  const restoreNeeded = SorobanRpc.Api.isSimulationRestore(simResponse)
+  const restoreNeeded = rpc.Api.isSimulationRestore(simResponse)
   if (!restoreNeeded) {
     return
   }
