@@ -1,4 +1,4 @@
-import { Address, nativeToScVal, SorobanRpc, xdr } from '@stellar/stellar-sdk'
+import { Address, nativeToScVal, rpc, xdr } from '@stellar/stellar-sdk'
 import {
   StellarNetwork,
   NetworkMetadatas,
@@ -69,7 +69,7 @@ export const findPoolMetadata = (network: StellarNetwork, poolName: string) => {
 }
 
 export const getLatestLedger = async (network: StellarNetwork) => {
-  const server = new SorobanRpc.Server(StellarPublicRpcUrl[network], {
+  const server = new rpc.Server(StellarPublicRpcUrl[network], {
     allowHttp: true,
   })
   return server.getLatestLedger()
