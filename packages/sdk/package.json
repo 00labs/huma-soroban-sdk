@@ -40,7 +40,7 @@
     "@huma-finance/soroban-pool-storage": "^0.0.17",
     "@huma-finance/soroban-sep41": "^0.0.17",
     "@huma-finance/soroban-tranche-vault": "^0.0.17",
-    "@stellar/stellar-sdk": "^12.1.0",
+    "@stellar/stellar-sdk": "13.0.0",
     "dotenv": "^16.0.3",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.0",
