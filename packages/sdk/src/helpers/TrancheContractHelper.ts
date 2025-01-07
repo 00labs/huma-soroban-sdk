@@ -1,4 +1,4 @@
-import { StellarWallet } from 'services'
+import { StellarWallet } from '../services'
 import {
   POOL_NAME,
   StellarNetwork,
@@ -7,7 +7,7 @@ import {
   ScValType,
   findPoolMetadata,
   ContractType,
-} from 'utils'
+} from '../utils'
 
 const DEFAULT_DECIMALS_FACTOR = BigInt('1_000_000_000_000_000_000')
 
