@@ -21,6 +21,10 @@ associated with the given pool name on the current chain.</p></dd>
 <dt><a href="#approveSep41Allowance">approveSep41Allowance(poolName, network, wallet, spenderAddress)</a></dt>
 <dd><p>Approves an Sep41 allowance for a spender address.
 Allowance is required to do certain actions on the Huma protocol (e.g. makePayment for Autopay)</p></dd>
+<dt><a href="#getYieldToWithdraw">getYieldToWithdraw(poolName, network, wallet)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
+<dd><p>Get yield available to withdraw from the pool for a lender account</p></dd>
+<dt><a href="#withdrawYields">withdrawYields(poolName, network, wallet)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
+<dd><p>Withdraw yield from the pool for a lender account</p></dd>
 </dl>
 
 <a name="getAvailableBalanceForPool"></a>
@@ -144,4 +148,36 @@ Allowance is required to do certain actions on the Huma protocol (e.g. makePayme
 | network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
 | wallet | <code>StellarWallet</code> | <p>The wallet used to send the transaction.</p> |
 | spenderAddress | <code>string</code> | <p>The address of the spender to approve an allowance for.</p> |
+
+<a name="getYieldToWithdraw"></a>
+
+## getYieldToWithdraw(poolName, network, wallet) ⇒ <code>Promise.&lt;SentTransaction&gt;</code>
+<p>Get yield available to withdraw from the pool for a lender account</p>
+
+**Kind**: global function  
+**Returns**: <code>Promise.&lt;SentTransaction&gt;</code> - <ul>
+<li>A Promise of the SentTransaction.</li>
+</ul>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to get the contract instance for.</p> |
+| network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
+| wallet | <code>StellarWallet</code> | <p>The stellar wallet.</p> |
+
+<a name="withdrawYields"></a>
+
+## withdrawYields(poolName, network, wallet) ⇒ <code>Promise.&lt;SentTransaction&gt;</code>
+<p>Withdraw yield from the pool for a lender account</p>
+
+**Kind**: global function  
+**Returns**: <code>Promise.&lt;SentTransaction&gt;</code> - <ul>
+<li>A Promise of the SentTransaction.</li>
+</ul>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to get the contract instance for.</p> |
+| network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
+| wallet | <code>StellarWallet</code> | <p>The stellar wallet.</p> |
 
