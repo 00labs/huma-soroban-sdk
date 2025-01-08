@@ -6,6 +6,7 @@
   "main": "src/mintReceivable.js",
   "scripts": {
     "startDrawdownPayback": "ts-node src/drawdownAndPayback.ts",
+    "yieldWithdrawable": "ts-node src/yieldWithdrawable.ts",
     "lint-staged": "lint-staged"
   },
   "dependencies": {
