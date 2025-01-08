@@ -42,7 +42,10 @@ const ClientMap = {
   seniorTranche: TrancheVaultClient,
 }
 
-const getCommonProps = (network: StellarNetwork, wallet: StellarWallet) => {
+export const getCommonProps = (
+  network: StellarNetwork,
+  wallet: StellarWallet,
+) => {
   return {
     publicKey: wallet.userInfo.publicKey,
     networkPassphrase: StellarNetworkPassphrase[network],
