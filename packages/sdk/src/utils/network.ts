@@ -90,6 +90,30 @@ export const NetworkMetadatas: NetworkMetadata[] = [
         },
         borrowers: [],
       },
+      {
+        poolName: POOL_NAME.Roam,
+        poolType: POOL_TYPE.Creditline,
+        contracts: {
+          humaConfig:
+            'CAXZGMU3EHOHGXGXDJWVPG5PIVC2DCZQ2JO2YI3RGSM4OQK7ZIQ46FV5',
+          poolStorage:
+            'CAB53KIRFB6S5AB73NCCLKM5XMYTKD75RL3FGVG5ZKDUQBGVUIK4ZRDC',
+          pool: 'CCCWIFYK57JQJ7PUE5OCH7KIG4LJECSAUL6VCOB3RYTH3G7LK5XWUPLV',
+          poolManager:
+            'CAA5V7EUL54JWLZMM5ZW4UMNFFWIEQAB74QZ7BFPDS4TU3YGURNB7X3O',
+          poolCredit:
+            'CDLV3BYERCMZ6GA2K7N737SSS7OCOMDG4YQOK3L7ECBQF3QSYWJ64KPU',
+          creditManager:
+            'CBOBDST2PFMLN6CP6KP3TA67NV7AM3AURTUQ2UFCO6QTUGNAQKSIWYKE',
+          creditStorage:
+            'CDVTUZZPATZD236WX3RQF57WWBGU74OMEUXJZQ3LTT6H5SCZVFTFV3ZD',
+          juniorTranche:
+            'CBT55AVA4MM5DLYJA7KW23GQY64KGOTQF5ELEY7CMYJ6TDQ43QMPEF7B',
+          underlyingToken:
+            'CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75',
+        },
+        borrowers: [],
+      },
     ],
   },
   {

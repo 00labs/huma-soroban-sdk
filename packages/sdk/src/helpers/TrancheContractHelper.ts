@@ -7,9 +7,11 @@ import {
   ScValType,
   findPoolMetadata,
   ContractType,
+  fetchStellarDepositRecord,
+  DepositRecord,
 } from '../utils'
 
-const DEFAULT_DECIMALS_FACTOR = BigInt('1_000_000_000_000_000_000')
+const DEFAULT_DECIMALS_FACTOR = BigInt('1000000000000000000')
 
 function convertToAssets(
   totalAssets: bigint,
@@ -54,24 +56,13 @@ async function getYieldToWithdrawFromTranche(
       },
     ],
   })
-  const {
-    result: depositRecord,
-  }: {
-    result: {
-      last_deposit_time: bigint
-      principal: bigint
-    }
-  } = await sendTransaction({
-    context: trancheContext,
-    method: 'get_deposit_record',
-    params: [
-      {
-        name: 'account',
-        type: ScValType.address,
-        value: wallet.userInfo.publicKey,
-      },
-    ],
-  })
+  const depositRecord: DepositRecord | null = await fetchStellarDepositRecord(
+    trancheContext,
+    wallet.userInfo.publicKey,
+  )
+  if (depositRecord == null) {
+    throw new Error('Deposit record not found')
+  }
 
   // Scale numbers using `DEFAULT_DECIMALS_FACTOR` to reduce precision loss caused by
   // integer division.
