@@ -119,7 +119,7 @@ export async function getYieldToWithdraw(
   return [juniorTrancheResult, seniorTrancheResult]
 }
 
-async function withdrawYieldFromTranche(
+export async function withdrawYieldFromTranche(
   poolName: POOL_NAME,
   network: StellarNetwork,
   wallet: StellarWallet,
