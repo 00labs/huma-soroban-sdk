@@ -1,6 +1,6 @@
 {
   "name": "@huma-finance/soroban-sdk",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -31,15 +31,15 @@
     "test:badges": "yarn run test:coverage && yarn jest-coverage-badges"
   },
   "dependencies": {
-    "@huma-finance/soroban-credit-manager": "^0.0.21",
-    "@huma-finance/soroban-credit-storage": "^0.0.21",
-    "@huma-finance/soroban-huma-config": "^0.0.21",
-    "@huma-finance/soroban-pool": "^0.0.21",
-    "@huma-finance/soroban-pool-credit": "^0.0.21",
-    "@huma-finance/soroban-pool-manager": "^0.0.21",
-    "@huma-finance/soroban-pool-storage": "^0.0.21",
-    "@huma-finance/soroban-sep41": "^0.0.21",
-    "@huma-finance/soroban-tranche-vault": "^0.0.21",
+    "@huma-finance/soroban-credit-manager": "^0.0.22",
+    "@huma-finance/soroban-credit-storage": "^0.0.22",
+    "@huma-finance/soroban-huma-config": "^0.0.22",
+    "@huma-finance/soroban-pool": "^0.0.22",
+    "@huma-finance/soroban-pool-credit": "^0.0.22",
+    "@huma-finance/soroban-pool-manager": "^0.0.22",
+    "@huma-finance/soroban-pool-storage": "^0.0.22",
+    "@huma-finance/soroban-sep41": "^0.0.22",
+    "@huma-finance/soroban-tranche-vault": "^0.0.22",
     "@stellar/stellar-sdk": "13.0.0",
     "dotenv": "^16.0.3",
     "ts-node": "^10.9.1",
