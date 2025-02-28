@@ -88,7 +88,7 @@ export const NetworkMetadatas: NetworkMetadata[] = [
           underlyingToken:
             'CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75',
         },
-        borrowers: ['GAPEI72LLOS43GQKPNJPS7BQL44UTZPAS472MTGAYQ4O3H5CUNNT7MOJ'],
+        borrowers: ['GBCH6Y5BHRFPVSXFPBYSKBZJTEYR45AYHTUWG2GTZ32LVLLJQBYICIY5'],
       },
       {
         poolName: POOL_NAME.Roam,
