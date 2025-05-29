@@ -268,7 +268,7 @@ export async function drawdown(
         value: drawdownAmount,
       },
     ],
-    shouldSignTransaction: true,
+    shouldSignTransaction: false,
   })
   return result
 }
@@ -336,7 +336,7 @@ export async function makePayment(
     context: poolCreditContext,
     method: principalOnly ? 'make_principal_payment' : 'make_payment',
     params: params,
-    shouldSignTransaction: true,
+    shouldSignTransaction: false,
   })
   return result
 }
