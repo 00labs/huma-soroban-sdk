@@ -72,10 +72,11 @@ export const restoreTransaction = async (
 
   const restoreNeeded = rpc.Api.isSimulationRestore(simResponse)
   if (!restoreNeeded) {
+    console.log('(SDK log) No restore needed')
     return
   }
 
-  console.log('Start restore transaction')
+  console.log('(SDK log) Start restore transaction')
   const { restorePreamble } = simResponse
   const builtTransaction = new TransactionBuilder(account, {
     networkPassphrase: StellarNetworkPassphrase[network],
@@ -105,10 +106,11 @@ export const extendTTLTransaction = async (
 
   const restoreNeeded = rpc.Api.isSimulationRestore(simResponse)
   if (!restoreNeeded) {
+    console.log('(SDK log) No extend TTL needed')
     return
   }
 
-  console.log('Start extend TTL transaction')
+  console.log('(SDK log) Start extend TTL transaction')
   const { restorePreamble } = simResponse
   const builtTransaction = new TransactionBuilder(account, {
     networkPassphrase: StellarNetworkPassphrase[network],
@@ -171,6 +173,7 @@ export const sendTransaction = async ({
   const paramsXDR = params.map((param) => {
     return toScVal(param.value, param.type)
   })
+  console.log('(SDK log) paramsXDR')
   const simResponse = await simulateTransaction(
     context.wallet,
     context.network,
@@ -178,6 +181,7 @@ export const sendTransaction = async ({
     method,
     paramsXDR,
   )
+  console.log('(SDK log) simulateTransaction ', JSON.stringify(simResponse))
   await restoreTransaction(context.wallet, context.network, simResponse)
   await extendTTLTransaction(context.wallet, context.network, simResponse)
 
@@ -185,14 +189,17 @@ export const sendTransaction = async ({
     accumulator[currentValue.name] = currentValue.value
     return accumulator
   }, {} as Record<string, unknown>)
+  console.log('(SDK log) paramsClient generated')
 
   // @ts-ignore
   const tx = await context.client[method](paramsClient, {
     fee: Number(BASE_FEE) * 2,
     timeoutInSeconds: 30,
   })
+  console.log('(SDK log) tx generated')
 
   if (!shouldSignTransaction) {
+    console.log('(SDK log) returning tx')
     return tx
   }
 

@@ -290,6 +290,7 @@ export async function makePayment(
     wallet,
     'poolCredit',
   )
+  console.log('(SDK log) Created transaction context')
   const params = [
     {
       name: 'borrower',
@@ -309,6 +310,7 @@ export async function makePayment(
       value: wallet.userInfo.publicKey,
     })
   }
+  console.log('(SDK log) params generated')
   const result = await sendTransaction({
     context: poolCreditContext,
     method: principalOnly ? 'make_principal_payment' : 'make_payment',
