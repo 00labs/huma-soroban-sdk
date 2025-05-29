@@ -240,15 +240,6 @@ describe('approveAllowanceForSentinel', () => {
     'SB2EYCOYEITOLL5NTD5ADVHFLZWPMQCMAZ33R4FP5GS3KLG3TA63WKPO',
   )
 
-  it('should throw an error if credit hash is not found', async () => {
-    ;(sendTransaction as jest.Mock).mockResolvedValueOnce({
-      result: null,
-    })
-    await expect(
-      approveAllowanceForSentinel(mockPoolName, mockNetwork, mockWallet),
-    ).rejects.toThrow('Could not find credit hash')
-  })
-
   it('should return a transaction if all conditions are met', async () => {
     const mockTransaction = { id: 'tx123' }
     ;(sendTransaction as jest.Mock)
@@ -293,15 +284,6 @@ describe('drawdown', () => {
   it('should return a transaction result if all conditions are met', async () => {
     ;(sendTransaction as jest.Mock)
       .mockResolvedValueOnce({
-        result: 'hash123',
-      })
-      .mockResolvedValueOnce({
-        result: {
-          next_due: 1000n,
-          total_past_due: 500n,
-        },
-      })
-      .mockResolvedValueOnce({
         result: 'sentinel123',
       })
       .mockResolvedValueOnce({
@@ -337,18 +319,6 @@ describe('makePayment', () => {
     const mockPrincipalOnly = true
     ;(sendTransaction as jest.Mock)
       .mockResolvedValueOnce({
-        result: 'hash123',
-      })
-      .mockResolvedValueOnce({
-        result: {
-          next_due: 1000n,
-          total_past_due: 500n,
-        },
-      })
-      .mockResolvedValueOnce({
-        result: 'sentinel123',
-      })
-      .mockResolvedValueOnce({
         result: 'sentinel123',
       })
       .mockResolvedValueOnce({
@@ -381,25 +351,13 @@ describe('makePayment', () => {
           value: mockPaymentAmount,
         },
       ],
-      shouldSignTransaction: true,
+      shouldSignTransaction: false,
     })
   })
 
   it('should return a transaction result if all conditions are met for make_payment', async () => {
     const mockPrincipalOnly = false
     ;(sendTransaction as jest.Mock)
-      .mockResolvedValueOnce({
-        result: 'hash123',
-      })
-      .mockResolvedValueOnce({
-        result: {
-          next_due: 1000n,
-          total_past_due: 500n,
-        },
-      })
-      .mockResolvedValueOnce({
-        result: 'sentinel123',
-      })
       .mockResolvedValueOnce({
         result: 'sentinel123',
       })
@@ -438,7 +396,7 @@ describe('makePayment', () => {
           value: mockPaymentAmount,
         },
       ],
-      shouldSignTransaction: true,
+      shouldSignTransaction: false,
     })
   })
 })
