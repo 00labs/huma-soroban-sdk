@@ -182,6 +182,12 @@ export const sendTransaction = async ({
     paramsXDR,
   )
   console.log('(SDK log) simulateTransaction ', JSON.stringify(simResponse))
+  if ('restorePreamble' in simResponse) {
+    console.log(
+      '(SDK log) simResponse.restorePreamble',
+      simResponse.restorePreamble,
+    )
+  }
   // await restoreTransaction(context.wallet, context.network, simResponse)
   // await extendTTLTransaction(context.wallet, context.network, simResponse)
 
