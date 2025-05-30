@@ -192,6 +192,22 @@ export const sendTransaction = async ({
       simResponse.restorePreamble.transactionData,
     )
     console.log(
+      '(SDK log) simResponse.restorePreamble footprint readOnly',
+      simResponse.restorePreamble.transactionData.getFootprint().readOnly(),
+    )
+    console.log(
+      '(SDK log) simResponse.restorePreamble footprint readWrite',
+      simResponse.restorePreamble.transactionData.getFootprint().readWrite(),
+    )
+    console.log(
+      '(SDK log) simResponse.restorePreamble readOnly',
+      simResponse.restorePreamble.transactionData.getReadOnly(),
+    )
+    console.log(
+      '(SDK log) simResponse.restorePreamble readWrite',
+      simResponse.restorePreamble.transactionData.getReadWrite(),
+    )
+    console.log(
       '(SDK log) simResponse.restorePreamble.transactionData.toXDR().toString()',
       simResponse.restorePreamble.transactionData.build().toXDR().toString(),
     )
