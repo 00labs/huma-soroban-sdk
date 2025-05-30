@@ -182,8 +182,8 @@ export const sendTransaction = async ({
     paramsXDR,
   )
   console.log('(SDK log) simulateTransaction ', JSON.stringify(simResponse))
-  await restoreTransaction(context.wallet, context.network, simResponse)
-  await extendTTLTransaction(context.wallet, context.network, simResponse)
+  // await restoreTransaction(context.wallet, context.network, simResponse)
+  // await extendTTLTransaction(context.wallet, context.network, simResponse)
 
   const paramsClient = params.reduce((accumulator, currentValue) => {
     accumulator[currentValue.name] = currentValue.value
