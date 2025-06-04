@@ -75,7 +75,6 @@ export const restoreTransaction = async (
     return
   }
 
-  console.log('Start restore transaction')
   const { restorePreamble } = simResponse
   const builtTransaction = new TransactionBuilder(account, {
     networkPassphrase: StellarNetworkPassphrase[network],
@@ -91,7 +90,6 @@ export const restoreTransaction = async (
 
   const response = await server.sendTransaction(preparedTransaction)
   const result = await handlePendingTransaction(response, server)
-  console.log('Restore transaction successfully: ', response.hash)
   return result
 }
 
@@ -108,7 +106,6 @@ export const extendTTLTransaction = async (
     return
   }
 
-  console.log('Start extend TTL transaction')
   const { restorePreamble } = simResponse
   const builtTransaction = new TransactionBuilder(account, {
     networkPassphrase: StellarNetworkPassphrase[network],
@@ -128,7 +125,6 @@ export const extendTTLTransaction = async (
 
   const response = await server.sendTransaction(preparedTransaction)
   const result = await handlePendingTransaction(response, server)
-  console.log('Extend TTL transaction successfully: ', response.hash)
   return result
 }
 

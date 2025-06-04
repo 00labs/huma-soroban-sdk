@@ -202,16 +202,6 @@ export async function approveAllowanceForSentinel(
   network: StellarNetwork,
   wallet: StellarWallet,
 ) {
-  const totalDue = await getTotalDue(
-    poolName,
-    network,
-    wallet,
-    wallet.userInfo.publicKey,
-  )
-  if (totalDue === null) {
-    throw new Error('Could not find total due')
-  }
-
   const poolStorageContext = new TransactionContext(
     poolName,
     network,
@@ -268,7 +258,7 @@ export async function drawdown(
         value: drawdownAmount,
       },
     ],
-    shouldSignTransaction: true,
+    shouldSignTransaction: false,
   })
   return result
 }
@@ -293,19 +283,6 @@ export async function makePayment(
   principalOnly: boolean,
 ) {
   await approveAllowanceForSentinel(poolName, network, wallet)
-
-  const poolStorageContext = new TransactionContext(
-    poolName,
-    network,
-    wallet,
-    'poolStorage',
-  )
-  const { result: sentinel }: { result: string } = await sendTransaction({
-    context: poolStorageContext,
-    method: 'get_sentinel',
-  })
-
-  await approveSep41Allowance(poolName, network, wallet, sentinel)
 
   const poolCreditContext = new TransactionContext(
     poolName,
@@ -336,7 +313,7 @@ export async function makePayment(
     context: poolCreditContext,
     method: principalOnly ? 'make_principal_payment' : 'make_payment',
     params: params,
-    shouldSignTransaction: true,
+    shouldSignTransaction: false,
   })
   return result
 }
