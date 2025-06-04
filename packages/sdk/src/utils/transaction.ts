@@ -72,11 +72,9 @@ export const restoreTransaction = async (
 
   const restoreNeeded = rpc.Api.isSimulationRestore(simResponse)
   if (!restoreNeeded) {
-    console.log('(SDK log) No restore needed')
     return
   }
 
-  console.log('(SDK log) Start restore transaction')
   const { restorePreamble } = simResponse
   const builtTransaction = new TransactionBuilder(account, {
     networkPassphrase: StellarNetworkPassphrase[network],
@@ -92,7 +90,6 @@ export const restoreTransaction = async (
 
   const response = await server.sendTransaction(preparedTransaction)
   const result = await handlePendingTransaction(response, server)
-  console.log('Restore transaction successfully: ', response.hash)
   return result
 }
 
@@ -106,11 +103,9 @@ export const extendTTLTransaction = async (
 
   const restoreNeeded = rpc.Api.isSimulationRestore(simResponse)
   if (!restoreNeeded) {
-    console.log('(SDK log) No extend TTL needed')
     return
   }
 
-  console.log('(SDK log) Start extend TTL transaction')
   const { restorePreamble } = simResponse
   const builtTransaction = new TransactionBuilder(account, {
     networkPassphrase: StellarNetworkPassphrase[network],
@@ -130,7 +125,6 @@ export const extendTTLTransaction = async (
 
   const response = await server.sendTransaction(preparedTransaction)
   const result = await handlePendingTransaction(response, server)
-  console.log('Extend TTL transaction successfully: ', response.hash)
   return result
 }
 
@@ -173,7 +167,6 @@ export const sendTransaction = async ({
   const paramsXDR = params.map((param) => {
     return toScVal(param.value, param.type)
   })
-  console.log('(SDK log) paramsXDR')
   const simResponse = await simulateTransaction(
     context.wallet,
     context.network,
@@ -181,55 +174,21 @@ export const sendTransaction = async ({
     method,
     paramsXDR,
   )
-  console.log('(SDK log) simulateTransaction ', JSON.stringify(simResponse))
-  if ('restorePreamble' in simResponse) {
-    console.log(
-      '(SDK log) simResponse.restorePreamble',
-      simResponse.restorePreamble,
-    )
-    console.log(
-      '(SDK log) simResponse.restorePreamble.transactionData',
-      simResponse.restorePreamble.transactionData,
-    )
-    console.log(
-      '(SDK log) simResponse.restorePreamble footprint readOnly',
-      simResponse.restorePreamble.transactionData.getFootprint().readOnly(),
-    )
-    console.log(
-      '(SDK log) simResponse.restorePreamble footprint readWrite',
-      simResponse.restorePreamble.transactionData.getFootprint().readWrite(),
-    )
-    console.log(
-      '(SDK log) simResponse.restorePreamble readOnly',
-      simResponse.restorePreamble.transactionData.getReadOnly(),
-    )
-    console.log(
-      '(SDK log) simResponse.restorePreamble readWrite',
-      simResponse.restorePreamble.transactionData.getReadWrite(),
-    )
-    console.log(
-      '(SDK log) simResponse.restorePreamble.transactionData.toXDR().toString()',
-      simResponse.restorePreamble.transactionData.build().toXDR().toString(),
-    )
-  }
-  // await restoreTransaction(context.wallet, context.network, simResponse)
-  // await extendTTLTransaction(context.wallet, context.network, simResponse)
+  await restoreTransaction(context.wallet, context.network, simResponse)
+  await extendTTLTransaction(context.wallet, context.network, simResponse)
 
   const paramsClient = params.reduce((accumulator, currentValue) => {
     accumulator[currentValue.name] = currentValue.value
     return accumulator
   }, {} as Record<string, unknown>)
-  console.log('(SDK log) paramsClient generated')
 
   // @ts-ignore
   const tx = await context.client[method](paramsClient, {
     fee: Number(BASE_FEE) * 2,
     timeoutInSeconds: 30,
   })
-  console.log('(SDK log) tx generated')
 
   if (!shouldSignTransaction) {
-    console.log('(SDK log) returning tx')
     return tx
   }
 
