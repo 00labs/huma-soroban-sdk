@@ -15,9 +15,11 @@ associated with the given pool name on the current chain.</p></dd>
 <dt><a href="#approveAllowanceForSentinel">approveAllowanceForSentinel(poolName, network, wallet)</a></dt>
 <dd><p>Approve allowance for sentinel if not enough allowance is approved.</p></dd>
 <dt><a href="#drawdown">drawdown(poolName, network, wallet, drawdownAmount)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
-<dd><p>Draws down from a pool.</p></dd>
+<dd><p>Draws down from a pool.
+Note: To ensure that allowance is always available for autopay, please call approveAllowanceForSentinel() before calling this function.</p></dd>
 <dt><a href="#makePayment">makePayment(poolName, network, wallet, paymentAmount, principalOnly)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
-<dd><p>Makes a payment.</p></dd>
+<dd><p>Makes a payment.
+Note: To ensure that allowance is always available for autopay, please call approveAllowanceForSentinel() before calling this function.</p></dd>
 <dt><a href="#approveSep41Allowance">approveSep41Allowance(poolName, network, wallet, spenderAddress)</a></dt>
 <dd><p>Approves an Sep41 allowance for a spender address.
 Allowance is required to do certain actions on the Huma protocol (e.g. makePayment for Autopay)</p></dd>
@@ -102,7 +104,8 @@ associated with the given pool name on the current chain.</p>
 <a name="drawdown"></a>
 
 ## drawdown(poolName, network, wallet, drawdownAmount) ⇒ <code>Promise.&lt;SentTransaction&gt;</code>
-<p>Draws down from a pool.</p>
+<p>Draws down from a pool.
+Note: To ensure that allowance is always available for autopay, please call approveAllowanceForSentinel() before calling this function.</p>
 
 **Kind**: global function  
 **Returns**: <code>Promise.&lt;SentTransaction&gt;</code> - <ul>
@@ -119,7 +122,8 @@ associated with the given pool name on the current chain.</p>
 <a name="makePayment"></a>
 
 ## makePayment(poolName, network, wallet, paymentAmount, principalOnly) ⇒ <code>Promise.&lt;SentTransaction&gt;</code>
-<p>Makes a payment.</p>
+<p>Makes a payment.
+Note: To ensure that allowance is always available for autopay, please call approveAllowanceForSentinel() before calling this function.</p>
 
 **Kind**: global function  
 **Returns**: <code>Promise.&lt;SentTransaction&gt;</code> - <ul>

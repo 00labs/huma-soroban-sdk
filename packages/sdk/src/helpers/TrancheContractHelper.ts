@@ -141,7 +141,7 @@ export async function withdrawYieldFromTranche(
         value: wallet.userInfo.publicKey,
       },
     ],
-    shouldSignTransaction: true,
+    shouldSignTransaction: false,
   })
 
   return trancheResult

@@ -282,13 +282,9 @@ describe('drawdown', () => {
   const mockDrawdownAmount = 1000n
 
   it('should return a transaction result if all conditions are met', async () => {
-    ;(sendTransaction as jest.Mock)
-      .mockResolvedValueOnce({
-        result: 'sentinel123',
-      })
-      .mockResolvedValueOnce({
-        result: 'transactionResult',
-      })
+    ;(sendTransaction as jest.Mock).mockResolvedValueOnce({
+      result: 'transactionResult',
+    })
     ;(approveSep41Allowance as jest.Mock).mockResolvedValueOnce({})
 
     const result = await drawdown(
@@ -317,13 +313,9 @@ describe('makePayment', () => {
 
   it('should return a transaction result if all conditions are met for make_principal_payment', async () => {
     const mockPrincipalOnly = true
-    ;(sendTransaction as jest.Mock)
-      .mockResolvedValueOnce({
-        result: 'sentinel123',
-      })
-      .mockResolvedValueOnce({
-        result: 'transactionResult',
-      })
+    ;(sendTransaction as jest.Mock).mockResolvedValueOnce({
+      result: 'transactionResult',
+    })
     ;(approveSep41Allowance as jest.Mock).mockResolvedValue({})
 
     const result = await makePayment(
@@ -357,13 +349,9 @@ describe('makePayment', () => {
 
   it('should return a transaction result if all conditions are met for make_payment', async () => {
     const mockPrincipalOnly = false
-    ;(sendTransaction as jest.Mock)
-      .mockResolvedValueOnce({
-        result: 'sentinel123',
-      })
-      .mockResolvedValueOnce({
-        result: 'transactionResult',
-      })
+    ;(sendTransaction as jest.Mock).mockResolvedValueOnce({
+      result: 'transactionResult',
+    })
     ;(approveSep41Allowance as jest.Mock).mockResolvedValue({})
 
     const result = await makePayment(
