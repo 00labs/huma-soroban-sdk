@@ -220,6 +220,7 @@ export async function approveAllowanceForSentinel(
 
 /**
  * Draws down from a pool.
+ * Note: To ensure that allowance is always available for autopay, please call approveAllowanceForSentinel() before calling this function.
  *
  * @async
  * @function
@@ -235,8 +236,6 @@ export async function drawdown(
   wallet: StellarWallet,
   drawdownAmount: bigint,
 ) {
-  await approveAllowanceForSentinel(poolName, network, wallet)
-
   const poolCreditContext = new TransactionContext(
     poolName,
     network,
@@ -265,6 +264,7 @@ export async function drawdown(
 
 /**
  * Makes a payment.
+ * Note: To ensure that allowance is always available for autopay, please call approveAllowanceForSentinel() before calling this function.
  *
  * @async
  * @function
@@ -282,8 +282,6 @@ export async function makePayment(
   paymentAmount: bigint,
   principalOnly: boolean,
 ) {
-  await approveAllowanceForSentinel(poolName, network, wallet)
-
   const poolCreditContext = new TransactionContext(
     poolName,
     network,

@@ -185,7 +185,7 @@ export const sendTransaction = async ({
   // @ts-ignore
   const tx = await context.client[method](paramsClient, {
     fee: Number(BASE_FEE) * 2,
-    timeoutInSeconds: 30,
+    timeoutInSeconds: 60,
   })
 
   if (!shouldSignTransaction) {

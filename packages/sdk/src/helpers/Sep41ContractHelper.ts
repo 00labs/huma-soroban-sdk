@@ -65,7 +65,7 @@ export async function approveSep41Allowance(
         value: latestLedger.sequence + advanceLedgerNum,
       },
     ],
-    shouldSignTransaction: true,
+    shouldSignTransaction: false,
   })
 
   return result

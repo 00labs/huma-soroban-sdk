@@ -1,8 +1,10 @@
 {
   "extends": "./tsconfig.json",
+  "exclude": ["tests/**/*"],
   "compilerOptions": {
     "module": "commonjs",
     "target": "ESNext",
+    "rootDir": "./src",
     "outDir": "./dist/cjs" /* Redirect output structure to the directory. */,
     "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
     "paths": {
