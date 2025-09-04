@@ -21,8 +21,8 @@
   "scripts": {
     "start": "tsc -w",
     "generateDocs": "jsdoc2md --files \"src/**/*.ts\" --configure ./jsdoc2md.json > API.md",
-    "build": "tsc --project ./tsconfig.json && tsc --project ./tsconfig.cjs.json",
-    "clean": "rm -f tsconfig.tsbuildinfo && rm -rf dist",
+    "build": "tsc --project ./tsconfig.build.json && tsc --project ./tsconfig.cjs.json",
+    "clean": "rm *.tsbuildinfo && rm -rf dist",
     "lint": "eslint --max-warnings=0 \"src/**/*.{js,ts,tsx,graphql}\"",
     "lint-staged": "lint-staged",
     "prettier": "prettier --write \"src/**/*.{js,ts,tsx,graphql}\"",
