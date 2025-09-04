@@ -35,7 +35,6 @@ export async function fetchStellarDepositRecord(
     const key = getDepositRecordKey(transactionContext.contractId, account)
     // Get the contract data with proper durability
     const response = await server.getLedgerEntries(key)
-    console.log('response', response)
     const contractData = response.entries[0].val
 
     if (contractData.switch() === xdr.LedgerEntryType.contractData()) {
