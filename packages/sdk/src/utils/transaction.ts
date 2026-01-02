@@ -93,10 +93,14 @@ export const restoreTransaction = async (
   return result
 }
 
+// Default TTL extension: ~30 days (at ~5 seconds per ledger)
+const DEFAULT_TTL_LEDGERS = 518400
+
 export const extendTTLTransaction = async (
   wallet: StellarWallet,
   network: StellarNetwork,
   simResponse: rpc.Api.SimulateTransactionResponse,
+  extendToLedgers: number = DEFAULT_TTL_LEDGERS,
 ) => {
   const server = new rpc.Server(StellarPublicRpcUrl[network])
   const account = await server.getAccount(wallet.userInfo.publicKey)
@@ -114,7 +118,7 @@ export const extendTTLTransaction = async (
     .setSorobanData(restorePreamble.transactionData.build())
     .addOperation(
       Operation.extendFootprintTtl({
-        extendTo: 3110400 - 1,
+        extendTo: extendToLedgers,
       }),
     )
     .setTimeout(30)
@@ -174,8 +178,9 @@ export const sendTransaction = async ({
     method,
     paramsXDR,
   )
+  // Only restore if needed - TTL extension removed as it's expensive and usually unnecessary
+  // The Soroban RPC will handle TTL extension automatically when needed during restore
   await restoreTransaction(context.wallet, context.network, simResponse)
-  await extendTTLTransaction(context.wallet, context.network, simResponse)
 
   const paramsClient = params.reduce((accumulator, currentValue) => {
     accumulator[currentValue.name] = currentValue.value
