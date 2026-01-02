@@ -1,13 +1,6 @@
 ## Functions
 
 <dl>
-<dt><a href="#getYieldToWithdraw">getYieldToWithdraw(poolName, network, wallet)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
-<dd><p>Get yield available to withdraw from the pool for a lender account</p></dd>
-<dt><a href="#withdrawYields">withdrawYields(poolName, network, wallet)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
-<dd><p>Withdraw yield from the pool for a lender account</p></dd>
-<dt><a href="#approveSep41Allowance">approveSep41Allowance(poolName, network, wallet, spenderAddress)</a></dt>
-<dd><p>Approves an Sep41 allowance for a spender address.
-Allowance is required to do certain actions on the Huma protocol (e.g. makePayment for Autopay)</p></dd>
 <dt><a href="#getAvailableBalanceForPool">getAvailableBalanceForPool(poolName, network, wallet)</a></dt>
 <dd><p>Returns the current pool balance available for borrowing</p></dd>
 <dt><a href="#getCreditRecordForPool">getCreditRecordForPool(poolName, network, wallet, borrower)</a></dt>
@@ -27,54 +20,14 @@ Note: To ensure that allowance is always available for autopay, please call appr
 <dt><a href="#makePayment">makePayment(poolName, network, wallet, paymentAmount, principalOnly)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
 <dd><p>Makes a payment.
 Note: To ensure that allowance is always available for autopay, please call approveAllowanceForSentinel() before calling this function.</p></dd>
+<dt><a href="#approveSep41Allowance">approveSep41Allowance(poolName, network, wallet, spenderAddress)</a></dt>
+<dd><p>Approves an Sep41 allowance for a spender address.
+Allowance is required to do certain actions on the Huma protocol (e.g. makePayment for Autopay)</p></dd>
+<dt><a href="#getYieldToWithdraw">getYieldToWithdraw(poolName, network, wallet)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
+<dd><p>Get yield available to withdraw from the pool for a lender account</p></dd>
+<dt><a href="#withdrawYields">withdrawYields(poolName, network, wallet)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
+<dd><p>Withdraw yield from the pool for a lender account</p></dd>
 </dl>
-
-<a name="getYieldToWithdraw"></a>
-
-## getYieldToWithdraw(poolName, network, wallet) ⇒ <code>Promise.&lt;SentTransaction&gt;</code>
-<p>Get yield available to withdraw from the pool for a lender account</p>
-
-**Kind**: global function  
-**Returns**: <code>Promise.&lt;SentTransaction&gt;</code> - <ul>
-<li>A Promise of the SentTransaction.</li>
-</ul>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to get the contract instance for.</p> |
-| network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
-| wallet | <code>StellarWallet</code> | <p>The stellar wallet.</p> |
-
-<a name="withdrawYields"></a>
-
-## withdrawYields(poolName, network, wallet) ⇒ <code>Promise.&lt;SentTransaction&gt;</code>
-<p>Withdraw yield from the pool for a lender account</p>
-
-**Kind**: global function  
-**Returns**: <code>Promise.&lt;SentTransaction&gt;</code> - <ul>
-<li>A Promise of the SentTransaction.</li>
-</ul>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to get the contract instance for.</p> |
-| network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
-| wallet | <code>StellarWallet</code> | <p>The stellar wallet.</p> |
-
-<a name="approveSep41Allowance"></a>
-
-## approveSep41Allowance(poolName, network, wallet, spenderAddress)
-<p>Approves an Sep41 allowance for a spender address.
-Allowance is required to do certain actions on the Huma protocol (e.g. makePayment for Autopay)</p>
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to get the contract instance for.</p> |
-| network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
-| wallet | <code>StellarWallet</code> | <p>The wallet used to send the transaction.</p> |
-| spenderAddress | <code>string</code> | <p>The address of the spender to approve an allowance for.</p> |
 
 <a name="getAvailableBalanceForPool"></a>
 
@@ -184,4 +137,51 @@ Note: To ensure that allowance is always available for autopay, please call appr
 | wallet | <code>StellarWallet</code> | <p>The stellar wallet.</p> |
 | paymentAmount | <code>bigint</code> | <p>The amount to payback.</p> |
 | principalOnly | <code>boolean</code> | <p>Whether this payment should ONLY apply to the principal</p> |
+
+<a name="approveSep41Allowance"></a>
+
+## approveSep41Allowance(poolName, network, wallet, spenderAddress)
+<p>Approves an Sep41 allowance for a spender address.
+Allowance is required to do certain actions on the Huma protocol (e.g. makePayment for Autopay)</p>
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to get the contract instance for.</p> |
+| network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
+| wallet | <code>StellarWallet</code> | <p>The wallet used to send the transaction.</p> |
+| spenderAddress | <code>string</code> | <p>The address of the spender to approve an allowance for.</p> |
+
+<a name="getYieldToWithdraw"></a>
+
+## getYieldToWithdraw(poolName, network, wallet) ⇒ <code>Promise.&lt;SentTransaction&gt;</code>
+<p>Get yield available to withdraw from the pool for a lender account</p>
+
+**Kind**: global function  
+**Returns**: <code>Promise.&lt;SentTransaction&gt;</code> - <ul>
+<li>A Promise of the SentTransaction.</li>
+</ul>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to get the contract instance for.</p> |
+| network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
+| wallet | <code>StellarWallet</code> | <p>The stellar wallet.</p> |
+
+<a name="withdrawYields"></a>
+
+## withdrawYields(poolName, network, wallet) ⇒ <code>Promise.&lt;SentTransaction&gt;</code>
+<p>Withdraw yield from the pool for a lender account</p>
+
+**Kind**: global function  
+**Returns**: <code>Promise.&lt;SentTransaction&gt;</code> - <ul>
+<li>A Promise of the SentTransaction.</li>
+</ul>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to get the contract instance for.</p> |
+| network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
+| wallet | <code>StellarWallet</code> | <p>The stellar wallet.</p> |
 
