@@ -1,0 +1,96 @@
+name: NPM Packages Publishing
+
+on:
+  pull_request:
+    types: [closed]
+    branches: ["main", "develop"]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Target branch (main or develop)"
+        required: true
+        type: choice
+        options:
+          - main
+          - develop
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: write # Required for git push operations
+
+jobs:
+  publish:
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true) ||
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CI_TOKEN_PUBLIC }}
+          fetch-depth: 0
+
+      - name: Determine target branch
+        id: determine_branch
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            TARGET_BRANCH="${{ github.event.inputs.branch }}"
+          else
+            TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+          fi
+          echo "TARGET_BRANCH=${TARGET_BRANCH}" >> $GITHUB_ENV
+          echo "Target branch: ${TARGET_BRANCH}"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.3.0
+          registry-url: "https://registry.npmjs.org"
+
+      # Ensure npm 11.5.1 or later for trusted publishing
+      - run: npm install -g npm@11.7.0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.8.0
+
+      - name: Configure pnpm registry
+        run: |
+          pnpm config set registry https://registry.npmjs.org/
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Test packages
+        run: pnpm test
+
+      - name: Configure Git User
+        run: |
+          git config --global user.email "ci@huma.finance"
+          git config --global user.name "humaci"
+
+      # Beta publishing (for develop branch)
+      - name: Publish beta packages
+        if: env.TARGET_BRANCH == 'develop'
+        run: |
+          pnpm lerna:publish:canary --yes --force-publish
+
+      # Production publishing (for main branch)
+      - name: Publish production packages
+        if: env.TARGET_BRANCH == 'main'
+        run: |
+          pnpm lerna:publish --yes --force-publish
+
+      - name: Synchronize lerna version bump commit with develop branch
+        if: env.TARGET_BRANCH == 'main'
+        run: |
+          git fetch --unshallow
+          git checkout develop
+          git pull
+          git merge --no-ff main -m "Auto-merge main back to develop"
+          git push
