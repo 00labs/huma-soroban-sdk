@@ -47,27 +47,24 @@ jobs:
         with:
           node-version: 24.3.0
           registry-url: "https://registry.npmjs.org"
+          cache: "yarn"
 
-      # Ensure npm 11.5.1 or later for trusted publishing
-      - run: npm install -g npm@11.7.0
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v3
         with:
-          version: 10.8.0
-
-      - name: Configure pnpm registry
-        run: |
-          pnpm config set registry https://registry.npmjs.org/
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: yarn install --frozen-lockfile
 
       - name: Build packages
-        run: pnpm build
+        run: yarn build:all
 
       - name: Test packages
-        run: pnpm test
+        run: yarn test:all
 
       - name: Configure Git User
         run: |
@@ -78,13 +75,13 @@ jobs:
       - name: Publish beta packages
         if: env.TARGET_BRANCH == 'develop'
         run: |
-          pnpm lerna:publish:canary --yes --force-publish
+          yarn lerna:publish:canary --yes --force-publish
 
       # Production publishing (for main branch)
       - name: Publish production packages
         if: env.TARGET_BRANCH == 'main'
         run: |
-          pnpm lerna:publish --yes --force-publish
+          yarn lerna:publish --yes --force-publish
 
       - name: Synchronize lerna version bump commit with develop branch
         if: env.TARGET_BRANCH == 'main'
