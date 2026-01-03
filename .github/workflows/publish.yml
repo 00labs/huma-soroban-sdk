@@ -76,12 +76,16 @@ jobs:
         if: env.TARGET_BRANCH == 'develop'
         run: |
           yarn lerna:publish:canary --yes --force-publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Production publishing (for main branch)
       - name: Publish production packages
         if: env.TARGET_BRANCH == 'main'
         run: |
           yarn lerna:publish --yes --force-publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Synchronize lerna version bump commit with develop branch
         if: env.TARGET_BRANCH == 'main'
