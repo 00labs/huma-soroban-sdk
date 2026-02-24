@@ -1,17 +1,31 @@
 import "dotenv/config";
 
 import {
+  getCommonProps,
   POOL_NAME,
   StellarNetwork,
   StellarWallet,
   withdrawYieldFromTranche,
   withdrawYields,
 } from "@huma-finance/soroban-sdk";
+import { Client as TrancheVaultClient } from "@huma-finance/soroban-tranche-vault";
 
 const main = async () => {
   const lender = new StellarWallet(process.env.TEST_PRIVATE_KEY as string);
   const poolName = POOL_NAME.Arf;
-  const network = StellarNetwork.testnet;
+  const network = StellarNetwork.mainnet;
+
+  const juniorTrancheClient = new TrancheVaultClient({
+    contractId: "CDJ6AO57ZWBIDITDN32URXYQY6MTSFBNF6OFOCENRDE2MUB67UZKLKDP",
+    ...getCommonProps(network, lender),
+  });
+
+  const result = await juniorTrancheClient.withdraw_yields({
+    lender: lender.userInfo.publicKey,
+  });
+  await result.signAndSend();
+
+  return;
 
   // Withdraw from all tranches
   const withdrawResult = await withdrawYields(poolName, network, lender);

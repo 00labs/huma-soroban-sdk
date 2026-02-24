@@ -8,6 +8,7 @@
     "startDrawdownPayback": "ts-node src/drawdownAndPayback.ts",
     "yieldWithdrawable": "ts-node src/yieldWithdrawable.ts",
     "depositRecord": "ts-node src/depositRecord.ts",
+    "withdrawYield": "ts-node src/withdrawYield.ts",
     "lint-staged": "lint-staged"
   },
   "dependencies": {
