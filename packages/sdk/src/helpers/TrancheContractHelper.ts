@@ -1,14 +1,14 @@
 import { StellarWallet } from '../services'
 import {
+  ContractType,
+  DepositRecord,
   POOL_NAME,
+  ScValType,
   StellarNetwork,
   TransactionContext,
-  sendTransaction,
-  ScValType,
-  findPoolMetadata,
-  ContractType,
   fetchStellarDepositRecord,
-  DepositRecord,
+  findPoolMetadata,
+  sendTransaction,
 } from '../utils'
 
 const DEFAULT_DECIMALS_FACTOR = BigInt('1000000000000000000')
@@ -117,6 +117,73 @@ export async function getYieldToWithdraw(
   )
 
   return [juniorTrancheResult, seniorTrancheResult]
+}
+
+export async function depositToTranche(
+  poolName: POOL_NAME,
+  network: StellarNetwork,
+  wallet: StellarWallet,
+  contractType: ContractType,
+  assets: bigint,
+) {
+  const trancheContext = new TransactionContext(
+    poolName,
+    network,
+    wallet,
+    contractType,
+  )
+  const trancheResult = await sendTransaction({
+    context: trancheContext,
+    method: 'deposit',
+    params: [
+      {
+        name: 'lender',
+        type: ScValType.address,
+        value: wallet.userInfo.publicKey,
+      },
+      {
+        name: 'assets',
+        type: ScValType.u128,
+        value: assets,
+      },
+    ],
+  })
+
+  return trancheResult
+}
+
+/**
+ * Deposit assets into a tranche of the pool
+ *
+ * @async
+ * @function
+ * @param {POOL_NAME} poolName - The name of the credit pool to deposit into.
+ * @param {StellarNetwork} network - The stellar network.
+ * @param {StellarWallet} wallet - The stellar wallet.
+ * @param {bigint} assets - The amount of underlying assets to deposit.
+ * @param {'juniorTranche' | 'seniorTranche'} - The tranche to deposit into.
+ * @returns {Promise<SentTransaction>} - A Promise of the SentTransaction containing the shares minted.
+ */
+export async function deposit(
+  poolName: POOL_NAME,
+  network: StellarNetwork,
+  wallet: StellarWallet,
+  assets: bigint,
+  trancheType: 'juniorTranche' | 'seniorTranche',
+) {
+  const poolMetadata = findPoolMetadata(network, poolName)
+  if (!poolMetadata) {
+    throw new Error(`Could not find pool metadata by pool name: ${poolName}`)
+  }
+
+  if (
+    trancheType === 'seniorTranche' &&
+    !poolMetadata.contracts['seniorTranche']
+  ) {
+    throw new Error(`Senior tranche is not available for pool: ${poolName}`)
+  }
+
+  return depositToTranche(poolName, network, wallet, trancheType, assets)
 }
 
 export async function withdrawYieldFromTranche(
