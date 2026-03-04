@@ -1,6 +1,10 @@
 {
   "version": "0.0.27",
   "name": "@huma-finance/soroban-pool-manager",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/00labs/huma-soroban-sdk"
+  },
   "exports": {
     ".": {
       "require": "./dist/cjs/index.js",

@@ -1,14 +1,14 @@
 {
   "name": "huma-soroban-sdk",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/00labs/huma-soroban-sdk"
+  },
   "workspaces": {
     "packages": [
       "packages/*"
     ]
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": "false"
   },
   "scripts": {
     "binding": "ts-node scripts/bindings.ts",
