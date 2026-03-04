@@ -6,6 +6,10 @@
       "packages/*"
     ]
   },
+  "publishConfig": {
+    "access": "public",
+    "provenance": "false"
+  },
   "scripts": {
     "binding": "ts-node scripts/bindings.ts",
     "lerna:publish": "yarn lerna publish patch --no-private",
