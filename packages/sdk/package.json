@@ -1,6 +1,6 @@
 {
   "name": "@huma-finance/soroban-sdk",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "repository": {
     "type": "git",
     "url": "https://github.com/00labs/huma-soroban-sdk"
