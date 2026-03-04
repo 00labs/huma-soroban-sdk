@@ -3,15 +3,15 @@ name: NPM Packages Publishing
 on:
   pull_request:
     types: [closed]
-    branches: ["main", "develop"]
+    branches: ["master", "develop"]
   workflow_dispatch:
     inputs:
       branch:
-        description: "Target branch (main or develop)"
+        description: "Target branch (master or develop)"
         required: true
         type: choice
         options:
-          - main
+          - master
           - develop
 
 permissions:
@@ -77,17 +77,17 @@ jobs:
         run: |
           yarn lerna:publish:canary --yes --force-publish
 
-      # Production publishing (for main branch)
+      # Production publishing (for master branch)
       - name: Publish production packages
-        if: env.TARGET_BRANCH == 'main'
+        if: env.TARGET_BRANCH == 'master'
         run: |
           yarn lerna:publish --yes --force-publish
 
       - name: Synchronize lerna version bump commit with develop branch
-        if: env.TARGET_BRANCH == 'main'
+        if: env.TARGET_BRANCH == 'master'
         run: |
           git fetch --unshallow
           git checkout develop
           git pull
-          git merge --no-ff main -m "Auto-merge main back to develop"
+          git merge --no-ff master -m "Auto-merge master back to develop"
           git push
