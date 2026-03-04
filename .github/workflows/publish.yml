@@ -86,7 +86,7 @@ jobs:
       - name: Synchronize lerna version bump commit with develop branch
         if: env.TARGET_BRANCH == 'master'
         run: |
-          git fetch --unshallow
+          git fetch origin
           git checkout develop
           git pull
           git merge --no-ff master -m "Auto-merge master back to develop"
