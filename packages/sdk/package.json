@@ -1,6 +1,10 @@
 {
   "name": "@huma-finance/soroban-sdk",
   "version": "0.0.28",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/00labs/huma-soroban-sdk"
+  },
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -108,5 +112,6 @@
     "lint-staged": "^10.5.4",
     "prettier": "^2.7.1",
     "ts-jest": "^29.1.1"
-  }
+  },
+  "gitHead": "67da8339773bade80152df6d5657166baadcf9ee"
 }

@@ -1,6 +1,10 @@
 {
   "name": "huma-soroban-sdk",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/00labs/huma-soroban-sdk"
+  },
   "workspaces": {
     "packages": [
       "packages/*"
@@ -44,6 +48,6 @@
     "example": "yarn workspace @huma-finance/soroban-examples startDrawdownPayback"
   },
   "devDependencies": {
-    "lerna": "^6.6.1"
+    "lerna": "^9.0.0"
   }
 }

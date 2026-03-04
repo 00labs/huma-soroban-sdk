@@ -1,6 +1,10 @@
 {
   "version": "0.0.28",
   "name": "@huma-finance/soroban-pool-credit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/00labs/huma-soroban-sdk"
+  },
   "exports": {
     ".": {
       "require": "./dist/cjs/index.js",

@@ -25,6 +25,8 @@ Note: To ensure that allowance is always available for autopay, please call appr
 Allowance is required to do certain actions on the Huma protocol (e.g. makePayment for Autopay)</p></dd>
 <dt><a href="#getYieldToWithdraw">getYieldToWithdraw(poolName, network, wallet)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
 <dd><p>Get yield available to withdraw from the pool for a lender account</p></dd>
+<dt><a href="#deposit">deposit(poolName, network, wallet, assets, trancheType)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
+<dd><p>Deposit assets into a tranche of the pool</p></dd>
 <dt><a href="#withdrawYields">withdrawYields(poolName, network, wallet)</a> ⇒ <code>Promise.&lt;SentTransaction&gt;</code></dt>
 <dd><p>Withdraw yield from the pool for a lender account</p></dd>
 </dl>
@@ -168,6 +170,24 @@ Allowance is required to do certain actions on the Huma protocol (e.g. makePayme
 | poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to get the contract instance for.</p> |
 | network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
 | wallet | <code>StellarWallet</code> | <p>The stellar wallet.</p> |
+
+<a name="deposit"></a>
+
+## deposit(poolName, network, wallet, assets, trancheType) ⇒ <code>Promise.&lt;SentTransaction&gt;</code>
+<p>Deposit assets into a tranche of the pool</p>
+
+**Kind**: global function  
+**Returns**: <code>Promise.&lt;SentTransaction&gt;</code> - <ul>
+<li>A Promise of the SentTransaction containing the shares minted.</li>
+</ul>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| poolName | <code>POOL\_NAME</code> | <p>The name of the credit pool to deposit into.</p> |
+| network | <code>StellarNetwork</code> | <p>The stellar network.</p> |
+| wallet | <code>StellarWallet</code> | <p>The stellar wallet.</p> |
+| assets | <code>bigint</code> | <p>The amount of underlying assets to deposit.</p> |
+| trancheType | <code>&#x27;juniorTranche&#x27;</code> \| <code>&#x27;seniorTranche&#x27;</code> | <p>The tranche to deposit into.</p> |
 
 <a name="withdrawYields"></a>
 
